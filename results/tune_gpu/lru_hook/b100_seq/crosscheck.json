@@ -1,0 +1,10 @@
+{
+  "gpu_result": "results/tune_gpu/lru_hook/b100_seq/result.json",
+  "system": "lru_hook",
+  "requests": 703,
+  "exact_matches": 703,
+  "exact_fraction": 1.0,
+  "mean_abs_diff_tokens": 0.0,
+  "gpu_hit_rate": 0.587803329834504,
+  "sim_hit_rate": 0.587803329834504
+}

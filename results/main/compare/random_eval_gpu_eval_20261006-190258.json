@@ -1,0 +1,93 @@
+{
+  "kind": "GPU (vLLM 0.31.0)",
+  "config": "configs/experiments/main/local.yaml",
+  "trace": "results/traces/random_eval.json",
+  "blocks": [
+    100,
+    150
+  ],
+  "labels": [
+    "vanilla",
+    "cachescout"
+  ],
+  "table": {
+    "100": {
+      "vanilla": {
+        "hit_rate": 0.46269503444880133,
+        "ttft_mean_ms": 108.95072756708639,
+        "ttft_median_ms": 79.98755100015842,
+        "ttft_p99_ms": 395.54310828061716,
+        "latency_mean_ms": 397.6550826285796,
+        "latency_p99_ms": 801.2231963602243,
+        "throughput_tps": 7.561568339343293,
+        "turns": 813,
+        "source": "results/main/random_eval/vanilla/b100_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.49563458224361423,
+        "ttft_mean_ms": 111.08721549814717,
+        "ttft_median_ms": 78.86616299947491,
+        "ttft_p99_ms": 431.1034925206331,
+        "latency_mean_ms": 401.7700521660441,
+        "latency_p99_ms": 810.3426718404806,
+        "throughput_tps": 7.562938007596018,
+        "turns": 813,
+        "source": "results/main/random_eval/cachescout/b100_eval/result.json",
+        "warmups_issued": 14
+      }
+    },
+    "150": {
+      "vanilla": {
+        "hit_rate": 0.6047860820420237,
+        "ttft_mean_ms": 76.56530874293536,
+        "ttft_median_ms": 71.95404800040706,
+        "ttft_p99_ms": 170.04646124034477,
+        "latency_mean_ms": 358.5325437859771,
+        "latency_p99_ms": 650.4593148404092,
+        "throughput_tps": 7.5697776210790835,
+        "turns": 813,
+        "source": "results/main/random_eval/vanilla/b150_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.6550231739994505,
+        "ttft_mean_ms": 74.49322351290401,
+        "ttft_median_ms": 70.89445199926558,
+        "ttft_p99_ms": 144.23033427898187,
+        "latency_mean_ms": 354.7260038007195,
+        "latency_p99_ms": 666.9158596412307,
+        "throughput_tps": 7.578946819263182,
+        "turns": 813,
+        "source": "results/main/random_eval/cachescout/b150_eval/result.json",
+        "warmups_issued": 13
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "CacheScout hit rate > vanilla at every budget",
+      "ok": true,
+      "detail": "gains (pp): 100:+3.3, 150:+5.0",
+      "paper": "Fig. 8a (+10..18 pp), Fig. 14a"
+    },
+    {
+      "check": "gain shrinks as the cache grows",
+      "ok": false,
+      "detail": "100: +3.3 pp vs 150: +5.0 pp",
+      "paper": "Fig. 14a (vanilla 64.4%->76.6%, CacheScout flat 86-87%)"
+    },
+    {
+      "check": "CacheScout mean TTFT < vanilla at every budget",
+      "ok": false,
+      "detail": "100:+2.0%, 150:-2.7%",
+      "paper": "Fig. 8b (-18..45%)"
+    },
+    {
+      "check": "CacheScout mean per-turn latency < vanilla at every budget",
+      "ok": false,
+      "detail": "100:+1.0%, 150:-1.1%",
+      "paper": "Fig. 10a (-29..38%)"
+    }
+  ]
+}

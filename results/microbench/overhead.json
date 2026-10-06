@@ -1,0 +1,75 @@
+{
+  "python": "3.12.15",
+  "params": {
+    "scope": "session",
+    "max_active_sessions": 8,
+    "session_aggregate": "mean",
+    "block_mapping": "anchor_only",
+    "tau": 0.1,
+    "e_max": 6,
+    "lam": 0.005,
+    "delta": 0.01
+  },
+  "runs": [
+    {
+      "num_agents": 6,
+      "dispatches": 10000,
+      "state_bytes_by_dispatches": {
+        "10": 1160,
+        "100": 2516,
+        "1000": 2684,
+        "10000": 2712
+      },
+      "observe_us": {
+        "mean": 36.610688499999995,
+        "p50": 36.292,
+        "p99": 58.05285
+      },
+      "select_255_candidates_us": {
+        "mean": 223.32534280000002,
+        "p50": 218.6575,
+        "p99": 259.76149
+      }
+    },
+    {
+      "num_agents": 12,
+      "dispatches": 10000,
+      "state_bytes_by_dispatches": {
+        "10": 1392,
+        "100": 4940,
+        "1000": 7448,
+        "10000": 12200
+      },
+      "observe_us": {
+        "mean": 70.3715697,
+        "p50": 70.4575,
+        "p99": 98.72286
+      },
+      "select_255_candidates_us": {
+        "mean": 226.83420980000002,
+        "p50": 222.2905,
+        "p99": 260.13686
+      }
+    },
+    {
+      "num_agents": 24,
+      "dispatches": 10000,
+      "state_bytes_by_dispatches": {
+        "10": 1456,
+        "100": 7496,
+        "1000": 16804,
+        "10000": 40484
+      },
+      "observe_us": {
+        "mean": 172.0805629,
+        "p50": 171.6105,
+        "p99": 213.3707
+      },
+      "select_255_candidates_us": {
+        "mean": 234.28488389999998,
+        "p50": 229.3285,
+        "p99": 268.75185
+      }
+    }
+  ]
+}

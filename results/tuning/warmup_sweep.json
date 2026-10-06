@@ -1,0 +1,539 @@
+{
+  "baseline_vanilla": {
+    "params": {},
+    "cfg": {},
+    "hits": {
+      "selector_tune@100": 0.5974949488244349,
+      "selector_tune@150": 0.6770193293034563,
+      "selector_tune@200": 0.717578090966797,
+      "debate_tune@100": 0.6435549583403319,
+      "debate_tune@150": 0.7303039417506826,
+      "debate_tune@200": 0.7921782166615235
+    },
+    "mean_hit": 0.6930215809745377
+  },
+  "best": {
+    "params": {
+      "tau": 0.1,
+      "e_max": 6,
+      "lam": 0.005,
+      "delta": 0.01,
+      "scope": "session",
+      "max_active_sessions": 8,
+      "session_aggregate": "mean",
+      "block_mapping": "anchor_only",
+      "epsilon": 0.01,
+      "fingerprint_blocks": 2,
+      "r_min": 0.7
+    },
+    "cfg": {
+      "warmup_min_interval_s": 1.0
+    },
+    "hits": {
+      "selector_tune@100": 0.6312828533852212,
+      "selector_tune@150": 0.7068907576970789,
+      "selector_tune@200": 0.7407450432098509,
+      "debate_tune@100": 0.6516173638590173,
+      "debate_tune@150": 0.7328664117217376,
+      "debate_tune@200": 0.793553200548431
+    },
+    "mean_hit": 0.7094926050702228
+  },
+  "all": [
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.7
+      },
+      "cfg": {
+        "warmup_min_interval_s": 1.0
+      },
+      "hits": {
+        "selector_tune@100": 0.6312828533852212,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7407450432098509,
+        "debate_tune@100": 0.6516173638590173,
+        "debate_tune@150": 0.7328664117217376,
+        "debate_tune@200": 0.793553200548431
+      },
+      "mean_hit": 0.7094926050702228
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.7
+      },
+      "cfg": {
+        "warmup_min_interval_s": 2.0
+      },
+      "hits": {
+        "selector_tune@100": 0.6312828533852212,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7407450432098509,
+        "debate_tune@100": 0.6513673667886705,
+        "debate_tune@150": 0.7328664117217376,
+        "debate_tune@200": 0.793553200548431
+      },
+      "mean_hit": 0.7094509388918316
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.7
+      },
+      "cfg": {
+        "warmup_min_interval_s": 0.5
+      },
+      "hits": {
+        "selector_tune@100": 0.6312828533852212,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7407450432098509,
+        "debate_tune@100": 0.6509923711831502,
+        "debate_tune@150": 0.7328039124541509,
+        "debate_tune@200": 0.7934907012808443
+      },
+      "mean_hit": 0.7093676065350495
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.2
+      },
+      "cfg": {
+        "warmup_min_interval_s": 2.0
+      },
+      "hits": {
+        "selector_tune@100": 0.6286939962577738,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.740678662257865,
+        "debate_tune@100": 0.6513673667886705,
+        "debate_tune@150": 0.7328664117217376,
+        "debate_tune@200": 0.793553200548431
+      },
+      "mean_hit": 0.7090083992119262
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.3
+      },
+      "cfg": {
+        "warmup_min_interval_s": 2.0
+      },
+      "hits": {
+        "selector_tune@100": 0.6286939962577738,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.740678662257865,
+        "debate_tune@100": 0.6513673667886705,
+        "debate_tune@150": 0.7328664117217376,
+        "debate_tune@200": 0.793553200548431
+      },
+      "mean_hit": 0.7090083992119262
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.4
+      },
+      "cfg": {
+        "warmup_min_interval_s": 2.0
+      },
+      "hits": {
+        "selector_tune@100": 0.6286939962577738,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.740678662257865,
+        "debate_tune@100": 0.6513673667886705,
+        "debate_tune@150": 0.7328664117217376,
+        "debate_tune@200": 0.793553200548431
+      },
+      "mean_hit": 0.7090083992119262
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.5
+      },
+      "cfg": {
+        "warmup_min_interval_s": 2.0
+      },
+      "hits": {
+        "selector_tune@100": 0.6286939962577738,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.740678662257865,
+        "debate_tune@100": 0.6513673667886705,
+        "debate_tune@150": 0.7328664117217376,
+        "debate_tune@200": 0.793553200548431
+      },
+      "mean_hit": 0.7090083992119262
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.0
+      },
+      "cfg": {
+        "warmup_min_interval_s": 0.5
+      },
+      "hits": {
+        "selector_tune@100": 0.6284284724498305,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7406122813058793,
+        "debate_tune@100": 0.6509923711831502,
+        "debate_tune@150": 0.7328039124541509,
+        "debate_tune@200": 0.7934907012808443
+      },
+      "mean_hit": 0.7088697493951557
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.2
+      },
+      "cfg": {
+        "warmup_min_interval_s": 0.5
+      },
+      "hits": {
+        "selector_tune@100": 0.6284284724498305,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7406122813058793,
+        "debate_tune@100": 0.6509923711831502,
+        "debate_tune@150": 0.7328039124541509,
+        "debate_tune@200": 0.7934907012808443
+      },
+      "mean_hit": 0.7088697493951557
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.3
+      },
+      "cfg": {
+        "warmup_min_interval_s": 0.5
+      },
+      "hits": {
+        "selector_tune@100": 0.6284284724498305,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7406122813058793,
+        "debate_tune@100": 0.6509923711831502,
+        "debate_tune@150": 0.7328039124541509,
+        "debate_tune@200": 0.7934907012808443
+      },
+      "mean_hit": 0.7088697493951557
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.4
+      },
+      "cfg": {
+        "warmup_min_interval_s": 0.5
+      },
+      "hits": {
+        "selector_tune@100": 0.6284284724498305,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7406122813058793,
+        "debate_tune@100": 0.6509923711831502,
+        "debate_tune@150": 0.7328039124541509,
+        "debate_tune@200": 0.7934907012808443
+      },
+      "mean_hit": 0.7088697493951557
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.5
+      },
+      "cfg": {
+        "warmup_min_interval_s": 0.5
+      },
+      "hits": {
+        "selector_tune@100": 0.6284284724498305,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7406122813058793,
+        "debate_tune@100": 0.6509923711831502,
+        "debate_tune@150": 0.7328039124541509,
+        "debate_tune@200": 0.7934907012808443
+      },
+      "mean_hit": 0.7088697493951557
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.0
+      },
+      "cfg": {
+        "warmup_min_interval_s": 2.0
+      },
+      "hits": {
+        "selector_tune@100": 0.6286939962577738,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.740678662257865,
+        "debate_tune@100": 0.6498048850990027,
+        "debate_tune@150": 0.7328664117217376,
+        "debate_tune@200": 0.793553200548431
+      },
+      "mean_hit": 0.7087479855969815
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.0
+      },
+      "cfg": {
+        "warmup_min_interval_s": 1.0
+      },
+      "hits": {
+        "selector_tune@100": 0.6254413296104683,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7407450432098509,
+        "debate_tune@100": 0.6516173638590173,
+        "debate_tune@150": 0.7328664117217376,
+        "debate_tune@200": 0.793553200548431
+      },
+      "mean_hit": 0.7085190177744307
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.2
+      },
+      "cfg": {
+        "warmup_min_interval_s": 1.0
+      },
+      "hits": {
+        "selector_tune@100": 0.6254413296104683,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7407450432098509,
+        "debate_tune@100": 0.6516173638590173,
+        "debate_tune@150": 0.7328664117217376,
+        "debate_tune@200": 0.793553200548431
+      },
+      "mean_hit": 0.7085190177744307
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.3
+      },
+      "cfg": {
+        "warmup_min_interval_s": 1.0
+      },
+      "hits": {
+        "selector_tune@100": 0.6254413296104683,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7407450432098509,
+        "debate_tune@100": 0.6516173638590173,
+        "debate_tune@150": 0.7328664117217376,
+        "debate_tune@200": 0.793553200548431
+      },
+      "mean_hit": 0.7085190177744307
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.4
+      },
+      "cfg": {
+        "warmup_min_interval_s": 1.0
+      },
+      "hits": {
+        "selector_tune@100": 0.6254413296104683,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7407450432098509,
+        "debate_tune@100": 0.6516173638590173,
+        "debate_tune@150": 0.7328664117217376,
+        "debate_tune@200": 0.793553200548431
+      },
+      "mean_hit": 0.7085190177744307
+    },
+    {
+      "params": {
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.5
+      },
+      "cfg": {
+        "warmup_min_interval_s": 1.0
+      },
+      "hits": {
+        "selector_tune@100": 0.6254413296104683,
+        "selector_tune@150": 0.7068907576970789,
+        "selector_tune@200": 0.7407450432098509,
+        "debate_tune@100": 0.6516173638590173,
+        "debate_tune@150": 0.7328664117217376,
+        "debate_tune@200": 0.793553200548431
+      },
+      "mean_hit": 0.7085190177744307
+    }
+  ],
+  "tune_traces": [
+    "selector_tune",
+    "debate_tune"
+  ],
+  "budgets": [
+    100,
+    150,
+    200
+  ]
+}

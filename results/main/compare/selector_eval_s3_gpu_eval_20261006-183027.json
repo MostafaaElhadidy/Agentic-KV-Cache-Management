@@ -1,0 +1,157 @@
+{
+  "kind": "GPU (vLLM 0.31.0)",
+  "config": "configs/experiments/main/local.yaml",
+  "trace": "results/traces/selector_eval_s3.json",
+  "blocks": [
+    100,
+    150,
+    200
+  ],
+  "labels": [
+    "vanilla",
+    "eviction_only",
+    "cachescout"
+  ],
+  "table": {
+    "100": {
+      "vanilla": {
+        "hit_rate": 0.5600420432708701,
+        "ttft_mean_ms": 99.29500219561713,
+        "ttft_median_ms": 75.75150599950575,
+        "ttft_p99_ms": 414.0098992997098,
+        "latency_mean_ms": 413.82358257045115,
+        "latency_p99_ms": 842.4148572996277,
+        "throughput_tps": 6.523629374628323,
+        "turns": 731,
+        "source": "results/main/selector_eval_s3/vanilla/b100_eval/result.json",
+        "warmups_issued": 0
+      },
+      "eviction_only": {
+        "hit_rate": 0.5973995755555288,
+        "ttft_mean_ms": 94.69787504514099,
+        "ttft_median_ms": 72.58623400048236,
+        "ttft_p99_ms": 426.21421520025336,
+        "latency_mean_ms": 400.13081490013985,
+        "latency_p99_ms": 818.3081017996308,
+        "throughput_tps": 6.535366224756475,
+        "turns": 731,
+        "source": "results/main/selector_eval_s3/eviction_only/b100_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.5954739295614743,
+        "ttft_mean_ms": 97.59480822023598,
+        "ttft_median_ms": 72.95627500025148,
+        "ttft_p99_ms": 428.27561720050653,
+        "latency_mean_ms": 408.7373592380203,
+        "latency_p99_ms": 839.0947949003025,
+        "throughput_tps": 6.52280426811669,
+        "turns": 731,
+        "source": "results/main/selector_eval_s3/cachescout/b100_eval/result.json",
+        "warmups_issued": 132
+      }
+    },
+    "150": {
+      "vanilla": {
+        "hit_rate": 0.6550405789775622,
+        "ttft_mean_ms": 73.45464046646482,
+        "ttft_median_ms": 69.57874599993374,
+        "ttft_p99_ms": 159.53421600015656,
+        "latency_mean_ms": 377.9244005841245,
+        "latency_p99_ms": 641.8352919996325,
+        "throughput_tps": 6.535803237349095,
+        "turns": 731,
+        "source": "results/main/selector_eval_s3/vanilla/b150_eval/result.json",
+        "warmups_issued": 0
+      },
+      "eviction_only": {
+        "hit_rate": 0.6791111539032443,
+        "ttft_mean_ms": 72.05185505063253,
+        "ttft_median_ms": 68.44159699994634,
+        "ttft_p99_ms": 133.39976760007661,
+        "latency_mean_ms": 371.48397927087314,
+        "latency_p99_ms": 630.4348268999092,
+        "throughput_tps": 6.541288844516486,
+        "turns": 731,
+        "source": "results/main/selector_eval_s3/eviction_only/b150_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.6759659321129552,
+        "ttft_mean_ms": 71.86915150614195,
+        "ttft_median_ms": 69.12749600087409,
+        "ttft_p99_ms": 140.0246129998779,
+        "latency_mean_ms": 371.136282897374,
+        "latency_p99_ms": 625.4905581005005,
+        "throughput_tps": 6.530230176781774,
+        "turns": 731,
+        "source": "results/main/selector_eval_s3/cachescout/b150_eval/result.json",
+        "warmups_issued": 130
+      }
+    },
+    "200": {
+      "vanilla": {
+        "hit_rate": 0.6998439424392319,
+        "ttft_mean_ms": 71.34350647741967,
+        "ttft_median_ms": 68.13045799935935,
+        "ttft_p99_ms": 137.58061260086833,
+        "latency_mean_ms": 371.08858398087386,
+        "latency_p99_ms": 621.391488399786,
+        "throughput_tps": 6.536921829788826,
+        "turns": 731,
+        "source": "results/main/selector_eval_s3/vanilla/b200_eval/result.json",
+        "warmups_issued": 0
+      },
+      "eviction_only": {
+        "hit_rate": 0.712553205999992,
+        "ttft_mean_ms": 71.31778204378546,
+        "ttft_median_ms": 69.15644900072948,
+        "ttft_p99_ms": 123.97766600079206,
+        "latency_mean_ms": 372.1783796046421,
+        "latency_p99_ms": 649.4800185986611,
+        "throughput_tps": 6.539649380604019,
+        "turns": 731,
+        "source": "results/main/selector_eval_s3/eviction_only/b200_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.7119755122017756,
+        "ttft_mean_ms": 71.20747962790057,
+        "ttft_median_ms": 68.43935699907888,
+        "ttft_p99_ms": 141.99249339908485,
+        "latency_mean_ms": 372.279251897392,
+        "latency_p99_ms": 631.7453555997417,
+        "throughput_tps": 6.539276005697486,
+        "turns": 731,
+        "source": "results/main/selector_eval_s3/cachescout/b200_eval/result.json",
+        "warmups_issued": 132
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "CacheScout hit rate > vanilla at every budget",
+      "ok": true,
+      "detail": "gains (pp): 100:+3.5, 150:+2.1, 200:+1.2",
+      "paper": "Fig. 8a (+10..18 pp), Fig. 14a"
+    },
+    {
+      "check": "gain shrinks as the cache grows",
+      "ok": true,
+      "detail": "100: +3.5 pp vs 200: +1.2 pp",
+      "paper": "Fig. 14a (vanilla 64.4%->76.6%, CacheScout flat 86-87%)"
+    },
+    {
+      "check": "CacheScout mean TTFT < vanilla at every budget",
+      "ok": true,
+      "detail": "100:-1.7%, 150:-2.2%, 200:-0.2%",
+      "paper": "Fig. 8b (-18..45%)"
+    },
+    {
+      "check": "CacheScout mean per-turn latency < vanilla at every budget",
+      "ok": false,
+      "detail": "100:-1.2%, 150:-1.8%, 200:+0.3%",
+      "paper": "Fig. 10a (-29..38%)"
+    }
+  ]
+}

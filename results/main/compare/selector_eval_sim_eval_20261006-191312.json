@@ -1,0 +1,114 @@
+{
+  "kind": "SIMULATOR",
+  "config": "configs/experiments/main/local.yaml",
+  "trace": "results/traces/selector_eval.json",
+  "blocks": [
+    100,
+    150,
+    200
+  ],
+  "labels": [
+    "vanilla",
+    "cachescout"
+  ],
+  "table": {
+    "100": {
+      "vanilla": {
+        "hit_rate": 0.5462344641201703,
+        "ttft_mean_ms": 42.36347118936556,
+        "ttft_median_ms": 33.40000000000032,
+        "ttft_p99_ms": 187.0758344299942,
+        "latency_mean_ms": 296.44259806521836,
+        "latency_p99_ms": 490.8781455289991,
+        "throughput_tps": 7.733662801762658,
+        "turns": 733,
+        "source": "simulator"
+      },
+      "cachescout": {
+        "hit_rate": 0.5789167701082601,
+        "ttft_mean_ms": 42.168743020021616,
+        "ttft_median_ms": 33.299999999997,
+        "ttft_p99_ms": 204.59928364780396,
+        "latency_mean_ms": 296.24786989587426,
+        "latency_p99_ms": 487.93333622553394,
+        "throughput_tps": 7.734282977694278,
+        "turns": 733,
+        "source": "simulator"
+      }
+    },
+    "150": {
+      "vanilla": {
+        "hit_rate": 0.651132096224251,
+        "ttft_mean_ms": 32.11623465211457,
+        "ttft_median_ms": 27.000000000001023,
+        "ttft_p99_ms": 66.83600000000182,
+        "latency_mean_ms": 286.19536152796735,
+        "latency_p99_ms": 465.27200000000033,
+        "throughput_tps": 7.7343156212880855,
+        "turns": 733,
+        "source": "simulator"
+      },
+      "cachescout": {
+        "hit_rate": 0.6771522398378454,
+        "ttft_mean_ms": 31.212551159617977,
+        "ttft_median_ms": 27.40000000000009,
+        "ttft_p99_ms": 59.8040000000003,
+        "latency_mean_ms": 285.2916780354706,
+        "latency_p99_ms": 465.27200000000033,
+        "throughput_tps": 7.736242081173888,
+        "turns": 733,
+        "source": "simulator"
+      }
+    },
+    "200": {
+      "vanilla": {
+        "hit_rate": 0.689596656348695,
+        "ttft_mean_ms": 30.780354706684804,
+        "ttft_median_ms": 26.099999999999568,
+        "ttft_p99_ms": 60.84800000000138,
+        "latency_mean_ms": 284.8594815825376,
+        "latency_p99_ms": 465.27200000000033,
+        "throughput_tps": 7.741634736819524,
+        "turns": 733,
+        "source": "simulator"
+      },
+      "cachescout": {
+        "hit_rate": 0.6994641987335607,
+        "ttft_mean_ms": 30.437653478853985,
+        "ttft_median_ms": 26.099999999999568,
+        "ttft_p99_ms": 59.8040000000003,
+        "latency_mean_ms": 284.5167803547068,
+        "latency_p99_ms": 465.27200000000033,
+        "throughput_tps": 7.737940773843948,
+        "turns": 733,
+        "source": "simulator"
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "CacheScout hit rate > vanilla at every budget",
+      "ok": true,
+      "detail": "gains (pp): 100:+3.3, 150:+2.6, 200:+1.0",
+      "paper": "Fig. 8a (+10..18 pp), Fig. 14a"
+    },
+    {
+      "check": "gain shrinks as the cache grows",
+      "ok": true,
+      "detail": "100: +3.3 pp vs 200: +1.0 pp",
+      "paper": "Fig. 14a (vanilla 64.4%->76.6%, CacheScout flat 86-87%)"
+    },
+    {
+      "check": "CacheScout mean TTFT < vanilla at every budget",
+      "ok": true,
+      "detail": "100:-0.5%, 150:-2.8%, 200:-1.1%",
+      "paper": "Fig. 8b (-18..45%)"
+    },
+    {
+      "check": "CacheScout mean per-turn latency < vanilla at every budget",
+      "ok": true,
+      "detail": "100:-0.1%, 150:-0.3%, 200:-0.1%",
+      "paper": "Fig. 10a (-29..38%)"
+    }
+  ]
+}

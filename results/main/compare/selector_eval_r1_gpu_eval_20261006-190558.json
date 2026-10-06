@@ -1,0 +1,60 @@
+{
+  "kind": "GPU (vLLM 0.31.0)",
+  "config": "configs/experiments/main/local.yaml",
+  "trace": "results/traces/selector_eval_r1.json",
+  "blocks": [
+    150
+  ],
+  "labels": [
+    "vanilla",
+    "cachescout"
+  ],
+  "table": {
+    "150": {
+      "vanilla": {
+        "hit_rate": 0.5493141429536634,
+        "ttft_mean_ms": 194.81601286222897,
+        "ttft_median_ms": 131.50574000064807,
+        "ttft_p99_ms": 599.7585775602781,
+        "latency_mean_ms": 539.5098306152651,
+        "latency_p99_ms": 1016.2309026397265,
+        "throughput_tps": 13.423142904981644,
+        "turns": 733,
+        "source": "results/main/selector_eval_r1/vanilla/b150_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.5661581006552174,
+        "ttft_mean_ms": 192.16829570803006,
+        "ttft_median_ms": 137.17631799954688,
+        "ttft_p99_ms": 556.6145327193952,
+        "latency_mean_ms": 536.2601491050323,
+        "latency_p99_ms": 1010.4399319195363,
+        "throughput_tps": 13.360303890467167,
+        "turns": 733,
+        "source": "results/main/selector_eval_r1/cachescout/b150_eval/result.json",
+        "warmups_issued": 51
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "CacheScout hit rate > vanilla at every budget",
+      "ok": true,
+      "detail": "gains (pp): 150:+1.7",
+      "paper": "Fig. 8a (+10..18 pp), Fig. 14a"
+    },
+    {
+      "check": "CacheScout mean TTFT < vanilla at every budget",
+      "ok": true,
+      "detail": "150:-1.4%",
+      "paper": "Fig. 8b (-18..45%)"
+    },
+    {
+      "check": "CacheScout mean per-turn latency < vanilla at every budget",
+      "ok": true,
+      "detail": "150:-0.6%",
+      "paper": "Fig. 10a (-29..38%)"
+    }
+  ]
+}

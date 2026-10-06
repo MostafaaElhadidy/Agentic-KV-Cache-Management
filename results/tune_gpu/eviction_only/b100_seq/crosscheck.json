@@ -1,0 +1,10 @@
+{
+  "gpu_result": "results/tune_gpu/eviction_only/b100_seq/result.json",
+  "system": "eviction_only",
+  "requests": 703,
+  "exact_matches": 688,
+  "exact_fraction": 0.9786628733997155,
+  "mean_abs_diff_tokens": 1.9800853485064012,
+  "gpu_hit_rate": 0.62477752009061,
+  "sim_hit_rate": 0.6213920915393328
+}

@@ -1,0 +1,93 @@
+{
+  "kind": "GPU (vLLM 0.31.0)",
+  "config": "configs/experiments/main/local.yaml",
+  "trace": "results/traces/debate_eval.json",
+  "blocks": [
+    100,
+    150
+  ],
+  "labels": [
+    "vanilla",
+    "cachescout"
+  ],
+  "table": {
+    "100": {
+      "vanilla": {
+        "hit_rate": 0.6467583560668,
+        "ttft_mean_ms": 71.88610006886604,
+        "ttft_median_ms": 68.7510485004168,
+        "ttft_p99_ms": 170.47611825000786,
+        "latency_mean_ms": 392.9660567424089,
+        "latency_p99_ms": 640.9533814999122,
+        "throughput_tps": 4.84900684368699,
+        "turns": 726,
+        "source": "results/main/debate_eval/vanilla/b100_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.6600989209361061,
+        "ttft_mean_ms": 71.6976761722117,
+        "ttft_median_ms": 68.38417349990777,
+        "ttft_p99_ms": 182.96437975004665,
+        "latency_mean_ms": 392.0371526680328,
+        "latency_p99_ms": 647.9612635012018,
+        "throughput_tps": 4.850152762534138,
+        "turns": 726,
+        "source": "results/main/debate_eval/cachescout/b100_eval/result.json",
+        "warmups_issued": 138
+      }
+    },
+    "150": {
+      "vanilla": {
+        "hit_rate": 0.7394299498919317,
+        "ttft_mean_ms": 68.90124463495513,
+        "ttft_median_ms": 67.26720450024004,
+        "ttft_p99_ms": 121.19273625103233,
+        "latency_mean_ms": 389.45431350549364,
+        "latency_p99_ms": 629.4722897514475,
+        "throughput_tps": 4.850735029592316,
+        "turns": 726,
+        "source": "results/main/debate_eval/vanilla/b150_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.7475249528466078,
+        "ttft_mean_ms": 66.56207250687824,
+        "ttft_median_ms": 64.72526200013817,
+        "ttft_p99_ms": 127.71887350072575,
+        "latency_mean_ms": 378.598515389822,
+        "latency_p99_ms": 614.534683749298,
+        "throughput_tps": 4.85538037783816,
+        "turns": 726,
+        "source": "results/main/debate_eval/cachescout/b150_eval/result.json",
+        "warmups_issued": 138
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "CacheScout hit rate > vanilla at every budget",
+      "ok": true,
+      "detail": "gains (pp): 100:+1.3, 150:+0.8",
+      "paper": "Fig. 8a (+10..18 pp), Fig. 14a"
+    },
+    {
+      "check": "gain shrinks as the cache grows",
+      "ok": true,
+      "detail": "100: +1.3 pp vs 150: +0.8 pp",
+      "paper": "Fig. 14a (vanilla 64.4%->76.6%, CacheScout flat 86-87%)"
+    },
+    {
+      "check": "CacheScout mean TTFT < vanilla at every budget",
+      "ok": true,
+      "detail": "100:-0.3%, 150:-3.4%",
+      "paper": "Fig. 8b (-18..45%)"
+    },
+    {
+      "check": "CacheScout mean per-turn latency < vanilla at every budget",
+      "ok": true,
+      "detail": "100:-0.2%, 150:-2.8%",
+      "paper": "Fig. 10a (-29..38%)"
+    }
+  ]
+}

@@ -90,6 +90,23 @@ def main() -> int:
                       f"{', '.join(f'{d:+.1f}' for d in dh)} |")
     summary["seeds"] = seeds
 
+    # 2b. absolute means over the 3 evaluation seeds (README results table)
+    readme: dict[str, Any] = {}
+    for s in ("vanilla", "cachescout"):
+        for b in BLOCKS:
+            runs = [load(t, s, b) for t in SEED_TRACES]
+            runs = [r for r in runs if r]
+            if len(runs) < 3:
+                continue
+            readme[f"{s}@{b}"] = {
+                "n_seeds": len(runs),
+                "hit_mean": statistics.mean(r["hit"] for r in runs),
+                "ttft_ms_mean": statistics.mean(r["ttft_ms"] for r in runs),
+                "lat_ms_mean": statistics.mean(r["lat_ms"] for r in runs),
+                "thr_mean": statistics.mean(r["thr"] for r in runs),
+                "sources": [r["src"] for r in runs]}
+    summary["readme_table"] = readme
+
     # 3. topologies
     md += ["", "## Coordination topologies (GPU, CacheScout vs vanilla)", "",
            "| trace | true R (trace) | paper R | blocks | vanilla hit | CacheScout hit | Δ hit (pp) | "

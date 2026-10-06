@@ -8,19 +8,22 @@ __pycache__/
 build/
 dist/
 
-# Virtual envs (the real env lives in ~/testLLM/.venv, outside this repo)
+# Virtual envs (the vLLM env lives outside this repo)
 .venv/
 venv/
 env/
 
-# Results: bulky outputs ignored; experiment records in results/log/ are tracked
-results/*
-!results/.gitkeep
-!results/log/
-results/log/*
-!results/log/.gitkeep
-!results/log/*.md
-!results/log/*.json
+# Logs (raw run logs, memory monitors)
+*.log
+logs/
+
+# Results: small JSON/MD/PNG results are tracked; bulky or regenerable ones are not
+results/traces/*.json
+!results/traces/stats.json
+results/traces_cloud/
+results/smoke/
+results/tiny/
+results/**/*.tmp
 
 # Models, weights, caches
 *.safetensors
@@ -31,6 +34,7 @@ results/log/*
 models/
 hf_cache/
 .cache/
+.huggingface/
 
 # Windows / editor junk
 *:Zone.Identifier
@@ -41,10 +45,3 @@ hf_cache/
 
 # Claude Code local-only settings
 .claude/settings.local.json
-
-# Smoke-test run logs
-smoke_run*.log
-
-# Run logs
-*.log
-logs/

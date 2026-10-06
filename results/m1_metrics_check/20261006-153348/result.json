@@ -1,0 +1,324 @@
+{
+  "config": {
+    "experiment": "m1_metrics_check",
+    "hardware": "configs/hardware/local.yaml",
+    "seed": 0,
+    "max_tokens": 8,
+    "token_id_range": [
+      1000,
+      150000
+    ],
+    "checks": {
+      "shared_prefix": {
+        "prefix_tokens": 64,
+        "suffix_tokens": 36
+      },
+      "identical_prompt": {
+        "prompt_tokens": 96
+      },
+      "eviction": {
+        "target_prompt_tokens": 200,
+        "filler_prompt_tokens": 1200,
+        "margin_blocks": 32
+      }
+    },
+    "counter_tolerance_tokens": 16,
+    "hardware_cfg": {
+      "name": "local-rtx4060-8gb",
+      "model": {
+        "name": "Qwen/Qwen2.5-1.5B-Instruct",
+        "dtype": "bfloat16"
+      },
+      "vllm": {
+        "gpu_memory_utilization": 0.6,
+        "max_model_len": 2048,
+        "max_num_seqs": 8,
+        "block_size": 16,
+        "enable_prefix_caching": true,
+        "enforce_eager": true,
+        "num_gpu_blocks_override": 256
+      },
+      "env": {
+        "HF_HUB_OFFLINE": "1"
+      }
+    }
+  },
+  "config_path": "configs/experiments/m1_metrics_check/local.yaml",
+  "provenance": {
+    "git_commit": "810151fead43e1d3494ca3ec5f52bdab46d7e6b4",
+    "git_dirty": true,
+    "python": "3.12.15",
+    "vllm": "0.31.0",
+    "torch": "2.13.0+cu132",
+    "transformers": "5.17.0",
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU, 8188 MiB",
+    "hardware_profile": "local-rtx4060-8gb",
+    "timestamp": "2026-10-06T15:33:48"
+  },
+  "plan": {
+    "usable": 255,
+    "target_blocks": 13,
+    "filler_blocks_each": 76,
+    "num_fillers": 4,
+    "required_filler_blocks": 300,
+    "total_filler_blocks": 304
+  },
+  "checks": [
+    {
+      "check": "a: A first send",
+      "expected": 0,
+      "actual": 0,
+      "ok": true,
+      "note": "fresh content after reset"
+    },
+    {
+      "check": "a: B shares prefix",
+      "expected": 64,
+      "actual": 64,
+      "ok": true,
+      "note": "64-token shared prefix"
+    },
+    {
+      "check": "b: first send",
+      "expected": 0,
+      "actual": 0,
+      "ok": true,
+      "note": "fresh content after reset"
+    },
+    {
+      "check": "b: repeat",
+      "expected": 80,
+      "actual": 80,
+      "ok": true,
+      "note": "floor((N-1)/bs)*bs"
+    },
+    {
+      "check": "c: A first send",
+      "expected": 0,
+      "actual": 0,
+      "ok": true,
+      "note": "fresh content after reset"
+    },
+    {
+      "check": "c: A again (cached)",
+      "expected": 192,
+      "actual": 192,
+      "ok": true,
+      "note": "before fillers"
+    },
+    {
+      "check": "c: fillers",
+      "expected": 0,
+      "actual": 0,
+      "ok": true,
+      "note": "distinct random content"
+    },
+    {
+      "check": "c: A after fillers (evicted)",
+      "expected": 0,
+      "actual": 0,
+      "ok": true,
+      "note": "304 filler blocks > 255 usable"
+    },
+    {
+      "check": "d: queries",
+      "expected": 5792,
+      "actual": 5792,
+      "ok": true,
+      "note": "gap 0, tolerance 16"
+    },
+    {
+      "check": "d: hits",
+      "expected": 336,
+      "actual": 336,
+      "ok": true,
+      "note": "gap 0, tolerance 16"
+    }
+  ],
+  "counters_delta": {
+    "queries": 5792,
+    "hits": 336
+  },
+  "preemptions": 0,
+  "summary": {
+    "num_turns": 11,
+    "num_warmup": 0,
+    "total_prompt_tokens": 5792,
+    "total_cached_tokens": 336,
+    "hit_rate": 0.058011049723756904,
+    "max_possible_hit_rate": 0.9779005524861878,
+    "ttft": {
+      "n": 11,
+      "mean": 0.15124292807145553,
+      "median": 0.08624577522277832,
+      "p90": 0.15953445434570312,
+      "p99": 0.622356700897217
+    },
+    "per_turn_latency": {
+      "n": 11,
+      "mean": 0.30353102881822863,
+      "median": 0.24675241400018422,
+      "p90": 0.31232556400027534,
+      "p99": 0.7831353234999371
+    },
+    "throughput_turns_per_s": 3.286653326790746,
+    "per_agent": {}
+  },
+  "records": [
+    {
+      "request_id": "0",
+      "prompt_tokens": 100,
+      "cached_tokens": 0,
+      "output_tokens": 8,
+      "t_send": 4512.011329183,
+      "t_first_token": 4512.685110577959,
+      "t_done": 4512.846776702,
+      "session_id": null,
+      "agent_id": "a/A",
+      "turn_idx": null,
+      "is_warmup": false,
+      "vllm_first_token_latency": 0.6737813949584961
+    },
+    {
+      "request_id": "1",
+      "prompt_tokens": 100,
+      "cached_tokens": 64,
+      "output_tokens": 8,
+      "t_send": 4512.84722101,
+      "t_first_token": 4512.906949155599,
+      "t_done": 4513.057910516,
+      "session_id": null,
+      "agent_id": "a/B",
+      "turn_idx": null,
+      "is_warmup": false,
+      "vllm_first_token_latency": 0.059728145599365234
+    },
+    {
+      "request_id": "2",
+      "prompt_tokens": 96,
+      "cached_tokens": 0,
+      "output_tokens": 8,
+      "t_send": 4513.060590153,
+      "t_first_token": 4513.110705738327,
+      "t_done": 4513.263302823,
+      "session_id": null,
+      "agent_id": "b/first",
+      "turn_idx": null,
+      "is_warmup": false,
+      "vllm_first_token_latency": 0.05011558532714844
+    },
+    {
+      "request_id": "3",
+      "prompt_tokens": 96,
+      "cached_tokens": 80,
+      "output_tokens": 8,
+      "t_send": 4513.263360594,
+      "t_first_token": 4513.317007873739,
+      "t_done": 4513.467237946,
+      "session_id": null,
+      "agent_id": "b/second",
+      "turn_idx": null,
+      "is_warmup": false,
+      "vllm_first_token_latency": 0.05364727973937988
+    },
+    {
+      "request_id": "4",
+      "prompt_tokens": 200,
+      "cached_tokens": 0,
+      "output_tokens": 8,
+      "t_send": 4513.469575809,
+      "t_first_token": 4513.555821584223,
+      "t_done": 4513.716328223,
+      "session_id": null,
+      "agent_id": "c/A",
+      "turn_idx": null,
+      "is_warmup": false,
+      "vllm_first_token_latency": 0.08624577522277832
+    },
+    {
+      "request_id": "5",
+      "prompt_tokens": 200,
+      "cached_tokens": 192,
+      "output_tokens": 8,
+      "t_send": 4513.716384709,
+      "t_first_token": 4513.768913090347,
+      "t_done": 4513.925519605,
+      "session_id": null,
+      "agent_id": "c/A-again",
+      "turn_idx": null,
+      "is_warmup": false,
+      "vllm_first_token_latency": 0.05252838134765625
+    },
+    {
+      "request_id": "6",
+      "prompt_tokens": 1200,
+      "cached_tokens": 0,
+      "output_tokens": 8,
+      "t_send": 4513.926210918,
+      "t_first_token": 4514.085745372346,
+      "t_done": 4514.238536482,
+      "session_id": null,
+      "agent_id": "c/F1",
+      "turn_idx": null,
+      "is_warmup": false,
+      "vllm_first_token_latency": 0.15953445434570312
+    },
+    {
+      "request_id": "7",
+      "prompt_tokens": 1200,
+      "cached_tokens": 0,
+      "output_tokens": 8,
+      "t_send": 4514.239094015,
+      "t_first_token": 4514.396878238556,
+      "t_done": 4514.543115496,
+      "session_id": null,
+      "agent_id": "c/F2",
+      "turn_idx": null,
+      "is_warmup": false,
+      "vllm_first_token_latency": 0.15778422355651855
+    },
+    {
+      "request_id": "8",
+      "prompt_tokens": 1200,
+      "cached_tokens": 0,
+      "output_tokens": 8,
+      "t_send": 4514.543676158,
+      "t_first_token": 4514.699487944652,
+      "t_done": 4514.848630357,
+      "session_id": null,
+      "agent_id": "c/F3",
+      "turn_idx": null,
+      "is_warmup": false,
+      "vllm_first_token_latency": 0.15581178665161133
+    },
+    {
+      "request_id": "9",
+      "prompt_tokens": 1200,
+      "cached_tokens": 0,
+      "output_tokens": 8,
+      "t_send": 4514.849193816,
+      "t_first_token": 4515.006634716802,
+      "t_done": 4515.154672182,
+      "session_id": null,
+      "agent_id": "c/F4",
+      "turn_idx": null,
+      "is_warmup": false,
+      "vllm_first_token_latency": 0.1574409008026123
+    },
+    {
+      "request_id": "10",
+      "prompt_tokens": 200,
+      "cached_tokens": 0,
+      "output_tokens": 8,
+      "t_send": 4515.154751401,
+      "t_first_token": 4515.211805682235,
+      "t_done": 4515.358198751,
+      "session_id": null,
+      "agent_id": "c/A-final",
+      "turn_idx": null,
+      "is_warmup": false,
+      "vllm_first_token_latency": 0.05705428123474121
+    }
+  ],
+  "passed": true
+}
