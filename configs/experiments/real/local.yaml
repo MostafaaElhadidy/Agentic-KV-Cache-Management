@@ -24,6 +24,6 @@ cachescout:
   eviction: true
   warmup: true
   params: {scope: session, max_active_sessions: 8, session_aggregate: mean, block_mapping: anchor_only,
-           tau: 0.1, e_max: 6, lam: 0.005, delta: 0.01, epsilon: 0.01, fingerprint_blocks: 2, r_min: 0.3}
+           tau: 0.1, e_max: 6, lam: 0.001, delta: 0.01, epsilon: 0.01, fingerprint_blocks: 2, r_min: 0.3}  # lam re-tuned on real train recordings (decisions.md)
 warmup: {min_interval_s: 2.0}
 continuum: {ttl_s: 0.3}

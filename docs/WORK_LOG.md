@@ -205,3 +205,6 @@ Resume with `claude --continue`; the last entry says what was in progress.
   pipeline 165 calls acc .35 hit .251; random 185 acc .45 hit .160 trim .016 R .13; debate 131 acc .45 hit .374
   R 1.00 (rule-based debate is deterministic); selector 155 acc .40 fallback .82 R .86 hit .237. ~2.5 min/run.
 - NEXT STEP: xcheck stage (sequential replay of selector tuning recording: vanilla, lru_hook, eviction_only).
+- 23:18 xcheck: 155/155 exact (vanilla, lru_hook, eviction_only; eviction 0.305 vs 0.240) -> simulator
+  valid on real sessions. tune_real: vanilla .3265, current .3783, best .3803 (lam .001) -> adopted (gain = 0.2 pp
+  threshold). NEXT STEP: eval_record (12 live vanilla @100 runs, test seeds 1-3), then replay stage.

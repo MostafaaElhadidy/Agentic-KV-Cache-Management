@@ -164,3 +164,12 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
   measured R 0.74; ~370 extra tokens per agent turn. Per the agreed rule it is NOT adopted. The code path stays
   available (`agents.router: true`, default false). The selector topology keeps the agent's own `NEXT:` line,
   with no further prompt tuning, and its fallback rate is reported prominently.
+- **Simulator validity on real sessions.** Sequential replay of the selector tuning recording on vLLM vs the
+  simulator: 155/155 requests exact for vanilla, lru_hook AND eviction_only
+  (results/real/replay_gsm8k_train_selector_s101/*/b100_seq/crosscheck.json). Constants were therefore re-tuned
+  in the simulator.
+- **Re-tuned constant for the real workload (tuning problems only).** Grid of 512 configs on the four vanilla
+  recordings of GSM8K TRAIN problems (seed 101), objective = mean hit rate over 100/150/200 blocks
+  (results/tuning/real_eviction_sweep.json): vanilla 0.3265, previous constants 0.3783, best 0.3803 (only
+  lambda 0.005 -> 0.001). Gain 0.20 pp = exactly the pre-set adoption threshold (0.2 pp), so lambda = 0.001 is
+  adopted for configs/experiments/real/local.yaml; a borderline change. Synthetic-trace configs unchanged.
