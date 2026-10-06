@@ -183,3 +183,14 @@ Resume with `claude --continue`; the last entry says what was in progress.
   finding). git_dirty now ignores untracked files (results/), so committed code => git_dirty=false.
 - NEXT STEP: PILOT GATE: selector @100 blocks, 5 sessions, train seed 102 (tuning problems), vanilla + cachescout
   live; then STOP and report to the user. Do NOT start the campaign.
+- 22:42 PILOT GATE done (selector, 100 blocks, 5 sessions, train seed 102 = tuning problems
+  train:4868,4549,1141,6014,483; commit 038f48e, git_dirty=false):
+  - vanilla (results/real/gsm8k_train_selector_s102/vanilla/b100_pilot/result.json): fallback 31/38 (0.816),
+    strict NEXT 0.184, tool failures 0/4, FINAL ANSWER 4/5, accuracy 2/5, trim 0/46, hit 0.233, TTFT 603 ms.
+  - cachescout (.../cachescout/b100_pilot/result.json): fallback 20/29 (0.690), tool failures 1/10, FINAL
+    ANSWER 5/5, accuracy 3/5, trim 0/42, hit 0.317, TTFT 251 ms, 20 warmups, engine prediction acc 0.66.
+  - Same problems + temperature 0, but trajectories DIFFER between systems (46 vs 42 calls, different answers):
+    live closed-loop outputs are not deterministic across engine configurations (batching/numerics), so live
+    differences (incl. accuracy) are not attributable to CacheScout -> replay is the controlled comparison.
+- STOPPED at the pilot gate, waiting for the user's "go". NEXT STEP after go: sim-vs-GPU sequential cross-check on
+  recorded real sessions (amendment 2), then tuning on train problems, then campaign (replay first, then live).
