@@ -208,3 +208,6 @@ Resume with `claude --continue`; the last entry says what was in progress.
 - 23:18 xcheck: 155/155 exact (vanilla, lru_hook, eviction_only; eviction 0.305 vs 0.240) -> simulator
   valid on real sessions. tune_real: vanilla .3265, current .3783, best .3803 (lam .001) -> adopted (gain = 0.2 pp
   threshold). NEXT STEP: eval_record (12 live vanilla @100 runs, test seeds 1-3), then replay stage.
+- 23:52 eval_record done (12 live vanilla @100 runs, test seeds 1-3, all git_dirty=false). Note: seed 1
+  contains test:844, the one test problem seen in smoke run 1 (before prompt iteration moved to train problems).
+- NEXT STEP: replay stage (72 runs: 4 topologies x 3 seeds x {vanilla, cachescout} x {100,150,200}).
