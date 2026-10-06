@@ -4,7 +4,7 @@
 experiment: main
 hardware: configs/hardware/cloud.yaml
 seed: 0
-trace: results/traces/selector_eval.json      # evaluation trace (seed 1), never used for tuning
+trace: results/traces_cloud/selector_eval.json  # cloud evaluation trace (seed 1, 300 sessions)
 mode: online
 num_gpu_blocks_override: 150                 # default budget; sweeps override with --blocks
 max_model_len: 1584                          # <= (100-1)*16 so all budgets 100-200 admit every request

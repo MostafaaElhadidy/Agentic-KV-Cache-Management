@@ -17,7 +17,7 @@ MIN_FREE_GIB="${MIN_FREE_GIB:-6}"; MAX_GPU_USED_MIB="${MAX_GPU_USED_MIB:-1000}"
 mkdir -p "$REPO/logs"
 
 # only processes whose executable is python (not shells whose command line mentions it)
-others=$(ps -eo pid=,comm=,args= | awk '$2 ~ /^(python|VLLM)/' | grep -E "vllm|cachescout|check_prefix|smoke_vllm|tune_constants|calibrate|EngineCore" || true)
+others=$(ps -eo pid=,comm=,args= | awk '$2 ~ /^(python|VLLM)/' | grep -E "vllm|cachescout|check_prefix|smoke_vllm|tune_constants|calibrate|EngineCore" | grep -v "scripts/compare.py" || true)
 if [ -n "$others" ]; then echo "REFUSE: other heavy python jobs running:"; echo "$others"; exit 3; fi
 free_gib=$(free -g | awk '/^Mem:/{print $7}')
 gpu_used=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | head -1)

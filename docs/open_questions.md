@@ -143,3 +143,38 @@ Enabled locally after a torch.compile autotune OOM; applied to all systems. See 
 ### E3. Small model routing quality. OPEN
 A 1.5B model may choose agents poorly in SelectorGroupChat, so its transition structure may differ from Fig. 5.
 **Recommended:** measure R (Eq. 2) on our recorded traces and report it next to the paper's.
+
+---
+
+## Resolutions after the autonomous phase (2026-10-06)
+
+| Id | Status | Resolution (details in docs/decisions.md, evidence in docs/WORK_LOG.md) |
+|---|---|---|
+| A1 | RESOLVED | No downgrade. Hook via vLLM 0.31 `scheduler_cls` (CacheScoutScheduler ⊂ AsyncScheduler), instance-level wrappers, no site-packages edits. Verified: neutral hook == vanilla on 703/703 requests. |
+| A2 | RESOLVED | Victim selection scans the free queue per allocation (≤ 255 blocks locally), sorts by Eq. 9 with LRU position as tie-breaker; `lru` policy uses the original `popleft_n`. |
+| A3 | DEFAULT | CPU-tier preference not implemented (no CPU offload locally). |
+| B1 | RESOLVED | Tuned in the simulator on tuning traces only: eps 0.01, tau 0.1, E_max 6, lambda 0.005/step, delta 0.01, R_min 0.3, warmup interval 2 s. |
+| B2 | RESOLVED | Fingerprint = first 2 block hashes (32 tokens), engine side; same token prefix hash on the client. |
+| B3 | RESOLVED (interpretation) | `anchor_only`: only blocks shared by ≥ 2 sessions inherit survival. Literal "all blocks" kept as variant `cachescout_literal`. Reason: literal mapping let stale history displace anchors (Belady diagnostic). |
+| B4 | RESOLVED (interpretation) | Session scope (per-session transitions, survival averaged over the 8 most recent sessions). Literal global a_t learns noise under ~8 interleaved sessions (R 0.18 vs 0.57). |
+| B5 | DEFAULT | age in scheduler steps. |
+| B6 | DEFAULT | |b| literal (constant 16 for full blocks). |
+| B7 | DEFAULT | Plug-in entropies from counts. |
+| B8 | DEFAULT | Cumulative counts. |
+| B9 | RESOLVED | Warmup = learned anchor (block-aligned LCP across ≥ 2 sessions) + 4 fixed tokens, max_tokens=1, ≤ 1 in flight, ≥ 2 s per agent, only when a sequence slot is free; ids `cswarm-*`. |
+| C1 | RESOLVED (fallback) | Synthetic traces from Fig. 5 (Selector column placement searched for R = 0.57). No real AutoGen runs. |
+| C2 | RESOLVED | 60 sessions locally, 6-12 invocations, 1-3 calls per tool-agent invocation; workload scaled ×0.4 so vanilla matches the paper's vanilla hit-rate range (calibration with vanilla only). |
+| C3 | DEFAULT | Poisson arrivals. |
+| C4 | n/a | No dataset content used (synthetic tokens). |
+| D1 | RESOLVED (weak) | Soft TTL pinning (0.3 s). Under our conditions it coincides with LRU (pinned blocks are LRU's most recent), so it is not a faithful Continuum. |
+| D3 | RESOLVED | temperature 0, ignore_eos, fixed output lengths from the trace; tuning seeds 101/102, eval seeds 1/2/3. |
+| D4 | RESOLVED | Explicit block budgets 100/150/200 (`num_gpu_blocks_override`). |
+| E2 | RESOLVED | enforce_eager on locally. |
+| E3 | n/a | No real LLM routing (synthetic). |
+
+New open questions found during implementation:
+- **Q-new-1:** the paper's history-block reuse (12-15 per block, Fig. 3a) could not be matched together with its
+  vanilla hit-rate range at 100-200 blocks; our history reuse is ≈1-2. Unknown how the paper's sessions are
+  structured (how many LLM calls per agent invocation, and session length).
+- **Q-new-2:** how does Alg. 1 avoid corrupting transitions with concurrent sessions? (Not stated.)
+- **Q-new-3:** does Eq. 9 apply survival to history blocks? (Literal reading hurts in our workload.)

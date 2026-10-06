@@ -1,11 +1,11 @@
-# Cloud hardware profile (Phase 2). Values are placeholders until M6.
+# Cloud hardware profile (Phase 2, M6). Not yet run; see docs/CLOUD_RUNBOOK.md.
 name: cloud-a100-80gb
 model:
   name: meta-llama/Llama-3.1-8B-Instruct   # paper main model (Sec. 5.1)
   dtype: bfloat16
 vllm:
   gpu_memory_utilization: 0.90
-  max_model_len: 16384           # TBD from workload footprint
+  max_model_len: 4096            # workload max request ~44 blocks (704 tokens); experiments may lower it
   max_num_seqs: 256
   block_size: 16
   enable_prefix_caching: true

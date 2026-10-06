@@ -137,3 +137,11 @@ Resume with `claude --continue`; the last entry says what was in progress.
   Continuum == vanilla exactly (soft TTL pins coincide with LRU's most-recent blocks → degenerate baseline).
   Palette validator (node) unavailable; used the skill's pre-validated reference palette + marker shapes.
 - 16:53 Starting GPU main sweep (selector_eval, 5 systems × 100/150/200 blocks) via compare.py --run.
+- 16:53 compare.py --run refused by gpu_run.sh preflight (it matched the compare.py orchestrator itself). Fixed: orchestrator excluded. Restarting sweep.
+- 17:27 GPU main sweep done (15 runs, all exit 0, ~2:10 each). results/main/compare/selector_eval_gpu_eval_20261006-172634.*
+  Hit gain CacheScout vs vanilla: +1.8/+2.8/+1.6 pp @100/150/200 (sim predicted +3.3/+2.6/+1.0; sequential GPU
+  cross-check @100 on tuning trace gave +3.7). TTFT/latency: no significant difference (±1-3%, noise) — with
+  ~340-token prompts a 2 pp hit gain saves ~7 prefill tokens/request, negligible vs batching/queueing on a 1.5B
+  model. Eviction-only ≥ warmup-only ✓; warmup-only +0.5..+1.1 pp; Continuum ≈ vanilla. "Gain shrinks" passes
+  only marginally and is non-monotone (largest at 150) → not claimed.
+- Next: scripts/run_all_local.sh steps 2-5 (variants, seeds, topologies, load) in background.

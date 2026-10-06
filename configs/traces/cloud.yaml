@@ -1,0 +1,31 @@
+# Cloud trace set (M6). Same generator and calibrated profile as local; token IDs in Llama-3.1's regular
+# range; more sessions and higher arrival rates (paper Fig. 11 sweeps 0.2-50 sessions/s).
+#   python scripts/make_traces.py --config configs/traces/cloud.yaml
+out_dir: results/traces_cloud
+token_id_range: [1000, 120000]   # Llama-3.1 vocab 128256; special tokens >= 128000
+profile:
+  name: selector-calibrated-0.4
+  anchor_tokens: {P: 224, A: 179, C: 211, T: 160, R: 173, D: 141}
+  task_tokens: [19, 38]
+  header_tokens: 4
+  output_tokens: {P: [6, 16], A: [6, 13], C: [10, 22], T: [6, 13], R: [6, 16], D: [6, 16]}
+  tool_tokens: {P: [0, 0], A: [10, 29], C: [0, 13], T: [6, 22], R: [0, 0], D: [0, 0]}
+  calls_per_invocation: {P: [1, 1], A: [1, 3], C: [1, 3], T: [1, 2], R: [1, 1], D: [1, 1]}
+  turns: [6, 12]
+  max_prompt_tokens: 1400
+  think_s: [0.2, 0.5]
+  tool_s: [0.05, 0.25]
+  start_agent: P
+traces:
+  - {name: selector_eval, topology: selector, num_sessions: 300, arrival_rate: 1.0, seed: 1}
+  - {name: pipeline_eval, topology: pipeline, num_sessions: 300, arrival_rate: 1.0, seed: 1}
+  - {name: debate_eval, topology: debate, num_sessions: 300, arrival_rate: 1.0, seed: 1}
+  - {name: random_eval, topology: random, num_sessions: 300, arrival_rate: 1.0, seed: 1}
+  - {name: selector_eval_s2, topology: selector, num_sessions: 300, arrival_rate: 1.0, seed: 2}
+  - {name: selector_eval_s3, topology: selector, num_sessions: 300, arrival_rate: 1.0, seed: 3}
+  - {name: selector_eval_r5, topology: selector, num_sessions: 300, arrival_rate: 5.0, seed: 1}
+  - {name: selector_eval_r20, topology: selector, num_sessions: 300, arrival_rate: 20.0, seed: 1}
+  - {name: selector_eval_r50, topology: selector, num_sessions: 300, arrival_rate: 50.0, seed: 1}
+  - {name: selector_tune, topology: selector, num_sessions: 300, arrival_rate: 1.0, seed: 101, role: tune}
+  - {name: debate_tune, topology: debate, num_sessions: 300, arrival_rate: 1.0, seed: 102, role: tune}
+  - {name: smoke, topology: selector, num_sessions: 4, arrival_rate: 2.0, seed: 999, role: smoke}
