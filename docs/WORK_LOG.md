@@ -201,3 +201,7 @@ Resume with `claude --continue`; the last entry says what was in progress.
 - NEXT STEP: record tuning sessions (vanilla live @100, train seed 101, 20 sessions x 4 topologies), then
   sim-vs-GPU sequential cross-check on a recording, then tuning, then campaign.
 - 22:50 Stage tune_record started (commit 1657167, tracked tree clean).
+- 23:03 tune_record done (4 runs, rc 0, git_dirty=false): train seed 101, 20 sessions each.
+  pipeline 165 calls acc .35 hit .251; random 185 acc .45 hit .160 trim .016 R .13; debate 131 acc .45 hit .374
+  R 1.00 (rule-based debate is deterministic); selector 155 acc .40 fallback .82 R .86 hit .237. ~2.5 min/run.
+- NEXT STEP: xcheck stage (sequential replay of selector tuning recording: vanilla, lru_hook, eviction_only).
