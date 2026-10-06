@@ -1,0 +1,15 @@
+# M1 metrics check, cloud profile. Same checks; a fixed 256-block budget keeps the eviction test meaningful.
+experiment: m1_metrics_check
+hardware: configs/hardware/cloud.yaml
+seed: 0
+num_gpu_blocks_override: 256   # overrides the hardware profile for this check only
+max_tokens: 8
+token_id_range: [1000, 120000]   # Llama-3.1 vocab is 128256 (special tokens >= 128000)
+checks:
+  shared_prefix: {prefix_tokens: 64, suffix_tokens: 36}
+  identical_prompt: {prompt_tokens: 96}
+  eviction:
+    target_prompt_tokens: 200
+    filler_prompt_tokens: 1200
+    margin_blocks: 32
+counter_tolerance_tokens: 16

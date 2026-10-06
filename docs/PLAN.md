@@ -39,7 +39,9 @@ Absolute numbers will differ (smaller model, smaller workloads, different GPU). 
 - [x] **Deliberate** vLLM generation smoke test passed 2026-10-06 (`smoke_run3.log`): 256 blocks, override OK, ~3.7 GiB used, eager mode
 - [x] `num_gpu_blocks_override` honoured at runtime (256 allocated, 255 usable: vLLM reserves one null block)
 - [ ] Budget-sweep configs: max_model_len ≤ (budget − 1) × 16, e.g. ≤ 1584 for 100 blocks
-- [ ] Metrics module: hit rate (`num_cached_tokens` / prompt tokens per request, Sec. 5.1), TTFT, per-turn latency, throughput
+- [x] Metrics module (`src/cachescout/metrics/`): hit rate, TTFT, per-turn latency, throughput; unit-tested; vLLM sources in `docs/vllm_internals.md`
+- [ ] GPU check `scripts/check_prefix_metrics.py` passes (shared prefix, last-token rule, LRU eviction at 256 blocks, counters), run by user
+- [ ] Server + streaming collector (TTFT under load)
 - [ ] Baseline runner: replay a request trace against vLLM (offline engine first, then OpenAI server for TTFT under load)
 - [ ] Results saved with resolved config + `git rev-parse HEAD` + env freeze hash
 **Verify:** a two-request prefix test where the 2nd request shows cached tokens ≈ shared prefix; a block-budget test

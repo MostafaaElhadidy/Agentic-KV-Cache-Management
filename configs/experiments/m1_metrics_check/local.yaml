@@ -1,0 +1,15 @@
+# M1 metrics check: verifies cached-token accounting and LRU eviction on vanilla vLLM.
+# Run by hand: python scripts/check_prefix_metrics.py --config configs/experiments/m1_metrics_check/local.yaml
+experiment: m1_metrics_check
+hardware: configs/hardware/local.yaml   # 256 blocks (255 usable), max_model_len 2048
+seed: 0
+max_tokens: 8                 # small, so decode adds at most 1 block per request
+token_id_range: [1000, 150000]  # synthetic prompts; below Qwen2.5 special tokens (>= 151643)
+checks:
+  shared_prefix: {prefix_tokens: 64, suffix_tokens: 36}   # (a) expect B.cached == 64
+  identical_prompt: {prompt_tokens: 96}                   # (b) expect floor(95/16)*16 = 80
+  eviction:                                               # (c) expect A.cached == 0 after fillers
+    target_prompt_tokens: 200
+    filler_prompt_tokens: 1200
+    margin_blocks: 32         # extra blocks beyond usable capacity + target blocks
+counter_tolerance_tokens: 16  # (d) allowed |per-request total - vLLM counter|

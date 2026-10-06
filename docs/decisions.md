@@ -88,3 +88,25 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
   matters for the metrics design (see M1 metrics).
 - Note: vLLM printed "We must use the `spawn` multiprocessing start method". Harmless (the script has a `__main__`
   guard); not investigated further.
+
+## 2026-10-06: Metrics layer design (M1)
+- **Engineering choice.** `src/cachescout/metrics/`: `TurnRecord` (one per agent turn) → `summarize()`; collectors
+  turn vLLM outputs into records. Same summary code for the offline engine (now) and the OpenAI server + streaming
+  client (next step). Sources of every vLLM field: `docs/vllm_internals.md`.
+- **Paper (Sec. 5.1):** hit rate = Σ cached prompt tokens / Σ prompt tokens; TTFT = arrival → first token;
+  per-turn latency = end-to-end per agent invocation; throughput = completed agent turns per second.
+- **Interpretation, warmup requests:** CacheScout warmups (Sec. 3.4) are **excluded from hit rate, TTFT and per-turn
+  latency**, but **included in throughput** in the sense that the throughput window (first send → last completion)
+  spans them, while only non-warmup turns are counted as completed turns. The paper only states that warmups are
+  excluded from transition learning (Sec. 4); it does not say how they enter the metrics. (User-approved.)
+- **Engineering choice, percentiles:** `numpy.percentile(..., method="linear")` (numpy's default; interpolates
+  between closest ranks) for median/P90/P99. Constant `PERCENTILE_METHOD` in `src/cachescout/metrics/summary.py`.
+  The paper does not state its percentile method. (User-approved.)
+- **Engineering choice, clocks:** all latencies come from our own `time.perf_counter()`; never subtract vLLM's
+  monotonic engine-core timestamps from its wall-clock `arrival_time`. For offline runs, TTFT uses vLLM's
+  `first_token_latency` duration (requires `disable_log_stats=False`); with sequential requests this ≈ prefill time.
+- Also reported: `max_possible_hit_rate` using vLLM's ceiling floor((N−1)/16)·16 per prompt, because even a perfect
+  cache can't reach 100% in vLLM.
+- **M1 check script** (`scripts/check_prefix_metrics.py`): requests strictly sequential, `max_tokens=8` with
+  `ignore_eos=True` (fixed output length so block arithmetic is exact), synthetic token-ID prompts (seeded),
+  `reset_prefix_cache()` between checks; counter comparison uses before/after snapshots.

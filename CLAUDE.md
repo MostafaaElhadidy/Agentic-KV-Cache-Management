@@ -18,6 +18,7 @@ Phase 2: cloud GPUs (A100/H100). Same code; hardware/model settings only in `con
 - `docs/open_questions.md`: ambiguities + recommended defaults (A1 vLLM version is top priority)
 - `docs/PLAN.md`: milestones M1–M6 with checkboxes and the Phase 1 success criteria
 - `docs/decisions.md`: every non-paper choice (labelled paper / interpretation / engineering choice)
+- `docs/vllm_internals.md`: verified vLLM 0.31.0 internals with file:line refs (metrics, KV sizing, block pool)
 - `docs/project_instructions.md`: text for the claude.ai Project
 
 ## Commands
@@ -26,6 +27,8 @@ source ~/testLLM/.venv/bin/activate          # every new terminal
 pytest -q                                     # smoke tests (no model loading)
 ruff check .                                  # lint
 python scripts/smoke_vllm_generate.py --config configs/hardware/local.yaml   # LOADS MODEL: only when user asks
+python scripts/check_prefix_metrics.py --plan-only                            # block arithmetic, no GPU
+python scripts/check_prefix_metrics.py   # LOADS MODEL: M1 prefix-cache/eviction check, user runs it
 # Baseline benchmark / experiment runner: not implemented yet (M1). Planned:
 #   python -m cachescout.run --config configs/experiments/<exp>/local.yaml
 ```
