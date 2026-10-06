@@ -178,3 +178,8 @@ Resume with `claude --continue`; the last entry says what was in progress.
 - NEXT STEP: smoke runs (1 session per topology, vanilla), then one cachescout smoke, then PILOT GATE.
 - 22:32 Smoke 1 (pipeline, vanilla, 1 session; used ONE test problem test:844 — prompt iteration from now on uses train problems only): plumbing OK; CODER wrote Python instead of CALL lines, outputs hit 128-token cap. Clarified tool/format instructions in anchors.
 - 22:35 Smoke 2 (selector, train seed 101, 2 sessions): fallback rate 0.875 — model writes '[PLANNER]: DECIDER' instead of NEXT lines; old fallback looped P<->C until cap. Added lenient name-only parsing (counted) + round-robin fallback; decisions.md updated.
+- 22:39 Smoke 3 (selector, train seed 101): strict NEXT lines 2/15 (13%), fallbacks 13/15, final answer
+  3/3, tool failures 0/3. Stopped prompt iteration (1.5B model mostly ignores the NEXT protocol -> report as
+  finding). git_dirty now ignores untracked files (results/), so committed code => git_dirty=false.
+- NEXT STEP: PILOT GATE: selector @100 blocks, 5 sessions, train seed 102 (tuning problems), vanilla + cachescout
+  live; then STOP and report to the user. Do NOT start the campaign.

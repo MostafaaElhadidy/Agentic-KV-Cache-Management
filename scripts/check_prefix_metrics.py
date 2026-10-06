@@ -47,7 +47,7 @@ def provenance(hw: dict[str, Any]) -> dict[str, Any]:
         gpu = run(["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"])
     return {
         "git_commit": run(["git", "rev-parse", "HEAD"]),
-        "git_dirty": bool(run(["git", "status", "--porcelain"])),
+        "git_dirty": bool(run(["git", "status", "--porcelain", "--untracked-files=no"])),
         "python": sys.version.split()[0],
         "vllm": version("vllm"),
         "torch": version("torch"),
