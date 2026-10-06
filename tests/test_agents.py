@@ -124,7 +124,7 @@ def test_trimming_keeps_anchor_and_task() -> None:
     head = fake_tokenize([{"role": "system", "content": anchor_text("R", "selector")},
                           {"role": "user", "content": "Task: What is 2+2?"}])[:-2]
     assert built.token_ids[:len(head)] == head
-    small = b.build("R", "What is 2+2?", hist[:2])
+    small = b.build("R", "What is 2+2?", [Message("C", "ok")])
     assert small.dropped_messages == 0
 
 

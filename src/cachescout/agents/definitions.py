@@ -47,10 +47,9 @@ AGENTS: dict[str, AgentSpec] = {
     "C": AgentSpec("C", "CODER",
                    "CODER agent here. You are the CODER of a six-agent team that solves "
                    "grade-school math word problems.",
-                   "Turn the plan into arithmetic. Never write Python code and never do mental math: "
-                   "the only way to compute is a line CALL calculator: <expression>, one "
-                   "expression per call. After the result comes back, report the numbers you "
-                   "obtained in one or two sentences.",
+                   "Turn the plan into arithmetic. No Python code, no mental math: compute only with "
+                   "a line CALL calculator: <expression>, one expression per call, then report "
+                   "the numbers you obtained in one or two sentences.",
                    ("calculator", "scratchpad")),
     "T": AgentSpec("T", "TESTER",
                    "TESTER agent here. You are the TESTER of a six-agent team that solves "
