@@ -137,8 +137,8 @@ workload footprint) so local and cloud runs are comparable in *blocks*, not GB.
 Qwen2.5-1.5B-Instruct (cached) replaces Llama-3.1-8B-Instruct locally. KV per token ≈ 28 KiB (28 layers × 2 KV heads
 × 128 dim × K,V × bf16), ≈ 448 KiB per 16-token block, so 200 blocks ≈ 88 MiB. The paper's block budgets fit easily.
 
-### E2. `--enforce-eager`. OPEN
-Only if CUDA graph capture is unstable or too memory-hungry on WSL. Log it in decisions.md if used.
+### E2. `--enforce-eager`. RESOLVED (2026-10-06)
+Enabled locally after a torch.compile autotune OOM; applied to all systems. See decisions.md.
 
 ### E3. Small model routing quality. OPEN
 A 1.5B model may choose agents poorly in SelectorGroupChat, so its transition structure may differ from Fig. 5.

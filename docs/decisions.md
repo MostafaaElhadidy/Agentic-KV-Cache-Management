@@ -31,5 +31,18 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
 - **Engineering choice.** `.claude/settings.json` PostToolUse hook → `scripts/hooks/ruff_on_edit.sh`. Fast (<1 s),
   never touches the GPU. Full test suite is run manually (`pytest -q`).
 
-## enforce_eager
-- Not used yet. Record here if it becomes necessary for stability on WSL (open_questions E2).
+## 2026-10-06: enforce_eager=True locally (applies to ALL compared systems)
+- **Engineering choice.** First run of `scripts/smoke_vllm_generate.py` (local config, enforce_eager=false): the
+  model loaded fine (2.98 GiB weights), then failed with CUDA OOM during torch.compile autotuning
+  (`InductorError: Failed to run autotuning code block`). RAM was fine; WSL did not crash.
+- Fix: `enforce_eager: true` in `configs/hardware/local.yaml`. In vLLM 0.31.0 this sets
+  `compilation_config.mode = NONE` (no torch.compile/Inductor autotuning) and `cudagraph_mode = NONE`
+  (no CUDA graph capture); see `vllm/config/vllm.py`.
+- **Fairness:** eager mode is a hardware-profile setting, so it applies identically to vanilla vLLM, the
+  Continuum-style baseline, and CacheScout (all ablations). Never compare an eager run against a compiled run.
+  Eager mode slows decoding, so absolute local latency/throughput is pessimistic, but relative comparisons hold.
+- `configs/hardware/cloud.yaml` keeps `enforce_eager: false` (paper uses a normal vLLM setup, Sec. 5.1).
+  Every result records the flag via its saved config.
+- Smoke script reads GPU memory via NVML (pynvml, already installed with vLLM) rather than
+  `torch.cuda.mem_get_info`, which reports the same device-wide numbers but would create a CUDA context
+  (~0.3–0.5 GB) in the parent process.

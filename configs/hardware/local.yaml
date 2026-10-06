@@ -10,7 +10,7 @@ vllm:
   max_num_seqs: 8
   block_size: 16                 # paper Sec. 2.1 (vLLM default)
   enable_prefix_caching: true
-  enforce_eager: false           # set true only if needed; log in docs/decisions.md
+  enforce_eager: true            # torch.compile autotune OOMs on 8 GB; see docs/decisions.md (2026-10-06)
   num_gpu_blocks_override: null  # set per experiment (paper Fig. 14 uses 100-200)
 env:
   HF_HUB_OFFLINE: "1"            # never download models implicitly
