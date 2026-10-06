@@ -33,7 +33,8 @@ class CacheScoutParams:
     r_min: float = 0.3                # Eq. 11 (used by the warmup coordinator)
     fingerprint_blocks: int = 2       # Sec. 4: prefix blocks hashed into the agent fingerprint
     scope: str = "global"             # Alg. 1 literal = global current agent (open_questions B4)
-    max_active_sessions: int = 16     # session scope: sessions used as BFS sources
+    max_active_sessions: int = 8      # session scope: most recent sessions considered active
+    session_aggregate: str = "mean"   # session scope: combine per-session survival (mean | max)
     continuum_ttl_s: float = 0.3      # Sec. 5.1 Continuum TTL
     warmup_prefix: str = "cswarm-"    # request-id prefix of warmup requests (Sec. 4)
 
@@ -44,6 +45,8 @@ class CacheScoutParams:
             raise ValueError(f"scope must be one of {SCOPES}")
         if self.fingerprint_blocks < 1:
             raise ValueError("fingerprint_blocks must be >= 1")
+        if self.session_aggregate not in ("mean", "max"):
+            raise ValueError("session_aggregate must be mean or max")
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> "CacheScoutParams":
@@ -94,7 +97,7 @@ class CacheScoutRuntime:
         self.block_agent: dict[int, Agent] = {}
         self.block_last: dict[int, int] = {}
         self.block_pin_until: dict[int, float] = {}
-        self.request_agent: dict[str, Agent] = {}
+        self.request_agent: OrderedDict[str, Agent] = OrderedDict()  # bounded
         self.current: Agent | None = None                       # global scope a_t
         self.session_current: OrderedDict[str, Agent] = OrderedDict()  # session scope
         self.survival: dict[Agent, float] = {}
@@ -128,6 +131,8 @@ class CacheScoutRuntime:
         t0 = time.perf_counter_ns()
         a = self.agent_for_fingerprint(fingerprint)
         self.request_agent[request_id] = a
+        if len(self.request_agent) > 8192:       # bounded state (Sec. 4); keeps preempted ids
+            self.request_agent.popitem(last=False)
         self.learner.add_agent(a)
         if request_id.startswith(self.p.warmup_prefix):
             self.stats.warmups_seen += 1
@@ -238,10 +243,27 @@ class CacheScoutRuntime:
         return list(self.session_current.values())
 
     def _refresh_survival(self) -> None:
-        """Alg. 1 lines 18-19: rebuild the thresholded graph and hop table when a_t changes."""
+        """Alg. 1 lines 18-19: rebuild the thresholded graph and hop table when a_t changes.
+
+        Session scope (interpretation, open_questions B4): one Eq. 8 table per active session's
+        current agent, combined per agent by `session_aggregate` (mean approximates the chance
+        that the agent is reused soon by any active session; max = multi-source BFS).
+        """
         t0 = time.perf_counter_ns()
-        self.survival = survival_table(self.learner, self.current_agents(), self.p.tau,
-                                       self.p.e_max)
+        if self.p.scope == "global" or self.p.session_aggregate == "max":
+            self.survival = survival_table(self.learner, self.current_agents(), self.p.tau,
+                                           self.p.e_max)
+        else:
+            sources = self.current_agents()
+            per_agent: dict[Agent, float] = {}
+            tables: dict[Agent, dict[Agent, float]] = {}
+            for src in sources:
+                if src not in tables:
+                    tables[src] = survival_table(self.learner, [src], self.p.tau, self.p.e_max)
+                for a, v in tables[src].items():
+                    per_agent[a] = per_agent.get(a, 0.0) + v
+            n = max(len(sources), 1)
+            self.survival = {a: v / n for a, v in per_agent.items()}
         self.stats.refreshes += 1
         self.stats.refresh_ns += time.perf_counter_ns() - t0
 

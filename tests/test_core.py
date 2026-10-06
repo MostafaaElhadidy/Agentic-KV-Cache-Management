@@ -221,3 +221,19 @@ def test_warmup_gate_blocks_unpredictable() -> None:
         wc.observe([ord(ag)] * 8 + [i], "s0")
     assert wc.maybe_warmup("s0", now=0.0) is None
     assert wc.gated == 1
+
+
+def test_session_mean_aggregation() -> None:
+    rt = make_rt(scope="session", session_aggregate="mean", e_max=2, tau=0.5)
+    for i in range(6):                     # learn A->B and C->D, per session
+        rt.observe_dispatch(f"a{i}", "fpA", session=f"x{i}")
+        rt.observe_dispatch(f"b{i}", "fpB", session=f"x{i}")
+        rt.observe_dispatch(f"c{i}", "fpC", session=f"y{i}")
+        rt.observe_dispatch(f"d{i}", "fpD", session=f"y{i}")
+    rt.session_current.clear()
+    rt.observe_dispatch("s1", "fpA", session="S1")   # S1 at A
+    rt.observe_dispatch("s2", "fpC", session="S2")   # S2 at C
+    a, b, c, d = (rt.fingerprint_to_agent[f] for f in ("fpA", "fpB", "fpC", "fpD"))
+    assert rt.survival[a] == pytest.approx(0.5)      # 1 from S1, 0 from S2
+    assert rt.survival[b] == pytest.approx(0.25)     # hop 1 -> 0.5 from S1
+    assert rt.survival[c] == pytest.approx(0.5) and rt.survival[d] == pytest.approx(0.25)

@@ -19,6 +19,7 @@ VLLM_KEYS = (
     "enforce_eager",
     "num_gpu_blocks_override",
     "tensor_parallel_size",
+    "max_num_batched_tokens",
 )
 
 

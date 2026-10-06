@@ -57,3 +57,49 @@ Resume with `claude --continue`; the last entry says what was in progress.
   valuable in our workload → possible bias in CacheScout's favour. Will be reported as a threat to validity.
 - Observation: online next-agent accuracy with interleaved sessions (literal global a_t) is only ~0.40 vs 0.58-0.72
   per session → evidence for open question B4 (scope).
+
+## 2026-10-06 17:20 Simulator, workload calibration, first tuning: CacheScout ≈ LRU (+0.24 pp). Investigated.
+- Simulator made concurrent (max 8 running requests, blocks held until completion, FIFO admission), because the
+  sequential version was overloaded (warmups never ran, Continuum TTL always expired).
+- Workload calibration (scripts/calibrate_workload.py, vanilla only, tuning seed): base profile gave vanilla
+  31-45% at 100-200 blocks vs paper 64-77% (Fig. 14a). Scale 0.4 → vanilla 0.60/0.68/0.72, anchor share 0.58,
+  phi@12 0.44. Deviation: max request footprint 42 blocks (paper ~93). Longer sessions were tried and lowered both
+  vanilla hit rate and anchor share far below the paper → rejected. Profile written to configs/traces/local.yaml.
+- Tuning sweep 1 (384 configs, eviction_only, tuning traces): best 0.6954 vs vanilla 0.6930 → negligible gain.
+- Diagnosis (miss breakdown on selector_tune): engine-side learner with the literal GLOBAL current agent sees
+  ~8 interleaved sessions → learned R = 0.18, top-1 accuracy 0.43 (true R 0.57) → survival flat → LRU
+  (the paper's own graceful-degradation case). Session scope with multi-source BFS also flattens.
+- Change (interpretation, B4): session scope with per-session Eq. 8 tables averaged per agent
+  (`session_aggregate: mean`). Rerunning the sweep with scope ∈ {global, session×{4,8,16} active}.
+
+## 2026-10-06 (after restart) CRASH #1 during first GPU run of the experiment runner
+- Running when WSL/session died: `PYTHONPATH=src timeout 900 python -m cachescout.run
+  --config configs/experiments/smoke/local.yaml --system vanilla > logs/smoke_vanilla_1.log`
+  (AsyncLLM, vanilla, smoke trace: 4 sessions / 42 turns, 200 blocks, max_model_len 1584).
+- ALSO running at the same time: the CPU-only tuning sweep `scripts/tune_constants.py` (background, started
+  ~17:20). So two heavy Python processes were alive, not one.
+- Counts as crash #1 for the step "first GPU run of the runner".
+- Diagnosis (2026-10-06 16:06):
+  - Previous boot ended 16:02:06, ~22 s after the runner started (results/smoke/vanilla/b200_20261006-160144
+    created 16:01:44; no engine stats file → died during engine start-up: weight loading/profiling phase, cf. the
+    successful check run where this phase spans +12 s..+28 s).
+  - Logs empty (0 bytes): unflushed page cache lost when the VM died.
+  - Kernel log of previous boot: no OOM-killer messages; only "dxg: dxgkio_query_adapter_info: Ioctl failed: -22",
+    which appear at a constant ~52/min since 14:55 including during the successful 15:33 GPU run → background noise,
+    not the cause. Abrupt VM end without Linux-side errors suggests the Windows host killed/reset the VM (host
+    memory pressure or GPU driver reset).
+  - After restart: free 10 GiB RAM, swap 0 used, GPU 193 MiB used, no python/vllm leftovers.
+  - Differences vs the runs that worked (smoke script, check_prefix_metrics): same gpu_memory_utilization 0.6,
+    enforce_eager, max_num_seqs 8; smaller max_model_len (1584) and budget (200); AsyncLLM vs LLM (both spawn one
+    engine-core process). Only material difference: the CPU tuning sweep ran concurrently (two heavy Python
+    processes) during model loading → likely host memory pressure.
+  - NOTE: earlier WORK_LOG timestamps (16:10/16:40/17:20) were estimates, not clock readings; actual clock was
+    ~15:40-16:02. From now on timestamps come from `date`.
+- Fixes: (1) never run anything else heavy during a GPU job; (2) max_num_batched_tokens 2048 (default 8192) to cut
+  the profiling activation peak, applied to all systems; (3) scripts/gpu_run.sh: preflight checks + 2-s memory
+  monitor that fsyncs to logs/ so a crash leaves evidence; python -u for unbuffered logs.
+- Plan: tiny (1 session) → smoke (4 sessions) → full trace, one GPU process at a time.
+- 16:07 Stage 1 starting: tiny trace (1 session, 13 calls), vanilla, via scripts/gpu_run.sh
+- 16:08 Stage 1 PASS: tiny vanilla, 13 turns, hit 0.624, peak gpu_used=3878M peak ram_used=3611M min avail=8344M. Stage 2 (smoke, 4 sessions) next.
+- 16:09 Stage 2 PASS: smoke vanilla 42 turns hit 0.738, peak gpu_used=3878M peak ram_used=3632M min avail=8323M. Stage 2b: smoke with CacheScout hook.
+- 16:10 Stage 2b PASS: smoke with CacheScoutScheduler hook (engine core loaded it; 42 dispatches, 15 warmups excluded, acc 0.74, observe 43 us, select 27 us). Hit = vanilla (no pressure at 200 blocks on 4 sessions).

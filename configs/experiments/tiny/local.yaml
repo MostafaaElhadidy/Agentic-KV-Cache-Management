@@ -1,0 +1,15 @@
+# Tiny GPU runner test (1 session). scripts/gpu_run.sh tiny_vanilla 600 python -m cachescout.run --config configs/experiments/tiny/local.yaml --system vanilla
+experiment: tiny
+hardware: configs/hardware/local.yaml
+seed: 0
+trace: results/traces/tiny.json
+mode: online
+num_gpu_blocks_override: 200
+max_model_len: 1584          # <= (100-1)*16 so every budget in the sweep admits it
+cachescout:
+  enabled: true
+  eviction: true
+  warmup: true
+  params: {scope: session, tau: 0.3, e_max: 3, lam: 0.005, delta: 0.05, r_min: 0.3}
+warmup: {min_interval_s: 0.5}
+continuum: {ttl_s: 0.3}

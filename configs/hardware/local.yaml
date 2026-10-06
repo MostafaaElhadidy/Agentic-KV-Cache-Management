@@ -8,6 +8,7 @@ vllm:
   gpu_memory_utilization: 0.60   # ~4.9 GB of 8 GB; weights ~3.1 GB
   max_model_len: 2048           # 2048/16 = 128 blocks <= 255 usable blocks (see decisions.md)
   max_num_seqs: 8
+  max_num_batched_tokens: 2048   # lower profiling peak (default 8192); crash #1 mitigation
   block_size: 16                 # paper Sec. 2.1 (vLLM default)
   enable_prefix_caching: true
   enforce_eager: true            # torch.compile autotune OOMs on 8 GB; see docs/decisions.md (2026-10-06)
