@@ -36,15 +36,23 @@ Absolute numbers will differ (smaller model, smaller workloads, different GPU). 
 **Goal:** reproducible vanilla vLLM runs with the paper's four metrics.
 - [x] Environment inspected; versions recorded in CLAUDE.md; `docs/env_freeze_before.txt` saved
 - [x] Smoke test (imports, CUDA): `pytest -q tests/test_smoke_env.py`
-- [ ] **Deliberate** vLLM generation smoke test (`scripts/smoke_vllm_generate.py`), with you watching VRAM/RAM
-- [ ] Confirm `num_gpu_blocks_override` is honoured at runtime (source check done 2026-10-06: it sizes the real allocation; usable = override − 1)
+- [x] **Deliberate** vLLM generation smoke test passed 2026-10-06 (`smoke_run3.log`): 256 blocks, override OK, ~3.7 GiB used, eager mode
+- [x] `num_gpu_blocks_override` honoured at runtime (256 allocated, 255 usable: vLLM reserves one null block)
 - [ ] Budget-sweep configs: max_model_len ≤ (budget − 1) × 16, e.g. ≤ 1584 for 100 blocks
 - [ ] Metrics module: hit rate (`num_cached_tokens` / prompt tokens per request, Sec. 5.1), TTFT, per-turn latency, throughput
 - [ ] Baseline runner: replay a request trace against vLLM (offline engine first, then OpenAI server for TTFT under load)
 - [ ] Results saved with resolved config + `git rev-parse HEAD` + env freeze hash
 **Verify:** a two-request prefix test where the 2nd request shows cached tokens ≈ shared prefix; a block-budget test
 where an LRU-evicted prefix shows 0 cached tokens.
-**Risks:** WSL memory limits; CUDA-graph capture memory (→ `enforce_eager`, logged); metric APIs differ in 0.31.
+**Working local settings (2026-10-06, `configs/hardware/local.yaml`):**
+| Setting | Value | What it fixed |
+|---|---|---|
+| `enforce_eager` | true | Avoids torch.compile/Inductor autotuning and CUDA-graph capture (memory spikes; 1st OOM was reported there). Applied to all compared systems. |
+| `num_gpu_blocks_override` | 256 | The real OOM: `allocate_kv_cache` tried 1.23 GiB (derived from `gpu_memory_utilization`). Now ~112 MiB. 255 usable (1 null block). |
+| `max_model_len` | 2048 | 128 blocks per full-length sequence, so it fits in 255 usable blocks (≈2 concurrent full-length sequences). |
+Measured: weights 2.98 GiB; total GPU used ~3.7 GiB (incl. ~0.4 GiB Windows desktop).
+
+**Risks:** WSL memory limits; metric APIs differ in 0.31.
 
 ## M2. Agentic workload / trace generation
 **Goal:** traces of (session, turn, agent, prompt tokens, output length, arrival time).

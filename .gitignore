@@ -41,3 +41,6 @@ hf_cache/
 
 # Claude Code local-only settings
 .claude/settings.local.json
+
+# Smoke-test run logs
+smoke_run*.log

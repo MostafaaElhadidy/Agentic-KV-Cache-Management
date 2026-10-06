@@ -70,3 +70,21 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
   null block); for 150: ≤ 2384; for 200: ≤ 3184. The paper notes a ~93-block max request footprint (Sec. 5.4), which
   fits within 99. Experiment configs for the budget sweep must set max_model_len accordingly.
 - `gpu_memory_utilization` (0.60) still bounds vLLM's startup memory check and profiling, but no longer sizes the KV cache.
+
+## 2026-10-06: Local settings validated (smoke_run3.log)
+- **Engineering choice, verified.** With `enforce_eager: true`, `num_gpu_blocks_override: 256`, `max_model_len: 2048`
+  (plus `gpu_memory_utilization: 0.60`, `max_num_seqs: 8`), the smoke test passed:
+  - GPU used before load 424 MiB (Windows desktop); weights 2.98 GiB; after load 3771 MiB used, 4417 MiB free.
+  - vLLM log: "Available KV cache memory: 1.23 GiB", "Overriding num_gpu_blocks=2867 with num_gpu_blocks_override=256",
+    "GPU KV cache size: 4,096 tokens, Maximum concurrency for 2,048 tokens per request: 2.00x".
+  - Frontend reports `num_gpu_blocks=256`; generation worked.
+- **What each setting fixed:** `num_gpu_blocks_override` fixed the actual OOM (the 1.23 GiB KV allocation);
+  `max_model_len 2048` keeps one full sequence (128 blocks) within the budget; `enforce_eager` avoids compile/autotune
+  and CUDA-graph memory spikes and stays on for all compared systems.
+- **Finding: one block is reserved.** vLLM's `BlockPool` permanently holds one null block, so 256 allocated = **255
+  usable**. vLLM's own log line counts all 256 (4,096 tokens, 2.00x); the real usable capacity is 4,080 tokens. All
+  budget-sweep configs and hit-rate analysis must use usable = budget − 1.
+- Note: the `LLM` class runs with `disable_log_stats: True` by default (seen in the log's non-default args), which
+  matters for the metrics design (see M1 metrics).
+- Note: vLLM printed "We must use the `spawn` multiprocessing start method". Harmless (the script has a `__main__`
+  guard); not investigated further.
