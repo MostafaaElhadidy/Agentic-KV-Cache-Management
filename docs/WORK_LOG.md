@@ -211,3 +211,6 @@ Resume with `claude --continue`; the last entry says what was in progress.
 - 23:52 eval_record done (12 live vanilla @100 runs, test seeds 1-3, all git_dirty=false). Note: seed 1
   contains test:844, the one test problem seen in smoke run 1 (before prompt iteration moved to train problems).
 - NEXT STEP: replay stage (72 runs: 4 topologies x 3 seeds x {vanilla, cachescout} x {100,150,200}).
+- 2026-10-07 02:53 replay stage done: 72/72 runs exit 0. Headline (results/report_real/tables.md, preliminary
+  aggregation): mean over topologies+seeds +5.7/+6.3/+6.5 pp hit @100/150/200; latency changes small/noisy.
+- NEXT STEP: live stage (60 remaining runs: vanilla 150/200, cachescout 100/150/200; 4 topologies x 3 seeds).
