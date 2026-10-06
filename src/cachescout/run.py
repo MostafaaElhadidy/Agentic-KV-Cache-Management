@@ -215,13 +215,15 @@ class VLLMAgentClient:
         self._wid = 0
 
     async def generate(self, prompt_ids: list[int], max_tokens: int, request_id: str,
-                       session_id: str) -> Any:
+                       session_id: str, choices: list[str] | None = None) -> Any:
         from vllm import SamplingParams
         from vllm.inputs import TokensPrompt
+        from vllm.sampling_params import StructuredOutputsParams
 
         from cachescout.agents.session import GenResult
 
-        sp = SamplingParams(temperature=0.0, max_tokens=max_tokens)
+        so = StructuredOutputsParams(choice=choices) if choices else None
+        sp = SamplingParams(temperature=0.0, max_tokens=max_tokens, structured_outputs=so)
         self.inflight["fg"] += 1
         t_send, t_first, final = time.perf_counter(), None, None
         try:
@@ -279,9 +281,10 @@ async def drive_agents(engine: Any, exp: dict[str, Any], warm: bool, block_size:
     cfg = SessionConfig(topology=a["topology"], max_tokens=int(a.get("max_tokens", 128)),
                         max_calls=int(a.get("max_calls", 14)),
                         max_tool_calls=int(a.get("max_tool_calls", 2)),
-                        think_s=float(a.get("think_s", 0.2)))
+                        think_s=float(a.get("think_s", 0.2)),
+                        router=bool(a.get("router", False)))
     builder = PromptBuilder(hf_chat_tokenizer(tok), cfg.topology, max_model_len, cfg.max_tokens,
-                            {k: v.name for k, v in AGENTS.items()})
+                            {k: v.name for k, v in AGENTS.items()}, router=cfg.router)
     cs_params = CacheScoutParams.from_dict((exp.get("cachescout") or {}).get("params"))
     wcfg = exp.get("warmup") or {}
     coord = (WarmupCoordinator(cs_params, block_size, wcfg.get("minimal_prompt", [1001, 1002,

@@ -194,3 +194,4 @@ Resume with `claude --continue`; the last entry says what was in progress.
     differences (incl. accuracy) are not attributable to CacheScout -> replay is the controlled comparison.
 - STOPPED at the pilot gate, waiting for the user's "go". NEXT STEP after go: sim-vs-GPU sequential cross-check on
   recorded real sessions (amendment 2), then tuning on train problems, then campaign (replay first, then live).
+- 22:47 User said GO with amendments (router pilot first; then sim cross-check, tuning, campaign replay->live). Implemented AutoGen-style separate SELECTOR call constrained via vLLM 0.31 SamplingParams(structured_outputs=StructuredOutputsParams(choice=[...])) (vllm/sampling_params.py:88-92,341; backends xgrammar/llguidance installed). Agent cap counts agent calls only. 119 tests pass. NEXT: router pilot (selector, 100 blocks, train seed 102, 5 sessions, vanilla).

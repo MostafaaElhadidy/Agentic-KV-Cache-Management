@@ -12,7 +12,7 @@ import textwrap
 from pathlib import Path
 
 NAMES = {"P": "PLANNER", "A": "ANALYST", "C": "CODER", "T": "TESTER", "R": "REVIEWER",
-         "D": "DECIDER"}
+         "D": "DECIDER", "S": "SELECTOR (router call)"}
 
 
 def wrap(text: str, indent: str = "    ") -> str:

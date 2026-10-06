@@ -88,15 +88,33 @@ ROUTING_RULES = {
 }
 
 
-def anchor_text(letter: str, topology: str) -> str:
-    """System prompt (+ tool definitions + routing rule) for one agent under one topology."""
+SELECTOR_ANCHOR = (
+    "SELECTOR here. You are the SELECTOR (the group-chat manager) of a six-agent team that solves "
+    "grade-school math word problems. You never solve the problem yourself; you only decide who "
+    "speaks next. The team members are:\n"
+    "- PLANNER: writes a short plan of which quantities to find.\n"
+    "- ANALYST: extracts the given quantities and what is asked.\n"
+    "- CODER: computes intermediate results with the calculator tool.\n"
+    "- TESTER: re-checks the most recent computation.\n"
+    "- REVIEWER: critiques the solution and lists errors.\n"
+    "- DECIDER: gives the FINAL ANSWER when the work is complete, or asks for a revision.\n"
+    "Read the conversation and choose the single teammate whose contribution is most useful now. "
+    "Choose the DECIDER once a computed and checked result exists. Reply with the name only.")
+ROUTER_QUESTION = "[SELECTOR]: Who should act next? Reply with one name."
+
+
+def anchor_text(letter: str, topology: str, router: bool = False) -> str:
+    """System prompt (+ tool definitions + routing rule) for one agent under one topology.
+    With an AutoGen-style separate selector call (`router=True`) agents do not choose the next
+    speaker themselves."""
     spec = AGENTS[letter]
     tools = "".join(TOOL_DOCS[t] for t in spec.tools)
     tool_part = ("Tools available to you:\n" + tools +
                  "If you use a tool, write the CALL line and stop; the result will be shown to you "
                  "and you can continue.\n") if tools else "You cannot call any tools.\n"
-    rule = ROUTING_RULES["selector" if topology == "selector" else "fixed"]
-    if topology == "selector":
+    agent_routes = topology == "selector" and not router
+    rule = ROUTING_RULES["selector" if agent_routes else "fixed"]
+    if agent_routes:
         others = [AGENTS[x].name for x in AGENTS if x != letter]
         rule = rule.format(choices=", ".join(others[:-1]) + " or " + others[-1])
     return (f"{spec.opening} The team is: {TEAM}. Messages from teammates appear as "

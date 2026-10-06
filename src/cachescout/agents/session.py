@@ -10,10 +10,16 @@ import time
 from dataclasses import asdict, dataclass, field
 from typing import Any, Protocol
 
-from cachescout.agents.definitions import AGENTS
+from cachescout.agents.definitions import AGENTS, NAME_TO_LETTER
 from cachescout.agents.gsm8k import Problem, is_correct
 from cachescout.agents.prompting import Message, PromptBuilder
-from cachescout.agents.routing import first_agent, next_agent, parse_final_answer
+from cachescout.agents.routing import (
+    TEAM_ORDER,
+    Route,
+    first_agent,
+    next_agent,
+    parse_final_answer,
+)
 from cachescout.agents.tools import Scratchpad, execute, parse_tool_call
 from cachescout.metrics import TurnRecord
 
@@ -30,7 +36,7 @@ class GenResult:
 
 class LLMClient(Protocol):
     async def generate(self, prompt_ids: list[int], max_tokens: int, request_id: str,
-                       session_id: str) -> GenResult: ...
+                       session_id: str, choices: list[str] | None = None) -> GenResult: ...
 
 
 @dataclass
@@ -40,6 +46,8 @@ class SessionConfig:
     max_calls: int = 14
     max_tool_calls: int = 2          # per agent invocation
     think_s: float = 0.2             # pause between agent invocations
+    router: bool = False             # selector: separate constrained selector call (AutoGen-style)
+    router_max_tokens: int = 8
 
 
 @dataclass
@@ -105,10 +113,17 @@ class SessionResult:
                            c.t_send, c.t_first, c.t_done, session_id=self.session_id,
                            agent_id=c.agent, turn_idx=c.turn_idx) for c in self.calls]
 
+    @property
+    def router_calls(self) -> list["CallLog"]:
+        return [c for c in self.calls if c.agent == "S"]
+
     def agent_sequence(self) -> list[str]:
-        """Agent per invocation (consecutive calls of one invocation collapsed)."""
+        """Agent per invocation (consecutive calls of one invocation collapsed; selector calls
+        excluded, so R measures agent-to-agent routing)."""
         seq: list[str] = []
         for c in self.calls:
+            if c.agent == "S":
+                continue
             if not seq or seq[-1] != c.agent:
                 seq.append(c.agent)
         return seq
@@ -126,6 +141,27 @@ class SessionResult:
         return d
 
 
+async def _router_call(client: "LLMClient", builder: PromptBuilder, problem: Problem,
+                       cfg: SessionConfig, session_id: str, n: int, current: str,
+                       history: list[Message], res: "SessionResult") -> Route:
+    """AutoGen-style selector call: reply constrained (vLLM structured outputs `choice`) to the
+    names of the five other agents. Invalid replies (should not happen) -> counted fallback."""
+    choices = [AGENTS[a].name for a in AGENTS if a != current]
+    built = builder.build_router(problem.question, history)
+    rid = f"{session_id}|t{n}"
+    g = await client.generate(built.token_ids, cfg.router_max_tokens, rid, session_id,
+                              choices=choices)
+    text = g.text.strip()
+    res.calls.append(CallLog(n, "S", rid, len(built.token_ids), built.dropped_messages, text,
+                             g.output_tokens, g.cached_tokens, g.t_send, g.t_first, g.t_done,
+                             prompt_ids=built.token_ids))
+    letter = NAME_TO_LETTER.get(text.upper())
+    if letter is not None and letter != current:
+        return Route(letter, f"selector call: {text}")
+    fb = TEAM_ORDER[(TEAM_ORDER.index(current) + 1) % len(TEAM_ORDER)]
+    return Route(fb, f"round-robin fallback (selector replied {text!r})", fallback=True)
+
+
 async def run_session(client: LLMClient, builder: PromptBuilder, problem: Problem,
                       cfg: SessionConfig, session_id: str, rng: random.Random,
                       clock: Any = time.perf_counter) -> SessionResult:
@@ -135,12 +171,13 @@ async def run_session(client: LLMClient, builder: PromptBuilder, problem: Proble
     history: list[Message] = []
     scratch = Scratchpad()
     agent = first_agent(cfg.topology)
-    n = 0
+    n = 0                                                  # all LLM calls (request ids)
+    k = 0                                                  # agent calls (the cap applies here)
     done = False
-    while n < cfg.max_calls and not done:
-        if n == cfg.max_calls - 1 and agent != "D":
+    while k < cfg.max_calls and not done:
+        if k == cfg.max_calls - 1 and agent != "D":
             agent = "D"                                    # last call: force the DECIDER
-        force = n == cfg.max_calls - 1
+        force = k == cfg.max_calls - 1
         tool_calls = 0
         while True:                                        # one agent invocation
             built = builder.build(agent, problem.question, history, force_final=force)
@@ -153,6 +190,7 @@ async def run_session(client: LLMClient, builder: PromptBuilder, problem: Proble
             res.calls.append(log)
             history.append(Message(agent, text))
             n += 1
+            k += 1
             call = parse_tool_call(text)
             if call is not None:
                 result, ok = execute(call, AGENTS[agent].tools, scratch)
@@ -160,7 +198,7 @@ async def run_session(client: LLMClient, builder: PromptBuilder, problem: Proble
                             "ok": ok}
                 log.tool_parse_failure = not ok
                 history.append(Message(f"tool:{call.tool}", result))
-                if tool_calls < cfg.max_tool_calls and n < cfg.max_calls - 1:
+                if tool_calls < cfg.max_tool_calls and k < cfg.max_calls - 1:
                     tool_calls += 1
                     continue                               # same agent continues
             break
@@ -172,7 +210,12 @@ async def run_session(client: LLMClient, builder: PromptBuilder, problem: Proble
                 break
             if force:
                 break
-        route = next_agent(cfg.topology, agent, text, rng)
+        if cfg.router and cfg.topology == "selector" and k < cfg.max_calls - 1:
+            route = await _router_call(client, builder, problem, cfg, session_id, n, agent,
+                                       history, res)
+            n += 1
+        else:
+            route = next_agent(cfg.topology, agent, text, rng)
         log.route = {"next": route.next_agent, "reason": route.reason,
                      "fallback": route.fallback, "lenient": route.lenient}
         if route.next_agent is None:
@@ -180,7 +223,7 @@ async def run_session(client: LLMClient, builder: PromptBuilder, problem: Proble
         agent = route.next_agent
         if cfg.think_s > 0:
             await asyncio.sleep(cfg.think_s)
-    res.capped = not done and n >= cfg.max_calls
+    res.capped = not done and k >= cfg.max_calls
     res.correct = is_correct(res.final_answer, problem.gold)
     res.t_end = clock()
     return res

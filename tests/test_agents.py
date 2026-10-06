@@ -180,11 +180,18 @@ class FakeClient:
 
     def __init__(self, replies: dict[str, list[str]]) -> None:
         self.replies = {k: list(v) for k, v in replies.items()}
+        self.router_picks: list[str] = []
         self.t = 0.0
         self.prompts: list[list[int]] = []
 
-    async def generate(self, prompt_ids, max_tokens, request_id, session_id) -> GenResult:
+    async def generate(self, prompt_ids, max_tokens, request_id, session_id,
+                       choices=None) -> GenResult:
         self.prompts.append(list(prompt_ids))
+        self.choices = getattr(self, "choices", []) + [choices]
+        if choices is not None:                         # selector call: scripted choice
+            pick = self.router_picks.pop(0) if self.router_picks else choices[0]
+            self.t += 1.0
+            return GenResult(pick, 1, 0, self.t, self.t + 0.1, self.t + 0.2)
         agent = next(k for k, v in AGENTS.items()
                      if prompt_ids[2:2 + len(v.name)] == [ord(c) % 5000 + 10 for c in v.name])
         queue = self.replies.get(agent) or ["(nothing to add)"]
@@ -194,9 +201,9 @@ class FakeClient:
 
 
 def run(client, topology: str, max_calls: int = 14, question: str = "16 eggs, eats 3, uses 4, "
-        "sells at $2. Dollars per day?", gold: str = "18"):
-    b = PromptBuilder(fake_tokenize, topology, 1584, 128, NAMES)
-    cfg = SessionConfig(topology=topology, max_calls=max_calls, think_s=0.0)
+        "sells at $2. Dollars per day?", gold: str = "18", router: bool = False):
+    b = PromptBuilder(fake_tokenize, topology, 1584, 128, NAMES, router=router)
+    cfg = SessionConfig(topology=topology, max_calls=max_calls, think_s=0.0, router=router)
     return asyncio.run(run_session(client, b, Problem("test", 0, question, gold), cfg, "s0",
                                    random.Random(0), clock=lambda: 0.0))
 
@@ -263,3 +270,23 @@ def test_record_replay_roundtrip(tmp_path) -> None:
 
     out = simulate(tr, SimConfig(num_gpu_blocks=200, system="cachescout"))
     assert out["summary"]["num_turns"] == len(res.calls)
+
+
+def test_router_call_constrained_choices_and_cap_counts_agent_calls() -> None:
+    client = FakeClient({"P": ["plan"], "C": ["computed 18"], "D": ["FINAL ANSWER: 18"]})
+    client.router_picks = ["CODER", "DECIDER"]
+    res = run(client, "selector", router=True)
+    assert [c.agent for c in res.calls] == ["P", "S", "C", "S", "D"]
+    assert res.correct and res.fallbacks == 0
+    # choices offered exclude the current agent; agents' anchors have no NEXT rule in router mode
+    offered = [c for c in client.choices if c is not None]
+    assert "PLANNER" not in offered[0] and len(offered[0]) == 5
+    assert "NEXT: <NAME>" not in anchor_text("P", "selector", router=True)
+    assert res.agent_sequence() == ["P", "C", "D"]          # selector calls excluded from R
+    s = agent_run_summary([res])
+    assert s["router_calls"] == 2 and s["model_routing_fraction"] == 1.0
+    # cap counts agent calls only: 3 agent calls with cap 3 still reaches the forced DECIDER
+    client2 = FakeClient({"P": ["plan"], "C": ["x"], "D": ["FINAL ANSWER: 1"]})
+    client2.router_picks = ["CODER", "CODER"]
+    res2 = run(client2, "selector", max_calls=3, router=True)
+    assert [c.agent for c in res2.calls if c.agent != "S"] == ["P", "C", "D"]

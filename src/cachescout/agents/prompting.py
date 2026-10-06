@@ -10,7 +10,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from cachescout.agents.definitions import anchor_text
+from cachescout.agents.definitions import ROUTER_QUESTION, SELECTOR_ANCHOR, anchor_text
 
 FORCE_FINAL = ("[SYSTEM]: The call limit is reached. DECIDER, reply now with one line "
                "FINAL ANSWER: <number>.")
@@ -41,17 +41,29 @@ class PromptBuilder:
     one wraps tokenizer.apply_chat_template(..., add_generation_prompt=True))."""
 
     def __init__(self, tokenize: Callable[[list[dict[str, str]]], list[int]], topology: str,
-                 max_model_len: int, max_tokens: int, names: dict[str, str]) -> None:
+                 max_model_len: int, max_tokens: int, names: dict[str, str],
+                 router: bool = False) -> None:
         self.tokenize = tokenize
         self.topology = topology
         self.budget = max_model_len - max_tokens
         self.names = names
+        self.router = router
 
     def build(self, agent: str, question: str, history: Sequence[Message],
               force_final: bool = False) -> BuiltPrompt:
-        head = [{"role": "system", "content": anchor_text(agent, self.topology)},
-                {"role": "user", "content": f"Task: {question}"}]
+        system = anchor_text(agent, self.topology, self.router)
         tail = [{"role": "user", "content": FORCE_FINAL}] if force_final else []
+        return self._fit(system, question, history, tail)
+
+    def build_router(self, question: str, history: Sequence[Message]) -> BuiltPrompt:
+        """AutoGen-style selector call: SELECTOR anchor + task + the same shared history."""
+        return self._fit(SELECTOR_ANCHOR, question, history,
+                         [{"role": "user", "content": ROUTER_QUESTION}])
+
+    def _fit(self, system: str, question: str, history: Sequence[Message],
+             tail: list[dict[str, str]]) -> BuiltPrompt:
+        head = [{"role": "system", "content": system},
+                {"role": "user", "content": f"Task: {question}"}]
         hist = [m.as_chat(self.names) for m in history]
         dropped = 0
         while True:

@@ -19,6 +19,13 @@ def routing_R(sessions: Sequence[SessionResult]) -> float:
     return lr.entropy_reduction()
 
 
+def _next_distribution(sessions: Sequence[SessionResult]) -> dict[str, float]:
+    """Share of routing decisions (incl. fallbacks) that chose each agent."""
+    chosen = [c.route["next"] for s in sessions for c in s.calls
+              if c.route and c.route.get("next")]
+    return {a: chosen.count(a) / len(chosen) for a in "PACTRD"} if chosen else {}
+
+
 def agent_run_summary(sessions: Sequence[SessionResult]) -> dict[str, Any]:
     n = len(sessions)
     calls = [c for s in sessions for c in s.calls]
@@ -57,5 +64,12 @@ def agent_run_summary(sessions: Sequence[SessionResult]) -> dict[str, Any]:
         "session_completion_s_mean": statistics.mean(completion) if completion else None,
         "session_completion_s_median": statistics.median(completion) if completion else None,
         "routing_R_measured": routing_R(sessions),
-        "calls_per_agent": {a: sum(1 for c in calls if c.agent == a) for a in "PACTRD"},
+        "router_calls": sum(len(s.router_calls) for s in sessions),
+        "router_tokens_per_call_mean": (statistics.mean(c.prompt_tokens + c.output_tokens
+                                                        for s in sessions for c in s.router_calls)
+                                        if any(s.router_calls for s in sessions) else None),
+        "model_routing_fraction": (1 - sum(s.fallbacks for s in sessions) / decisions)
+        if decisions else None,
+        "next_agent_distribution": _next_distribution(sessions),
+        "calls_per_agent": {a: sum(1 for c in calls if c.agent == a) for a in "PACTRDS"},
     }
