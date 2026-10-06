@@ -44,3 +44,7 @@ hf_cache/
 
 # Smoke-test run logs
 smoke_run*.log
+
+# Run logs
+*.log
+logs/

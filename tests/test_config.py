@@ -22,3 +22,13 @@ def test_experiment_override_of_block_budget() -> None:
     exp = load_experiment(REPO / "configs/experiments/m1_metrics_check/cloud.yaml", repo_root=REPO)
     assert exp["hardware_cfg"]["vllm"]["num_gpu_blocks_override"] == 256
     assert exp["hardware_cfg"]["vllm"]["enforce_eager"] is False
+
+
+def test_apply_env(monkeypatch) -> None:
+    from cachescout.config import apply_env
+
+    monkeypatch.delenv("CS_TEST_VAR", raising=False)
+    apply_env({"env": {"CS_TEST_VAR": 1}})
+    import os
+
+    assert os.environ["CS_TEST_VAR"] == "1"

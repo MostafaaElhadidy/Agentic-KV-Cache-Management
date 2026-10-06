@@ -1,0 +1,15 @@
+# Standard synthetic trace set (M2). Tuning traces (seed 101+) are separate from evaluation traces.
+out_dir: results/traces
+token_id_range: [1000, 150000]   # Qwen2.5 regular tokens (special tokens >= 151643)
+profile: {}                      # WorkloadProfile defaults (src/cachescout/workload/trace.py)
+traces:
+  # evaluation traces
+  - {name: selector_eval, topology: selector, num_sessions: 60, arrival_rate: 0.5, seed: 1}
+  - {name: pipeline_eval, topology: pipeline, num_sessions: 60, arrival_rate: 0.5, seed: 1}
+  - {name: debate_eval, topology: debate, num_sessions: 60, arrival_rate: 0.5, seed: 1}
+  - {name: random_eval, topology: random, num_sessions: 60, arrival_rate: 0.5, seed: 1}
+  - {name: selector_eval_s2, topology: selector, num_sessions: 60, arrival_rate: 0.5, seed: 2}
+  - {name: selector_eval_s3, topology: selector, num_sessions: 60, arrival_rate: 0.5, seed: 3}
+  # tuning traces (never used for reported results)
+  - {name: selector_tune, topology: selector, num_sessions: 60, arrival_rate: 0.5, seed: 101, role: tune}
+  - {name: debate_tune, topology: debate, num_sessions: 60, arrival_rate: 0.5, seed: 102, role: tune}

@@ -6,4 +6,4 @@
 pytest==9.1.1
 ruff==0.16.10
 pyyaml==6.0.3   # already present as a vLLM dependency
-# M2 (pending separate approval): autogen-agentchat, datasets
+matplotlib==3.11.2   # plots (added 2026-10-06; dry run: 7 new pkgs, no core changes)

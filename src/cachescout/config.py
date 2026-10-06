@@ -4,6 +4,7 @@ Engineering choice: hardware/model settings live only in configs/hardware/*.yaml
 config points to one via `hardware:` and may override `num_gpu_blocks_override`.
 """
 
+import os
 from pathlib import Path
 from typing import Any
 
@@ -60,3 +61,9 @@ def llm_kwargs(hw: dict[str, Any], *, seed: int, log_stats: bool) -> dict[str, A
     }
     kwargs.update({k: v[k] for k in VLLM_KEYS if k in v})
     return kwargs
+
+
+def apply_env(hw: dict[str, Any]) -> None:
+    """Export the hardware profile `env:` mapping (e.g. HF_HUB_OFFLINE=1) before importing vLLM."""
+    for key, value in (hw.get("env") or {}).items():
+        os.environ[str(key)] = str(value)

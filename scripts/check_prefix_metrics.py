@@ -27,7 +27,7 @@ from typing import Any
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from cachescout.config import llm_kwargs, load_experiment  # noqa: E402
+from cachescout.config import apply_env, llm_kwargs, load_experiment  # noqa: E402
 from cachescout.kv_blocks import plan_eviction  # noqa: E402
 from cachescout.metrics import TurnRecord, max_cacheable_tokens, summarize  # noqa: E402
 from cachescout.metrics.collectors import prefix_counters, record_from_request_output  # noqa: E402
@@ -147,6 +147,7 @@ def main() -> int:
     if args.plan_only:
         return 0
 
+    apply_env(hw)
     from vllm import LLM, SamplingParams
 
     llm = LLM(**llm_kwargs(hw, seed=exp["seed"], log_stats=True))
