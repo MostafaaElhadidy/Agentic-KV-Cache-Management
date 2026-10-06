@@ -85,6 +85,10 @@ class SessionResult:
         return sum(1 for c in self.calls if c.route and c.route.get("fallback"))
 
     @property
+    def lenient_routes(self) -> int:
+        return sum(1 for c in self.calls if c.route and c.route.get("lenient"))
+
+    @property
     def routing_decisions(self) -> int:
         return sum(1 for c in self.calls if c.route is not None)
 
@@ -115,6 +119,7 @@ class SessionResult:
             for c in d["calls"]:
                 c.pop("prompt_ids", None)
         d.update(num_calls=self.num_calls, fallbacks=self.fallbacks,
+                 lenient_routes=self.lenient_routes,
                  routing_decisions=self.routing_decisions, trimmed_calls=self.trimmed_calls,
                  tool_parse_failures=self.tool_parse_failures,
                  agent_sequence=self.agent_sequence())
@@ -169,7 +174,7 @@ async def run_session(client: LLMClient, builder: PromptBuilder, problem: Proble
                 break
         route = next_agent(cfg.topology, agent, text, rng)
         log.route = {"next": route.next_agent, "reason": route.reason,
-                     "fallback": route.fallback}
+                     "fallback": route.fallback, "lenient": route.lenient}
         if route.next_agent is None:
             break
         agent = route.next_agent

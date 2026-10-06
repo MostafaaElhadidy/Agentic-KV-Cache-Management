@@ -138,8 +138,12 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
 ## 2026-10-06: Real multi-agent workload (branch real-agents)
 - **Interpretation, selector routing.** AutoGen's SelectorGroupChat picks the next speaker with a *separate*
   selector LLM call. Here every agent ends its own message with `NEXT: <AGENT>`, which the driver parses
-  (src/cachescout/agents/routing.py). Missing, unknown or self-referencing lines trigger a fixed fallback
-  (PLANNER, or CODER if the PLANNER failed); every fallback is counted and reported. Reason: one fewer LLM call
+  (src/cachescout/agents/routing.py). If there is no strict `NEXT:` line, a final line that is only an agent
+  name (`DECIDER`, `[DECIDER]`, `[PLANNER]: DECIDER`) is accepted and counted as a *lenient* route. Missing,
+  unknown or self-referencing names trigger a **round-robin fallback** (next agent in team order
+  P,A,C,T,R,D, like AutoGen's RoundRobinGroupChat), counted and reported. (First version used "fallback to
+  PLANNER / CODER"; on train problems it looped PLANNER↔CODER until the call cap, so it was replaced before any
+  evaluation run. Smoke evidence: results/real/gsm8k_train_selector_s101/vanilla/b100_smoke.) Reason: one fewer LLM call
   per turn, and no extra "selector" anchor that would change the cache workload. Consequence: routing quality
   depends on the 1.5B model following the format; the fallback rate measures this.
 - **Engineering choice, prompt structure.** System = agent anchor (always explicit, so Qwen's default system

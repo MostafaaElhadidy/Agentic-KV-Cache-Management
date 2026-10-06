@@ -108,10 +108,18 @@ def test_random_excludes_self_and_selector_fallback() -> None:
     assert all(next_agent("random", "C", "", rng).next_agent != "C" for _ in range(200))
     r = next_agent("selector", "A", "work\nNEXT: CODER", rng)
     assert r.next_agent == "C" and not r.fallback
-    r = next_agent("selector", "A", "no next line", rng)
-    assert r.next_agent == "P" and r.fallback
-    r = next_agent("selector", "P", "NEXT: PLANNER", rng)       # self -> fallback
+    r = next_agent("selector", "A", "no next line here", rng)  # round-robin: A -> C
     assert r.next_agent == "C" and r.fallback
+    r = next_agent("selector", "P", "NEXT: PLANNER", rng)       # self -> fallback P -> A
+    assert r.next_agent == "A" and r.fallback
+    r = next_agent("selector", "D", "REVISE: x", rng)           # D -> P (wraps around)
+    assert r.next_agent == "P" and r.fallback
+    for text, want in (("done\n[PLANNER]: DECIDER", "D"), ("DECIDER", "D"),
+                       ("ok\n[REVIEWER]", "R")):
+        r = next_agent("selector", "C", text, rng)
+        assert r.next_agent == want and r.lenient and not r.fallback
+    r = next_agent("selector", "C", "The answer is 18 dollars", rng)
+    assert r.fallback
 
 
 # ---- prompts / trimming / fingerprints ----

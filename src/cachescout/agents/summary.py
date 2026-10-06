@@ -38,6 +38,10 @@ def agent_run_summary(sessions: Sequence[SessionResult]) -> dict[str, Any]:
         "routing_decisions": decisions,
         "fallbacks": sum(s.fallbacks for s in sessions),
         "fallback_rate": (sum(s.fallbacks for s in sessions) / decisions) if decisions else None,
+        "lenient_routes": sum(s.lenient_routes for s in sessions),
+        "strict_next_rate": ((decisions - sum(s.fallbacks for s in sessions)
+                              - sum(s.lenient_routes for s in sessions)) / decisions)
+        if decisions else None,
         "tool_calls": len(tool_attempts),
         "tool_parse_failures": sum(1 for c in tool_attempts if c.tool_parse_failure),
         "tool_failure_rate": (sum(1 for c in tool_attempts if c.tool_parse_failure)

@@ -177,3 +177,4 @@ Resume with `claude --continue`; the last entry says what was in progress.
   Anchors 150-283 tokens, 6/6 distinct 32-token fingerprints with the real tokenizer. Tests: 115 passed.
 - NEXT STEP: smoke runs (1 session per topology, vanilla), then one cachescout smoke, then PILOT GATE.
 - 22:32 Smoke 1 (pipeline, vanilla, 1 session; used ONE test problem test:844 — prompt iteration from now on uses train problems only): plumbing OK; CODER wrote Python instead of CALL lines, outputs hit 128-token cap. Clarified tool/format instructions in anchors.
+- 22:35 Smoke 2 (selector, train seed 101, 2 sessions): fallback rate 0.875 — model writes '[PLANNER]: DECIDER' instead of NEXT lines; old fallback looped P<->C until cap. Added lenient name-only parsing (counted) + round-robin fallback; decisions.md updated.

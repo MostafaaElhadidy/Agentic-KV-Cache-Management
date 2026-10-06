@@ -3,7 +3,9 @@
 - pipeline: fixed chain P -> A -> C -> T -> R -> D, then stop.
 - random:   uniform over the other five agents (seeded per session).
 - debate:   P -> C -> R -> D; D either answers or (REVISE / unclear) sends work back to C.
-- selector: the agent's own last line `NEXT: <AGENT>`; missing/invalid/self -> counted fallback.
+- selector: the agent's own `NEXT: <AGENT>` line (strict), else a final line that is only an agent
+  name such as `DECIDER` / `[DECIDER]` / `[PLANNER]: DECIDER` (lenient, counted separately);
+  missing/invalid/self -> counted round-robin fallback (next agent in team order P,A,C,T,R,D).
   Deviation from AutoGen SelectorGroupChat (which makes a separate selector LLM call): see
   docs/decisions.md.
 """
@@ -19,6 +21,8 @@ TOPOLOGIES = ("pipeline", "random", "debate", "selector")
 PIPELINE = ("P", "A", "C", "T", "R", "D")
 _NEXT_RE = re.compile(r"NEXT\s*[:\-]\s*\**\s*\[?([A-Za-z]+)", re.IGNORECASE)
 _FINAL_RE = re.compile(r"FINAL\s+ANSWER\s*[:\-]?\s*(.+)", re.IGNORECASE)
+_NAME_LINE_RE = re.compile(r"^\W*(?:\[?[A-Za-z]+\]?\s*:\s*)?\[?([A-Za-z]+)\]?\W*$")
+TEAM_ORDER = ("P", "A", "C", "T", "R", "D")
 
 
 @dataclass(frozen=True)
@@ -26,6 +30,7 @@ class Route:
     next_agent: str | None      # None = session ends
     reason: str
     fallback: bool = False
+    lenient: bool = False       # selector: name-only line accepted instead of a strict NEXT line
 
 
 def parse_final_answer(text: str) -> str | None:
@@ -43,6 +48,16 @@ def parse_next(text: str) -> str | None:
         return None
     name = matches[-1].upper()
     return NAME_TO_LETTER.get(name)
+
+
+def parse_next_lenient(text: str) -> str | None:
+    """Agent letter from a final line that consists only of an agent name (optionally bracketed
+    or after a '[SPEAKER]:' prefix), e.g. 'DECIDER', '[DECIDER]', '[PLANNER]: DECIDER'."""
+    lines = [ln for ln in text.strip().splitlines() if ln.strip()]
+    if not lines:
+        return None
+    m = _NAME_LINE_RE.match(lines[-1].strip())
+    return NAME_TO_LETTER.get(m.group(1).upper()) if m else None
 
 
 def first_agent(topology: str) -> str:
@@ -69,7 +84,10 @@ def next_agent(topology: str, current: str, text: str, rng: random.Random) -> Ro
         nxt = parse_next(text)
         if nxt is not None and nxt != current:
             return Route(nxt, f"NEXT: {AGENTS[nxt].name}")
-        fb = "C" if current == "P" else "P"
-        why = "missing NEXT line" if nxt is None else "agent named itself"
-        return Route(fb, f"fallback ({why})", fallback=True)
+        lenient = parse_next_lenient(text) if nxt is None else None
+        if lenient is not None and lenient != current:
+            return Route(lenient, f"name-only line: {AGENTS[lenient].name}", lenient=True)
+        fb = TEAM_ORDER[(TEAM_ORDER.index(current) + 1) % len(TEAM_ORDER)]
+        why = "missing NEXT line" if nxt is None and lenient is None else "agent named itself"
+        return Route(fb, f"round-robin fallback ({why})", fallback=True)
     raise ValueError(f"unknown topology {topology!r}")
