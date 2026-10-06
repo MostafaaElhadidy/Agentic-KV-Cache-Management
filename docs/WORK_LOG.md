@@ -200,3 +200,4 @@ Resume with `claude --continue`; the last entry says what was in progress.
   NOT adopted (user criterion). Keeping NEXT-line selector, no more prompt tuning; fallback rate to be reported.
 - NEXT STEP: record tuning sessions (vanilla live @100, train seed 101, 20 sessions x 4 topologies), then
   sim-vs-GPU sequential cross-check on a recording, then tuning, then campaign.
+- 22:50 Stage tune_record started (commit 1657167, tracked tree clean).
