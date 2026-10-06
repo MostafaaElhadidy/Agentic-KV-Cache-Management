@@ -156,3 +156,14 @@ Resume with `claude --continue`; the last entry says what was in progress.
 - 19:16 scripts/aggregate_report.py → results/report/{summary.json,tables.md,fig_*.png};
   docs/REPORT.md written (all numbers cite result files). Removed one unsupported claim (run-to-run variance was
   never measured). PLAN.md / CLAUDE.md updated. Final commit next.
+
+## 2026-10-06 20:56 Public release on GitHub
+- Audit: personal email only in commit author fields; secrets none; no files > 5 MB; paper PDF kept (embedded
+  license CC BY 4.0, attribution in paper/README.md); setup_prompt.md and smoke_run2.log removed from history.
+- Backup: ~/CacheScout_backup.bundle. History rewritten with git-filter-repo (temporary uvx env): all authors and
+  committers = Mostafa <110402955+MostafaaElhadidy@users.noreply.github.com>; verified 0 occurrences of the
+  personal email in patches and messages. Local (not global) git identity set to the noreply address.
+- Added README.md, LICENSE (MIT), paper/README.md; .gitignore updated; small cited results tracked.
+- Pushed main to https://github.com/MostafaaElhadidy/Agentic-KV-Cache-Management (remote was empty; no force).
+  Visibility: PUBLIC. Description and topics (kv-cache, vllm, llm-serving, agentic-ai, paper-replication,
+  llm-inference) set via gh.
