@@ -47,16 +47,18 @@ AGENTS: dict[str, AgentSpec] = {
     "C": AgentSpec("C", "CODER",
                    "CODER agent here. You are the CODER of a six-agent team that solves "
                    "grade-school math word problems.",
-                   "Turn the plan into arithmetic. Compute intermediate results with the calculator "
-                   "tool instead of mental math, one expression per tool call, then report the "
-                   "numbers you obtained in one or two sentences.",
+                   "Turn the plan into arithmetic. Never write Python code and never do mental math: "
+                   "the only way to compute is a line CALL calculator: <expression>, one "
+                   "expression per call. After the result comes back, report the numbers you "
+                   "obtained in one or two sentences.",
                    ("calculator", "scratchpad")),
     "T": AgentSpec("T", "TESTER",
                    "TESTER agent here. You are the TESTER of a six-agent team that solves "
                    "grade-school math word problems.",
-                   "Independently re-check the most recent computation. Recompute it with the "
-                   "calculator tool, possibly in a different order, and say clearly whether the "
-                   "result is CONFIRMED or WRONG, giving the correct value if it is wrong.",
+                   "Independently re-check the most recent computation. Recompute it with a line "
+                   "CALL calculator: <expression> (no Python code), possibly in a different order, "
+                   "and say clearly whether the result is CONFIRMED or WRONG, giving the correct "
+                   "value if it is wrong.",
                    ("calculator",)),
     "R": AgentSpec("R", "REVIEWER",
                    "REVIEWER agent here. You are the REVIEWER of a six-agent team that solves "
@@ -97,7 +99,8 @@ def anchor_text(letter: str, topology: str) -> str:
     return (f"{spec.opening} The team is: {TEAM}. Messages from teammates appear as "
             f"[NAME]: text and tool results as [tool:name] result.\n"
             f"Your job: {spec.duties}\n{tool_part}"
-            f"Keep your message under 80 words. {rule}")
+            f"Write plain text without Markdown headings. Keep your message under 80 words. "
+            f"{rule}")
 
 
 def agent_name(letter: str) -> str:

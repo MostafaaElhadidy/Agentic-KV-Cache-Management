@@ -1,0 +1,545 @@
+{
+  "experiment": "real",
+  "system": "vanilla",
+  "variant": null,
+  "label": "vanilla",
+  "trace_name": "gsm8k_test_pipeline_s1",
+  "mode": "agents",
+  "config_path": "configs/experiments/real/local.yaml",
+  "config": {
+    "experiment": "real",
+    "hardware": "configs/hardware/local.yaml",
+    "seed": 0,
+    "mode": "agents",
+    "num_gpu_blocks_override": 100,
+    "max_model_len": 1584,
+    "agents": {
+      "topology": "pipeline",
+      "split": "test",
+      "problem_seed": 1,
+      "num_sessions": 1,
+      "arrival_rate": 0.2,
+      "max_tokens": 128,
+      "max_calls": 14,
+      "max_tool_calls": 2,
+      "think_s": 0.2
+    },
+    "cachescout": {
+      "enabled": true,
+      "eviction": true,
+      "warmup": true,
+      "params": {
+        "scope": "session",
+        "max_active_sessions": 8,
+        "session_aggregate": "mean",
+        "block_mapping": "anchor_only",
+        "tau": 0.1,
+        "e_max": 6,
+        "lam": 0.005,
+        "delta": 0.01,
+        "epsilon": 0.01,
+        "fingerprint_blocks": 2,
+        "r_min": 0.3
+      }
+    },
+    "warmup": {
+      "min_interval_s": 2.0
+    },
+    "continuum": {
+      "ttl_s": 0.3
+    },
+    "hardware_cfg": {
+      "name": "local-rtx4060-8gb",
+      "model": {
+        "name": "Qwen/Qwen2.5-1.5B-Instruct",
+        "dtype": "bfloat16"
+      },
+      "vllm": {
+        "gpu_memory_utilization": 0.6,
+        "max_model_len": 1584,
+        "max_num_seqs": 8,
+        "max_num_batched_tokens": 2048,
+        "block_size": 16,
+        "enable_prefix_caching": true,
+        "enforce_eager": true,
+        "num_gpu_blocks_override": 100
+      },
+      "env": {
+        "HF_HUB_OFFLINE": "1"
+      }
+    },
+    "tag": "smoke"
+  },
+  "trace_meta": {
+    "name": "gsm8k_test_pipeline_s1",
+    "role": "eval",
+    "workload": "gsm8k-agents",
+    "topology": "pipeline",
+    "split": "test",
+    "problem_seed": 1,
+    "num_sessions": 1,
+    "arrival_rate": 0.2,
+    "max_tokens": 128,
+    "max_calls": 14,
+    "max_tool_calls": 2,
+    "think_s": 0.2
+  },
+  "num_gpu_blocks_reported": 100,
+  "wall_s": 22.984078672998294,
+  "provenance": {
+    "git_commit": "afe1305eae9748e9eaf7cf3ae5c6ed8de7b13727",
+    "git_dirty": false,
+    "python": "3.12.15",
+    "vllm": "0.31.0",
+    "torch": "2.13.0+cu132",
+    "transformers": "5.17.0",
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU, 8188 MiB",
+    "hardware_profile": "local-rtx4060-8gb",
+    "timestamp": "2026-10-06T22:31:22"
+  },
+  "summary": {
+    "num_turns": 6,
+    "num_warmup": 0,
+    "total_prompt_tokens": 3472,
+    "total_cached_tokens": 0,
+    "hit_rate": 0.0,
+    "max_possible_hit_rate": 0.9861751152073732,
+    "ttft": {
+      "n": 6,
+      "mean": 0.2085649450012473,
+      "median": 0.11506228250073036,
+      "p90": 0.41327151250152383,
+      "p99": 0.6708239135517944
+    },
+    "per_turn_latency": {
+      "n": 6,
+      "mean": 2.37854652699995,
+      "median": 2.4840682550002384,
+      "p90": 3.6281993579996197,
+      "p99": 3.93593389289872
+    },
+    "throughput_turns_per_s": 0.3923698194899259,
+    "per_agent": {
+      "A": {
+        "num_turns": 1,
+        "num_warmup": 0,
+        "total_prompt_tokens": 413,
+        "total_cached_tokens": 0,
+        "hit_rate": 0.0,
+        "max_possible_hit_rate": 0.9685230024213075,
+        "ttft": {
+          "n": 1,
+          "mean": 0.091732780001621,
+          "median": 0.091732780001621,
+          "p90": 0.091732780001621,
+          "p99": 0.091732780001621
+        },
+        "per_turn_latency": {
+          "n": 1,
+          "mean": 3.250029162998544,
+          "median": 3.250029162998544,
+          "p90": 3.250029162998544,
+          "p99": 3.250029162998544
+        },
+        "throughput_turns_per_s": 0.30768954672313753,
+        "per_agent": {}
+      },
+      "C": {
+        "num_turns": 1,
+        "num_warmup": 0,
+        "total_prompt_tokens": 583,
+        "total_cached_tokens": 0,
+        "hit_rate": 0.0,
+        "max_possible_hit_rate": 0.9879931389365352,
+        "ttft": {
+          "n": 1,
+          "mean": 0.10298930000135442,
+          "median": 0.10298930000135442,
+          "p90": 0.10298930000135442,
+          "p99": 0.10298930000135442
+        },
+        "per_turn_latency": {
+          "n": 1,
+          "mean": 3.2862720970006194,
+          "median": 3.2862720970006194,
+          "p90": 3.2862720970006194,
+          "p99": 3.2862720970006194
+        },
+        "throughput_turns_per_s": 0.3042961661369124,
+        "per_agent": {}
+      },
+      "D": {
+        "num_turns": 1,
+        "num_warmup": 0,
+        "total_prompt_tokens": 787,
+        "total_cached_tokens": 0,
+        "hit_rate": 0.0,
+        "max_possible_hit_rate": 0.9961880559085133,
+        "ttft": {
+          "n": 1,
+          "mean": 0.12710217800122336,
+          "median": 0.12710217800122336,
+          "p90": 0.12710217800122336,
+          "p99": 0.12710217800122336
+        },
+        "per_turn_latency": {
+          "n": 1,
+          "mean": 0.4494863100007933,
+          "median": 0.4494863100007933,
+          "p90": 0.4494863100007933,
+          "p99": 0.4494863100007933
+        },
+        "throughput_turns_per_s": 2.2247618620425507,
+        "per_agent": {}
+      },
+      "P": {
+        "num_turns": 1,
+        "num_warmup": 0,
+        "total_prompt_tokens": 280,
+        "total_cached_tokens": 0,
+        "hit_rate": 0.0,
+        "max_possible_hit_rate": 0.9714285714285714,
+        "ttft": {
+          "n": 1,
+          "mean": 0.6994408470018243,
+          "median": 0.6994408470018243,
+          "p90": 0.6994408470018243,
+          "p99": 0.6994408470018243
+        },
+        "per_turn_latency": {
+          "n": 1,
+          "mean": 3.97012661899862,
+          "median": 3.97012661899862,
+          "p90": 3.97012661899862,
+          "p99": 3.97012661899862
+        },
+        "throughput_turns_per_s": 0.2518811352803223,
+        "per_agent": {}
+      },
+      "R": {
+        "num_turns": 1,
+        "num_warmup": 0,
+        "total_prompt_tokens": 717,
+        "total_cached_tokens": 0,
+        "hit_rate": 0.0,
+        "max_possible_hit_rate": 0.9818688981868898,
+        "ttft": {
+          "n": 1,
+          "mean": 0.11580219800089253,
+          "median": 0.11580219800089253,
+          "p90": 0.11580219800089253,
+          "p99": 0.11580219800089253
+        },
+        "per_turn_latency": {
+          "n": 1,
+          "mean": 1.7181073470019328,
+          "median": 1.7181073470019328,
+          "p90": 1.7181073470019328,
+          "p99": 1.7181073470019328
+        },
+        "throughput_turns_per_s": 0.582035809197244,
+        "per_agent": {}
+      },
+      "T": {
+        "num_turns": 1,
+        "num_warmup": 0,
+        "total_prompt_tokens": 692,
+        "total_cached_tokens": 0,
+        "hit_rate": 0.0,
+        "max_possible_hit_rate": 0.9942196531791907,
+        "ttft": {
+          "n": 1,
+          "mean": 0.11432236700056819,
+          "median": 0.11432236700056819,
+          "p90": 0.11432236700056819,
+          "p99": 0.11432236700056819
+        },
+        "per_turn_latency": {
+          "n": 1,
+          "mean": 1.597257625999191,
+          "median": 1.597257625999191,
+          "p90": 1.597257625999191,
+          "p99": 1.597257625999191
+        },
+        "throughput_turns_per_s": 0.6260730790841793,
+        "per_agent": {}
+      }
+    }
+  },
+  "warmups_issued": 0,
+  "warmups_gated": 0,
+  "coordinator_R": null,
+  "engine_runtime": null,
+  "records": [
+    {
+      "request_id": "g1-000|t0",
+      "prompt_tokens": 280,
+      "cached_tokens": 0,
+      "output_tokens": 128,
+      "t_send": 23284.791914406,
+      "t_first_token": 23285.491355253,
+      "t_done": 23288.762041025,
+      "session_id": "g1-000",
+      "agent_id": "P",
+      "turn_idx": 0,
+      "is_warmup": false,
+      "vllm_first_token_latency": null
+    },
+    {
+      "request_id": "g1-000|t1",
+      "prompt_tokens": 413,
+      "cached_tokens": 0,
+      "output_tokens": 128,
+      "t_send": 23288.966681061,
+      "t_first_token": 23289.058413841,
+      "t_done": 23292.216710224,
+      "session_id": "g1-000",
+      "agent_id": "A",
+      "turn_idx": 1,
+      "is_warmup": false,
+      "vllm_first_token_latency": null
+    },
+    {
+      "request_id": "g1-000|t2",
+      "prompt_tokens": 583,
+      "cached_tokens": 0,
+      "output_tokens": 128,
+      "t_send": 23292.420513457,
+      "t_first_token": 23292.523502757,
+      "t_done": 23295.706785554,
+      "session_id": "g1-000",
+      "agent_id": "C",
+      "turn_idx": 2,
+      "is_warmup": false,
+      "vllm_first_token_latency": null
+    },
+    {
+      "request_id": "g1-000|t3",
+      "prompt_tokens": 692,
+      "cached_tokens": 0,
+      "output_tokens": 61,
+      "t_send": 23295.91038565,
+      "t_first_token": 23296.024708017,
+      "t_done": 23297.507643276,
+      "session_id": "g1-000",
+      "agent_id": "T",
+      "turn_idx": 3,
+      "is_warmup": false,
+      "vllm_first_token_latency": null
+    },
+    {
+      "request_id": "g1-000|t4",
+      "prompt_tokens": 717,
+      "cached_tokens": 0,
+      "output_tokens": 65,
+      "t_send": 23297.712090659,
+      "t_first_token": 23297.827892857,
+      "t_done": 23299.430198006,
+      "session_id": "g1-000",
+      "agent_id": "R",
+      "turn_idx": 4,
+      "is_warmup": false,
+      "vllm_first_token_latency": null
+    },
+    {
+      "request_id": "g1-000|t5",
+      "prompt_tokens": 787,
+      "cached_tokens": 0,
+      "output_tokens": 14,
+      "t_send": 23299.634124098,
+      "t_first_token": 23299.761226276,
+      "t_done": 23300.083610408,
+      "session_id": "g1-000",
+      "agent_id": "D",
+      "turn_idx": 5,
+      "is_warmup": false,
+      "vllm_first_token_latency": null
+    }
+  ],
+  "agents_summary": {
+    "sessions": 1,
+    "problem_ids": [
+      "test:844"
+    ],
+    "calls": 6,
+    "calls_per_session_mean": 6.0,
+    "final_answer_rate": 1.0,
+    "gsm8k_accuracy": 0.0,
+    "correct": 0,
+    "capped_sessions": 0,
+    "routing_decisions": 5,
+    "fallbacks": 0,
+    "fallback_rate": 0.0,
+    "tool_calls": 0,
+    "tool_parse_failures": 0,
+    "tool_failure_rate": null,
+    "tool_calls_by_tool": {},
+    "trimmed_calls": 0,
+    "trim_rate": 0.0,
+    "prompt_tokens_mean": 578.6666666666666,
+    "prompt_tokens_max": 787,
+    "output_tokens_mean": 87.33333333333333,
+    "session_completion_s_mean": 15.393104104001395,
+    "session_completion_s_median": 15.393104104001395,
+    "routing_R_measured": 1.0,
+    "calls_per_agent": {
+      "P": 1,
+      "A": 1,
+      "C": 1,
+      "T": 1,
+      "R": 1,
+      "D": 1
+    }
+  },
+  "sessions": [
+    {
+      "session_id": "g1-000",
+      "problem_id": "test:844",
+      "question": "Peter has twice as many socks as Jack and half times as many dishes as jack. Jack collected twice as many dishes as socks in the store. If jack collected 60 dishes, calculate the total number of socks and dishes they have together?",
+      "gold": "180",
+      "topology": "pipeline",
+      "t_arrival": 23284.690554488,
+      "t_end": 23300.083658592,
+      "final_answer": "420",
+      "correct": false,
+      "capped": false,
+      "calls": [
+        {
+          "turn_idx": 0,
+          "agent": "P",
+          "request_id": "g1-000|t0",
+          "prompt_tokens": 280,
+          "dropped_messages": 0,
+          "output": "**Plan:**\n\n1. **Find out how many dishes Jack collected.**\n   - Jack collected twice as many dishes as socks.\n   - Jack collected 60 dishes.\n   - Therefore, Jack collected \\(2 \\times 60 = 120\\) socks.\n\n2. **Find out how many socks Peter has.**\n   - Peter has twice as many socks as Jack.\n   - Jack collected 120 socks.\n   - Therefore, Peter has \\(2 \\times 120 = 240\\) socks.\n\n3. **Find out how many dishes Peter has.**\n   - Peter has",
+          "output_tokens": 128,
+          "cached_tokens": 0,
+          "t_send": 23284.791914406,
+          "t_first": 23285.491355253,
+          "t_done": 23288.762041025,
+          "force_final": false,
+          "tool": null,
+          "tool_parse_failure": false,
+          "route": {
+            "next": "A",
+            "reason": "fixed chain",
+            "fallback": false
+          }
+        },
+        {
+          "turn_idx": 1,
+          "agent": "A",
+          "request_id": "g1-000|t1",
+          "prompt_tokens": 413,
+          "dropped_messages": 0,
+          "output": "[ANALYST]: **Analyze:**\n\n- Jack collected 60 dishes.\n- Peter has twice as many socks as Jack, so Peter has \\(2 \\times 60 = 120\\) socks.\n- Jack collected twice as many dishes as socks, so Jack collected \\(2 \\times 60 = 120\\) dishes.\n\n4. **Calculate the total number of socks and dishes they have together.**\n   - Total socks: \\(120 + 120 = 240\\)\n   - Total dishes: \\(60 + 120 = 18",
+          "output_tokens": 128,
+          "cached_tokens": 0,
+          "t_send": 23288.966681061,
+          "t_first": 23289.058413841,
+          "t_done": 23292.216710224,
+          "force_final": false,
+          "tool": null,
+          "tool_parse_failure": false,
+          "route": {
+            "next": "C",
+            "reason": "fixed chain",
+            "fallback": false
+          }
+        },
+        {
+          "turn_idx": 2,
+          "agent": "C",
+          "request_id": "g1-000|t2",
+          "prompt_tokens": 583,
+          "dropped_messages": 0,
+          "output": "[CODER]: **Code:**\n\n```python\n# Number of dishes Jack collected\ndishes_jack = 60\n\n# Number of socks Peter has\nsocks_peter = 2 * dishes_jack\n\n# Number of dishes Peter has\ndishes_peter = 2 * socks_jack\n\n# Total number of socks and dishes\ntotal_socks = socks_peter + dishes_jack\ntotal_dishes = dishes_jack + dishes_peter\n\ntotal_socks, total_dishes\n```\n\n**Output:**\n\n```\n(240, 180)\n```\n\n**Result:",
+          "output_tokens": 128,
+          "cached_tokens": 0,
+          "t_send": 23292.420513457,
+          "t_first": 23292.523502757,
+          "t_done": 23295.706785554,
+          "force_final": false,
+          "tool": null,
+          "tool_parse_failure": false,
+          "route": {
+            "next": "T",
+            "reason": "fixed chain",
+            "fallback": false
+          }
+        },
+        {
+          "turn_idx": 3,
+          "agent": "T",
+          "request_id": "g1-000|t3",
+          "prompt_tokens": 692,
+          "dropped_messages": 0,
+          "output": "[RESULT]: **Result:**\n\nPeter has 240 socks and 180 dishes. Together, they have 420 items.\n\n**Final Answer:**\n\nPeter has 240 socks and 180 dishes, making a total of 420 items.",
+          "output_tokens": 61,
+          "cached_tokens": 0,
+          "t_send": 23295.91038565,
+          "t_first": 23296.024708017,
+          "t_done": 23297.507643276,
+          "force_final": false,
+          "tool": null,
+          "tool_parse_failure": false,
+          "route": {
+            "next": "R",
+            "reason": "fixed chain",
+            "fallback": false
+          }
+        },
+        {
+          "turn_idx": 4,
+          "agent": "R",
+          "request_id": "g1-000|t4",
+          "prompt_tokens": 717,
+          "dropped_messages": 0,
+          "output": "**Review:**\n\nThe solution looks correct. It correctly calculates the number of socks and dishes each person has and then sums them up to get the total. The units are consistent and the operations are correct. No errors were found in the calculations or the units used. The answer is given in the right unit (items).",
+          "output_tokens": 65,
+          "cached_tokens": 0,
+          "t_send": 23297.712090659,
+          "t_first": 23297.827892857,
+          "t_done": 23299.430198006,
+          "force_final": false,
+          "tool": null,
+          "tool_parse_failure": false,
+          "route": {
+            "next": "D",
+            "reason": "fixed chain",
+            "fallback": false
+          }
+        },
+        {
+          "turn_idx": 5,
+          "agent": "D",
+          "request_id": "g1-000|t5",
+          "prompt_tokens": 787,
+          "dropped_messages": 0,
+          "output": "[DECIDER]: **FINAL ANSWER:** 420",
+          "output_tokens": 14,
+          "cached_tokens": 0,
+          "t_send": 23299.634124098,
+          "t_first": 23299.761226276,
+          "t_done": 23300.083610408,
+          "force_final": false,
+          "tool": null,
+          "tool_parse_failure": false,
+          "route": null
+        }
+      ],
+      "num_calls": 6,
+      "fallbacks": 0,
+      "routing_decisions": 5,
+      "trimmed_calls": 0,
+      "tool_parse_failures": 0,
+      "agent_sequence": [
+        "P",
+        "A",
+        "C",
+        "T",
+        "R",
+        "D"
+      ]
+    }
+  ]
+}
