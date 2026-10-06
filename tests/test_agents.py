@@ -35,7 +35,9 @@ def fake_tokenize(messages: list[dict[str, str]]) -> list[int]:
 @pytest.mark.parametrize(("expr", "want"), [("48 / 2 + 48", "72"), ("(3+4)*2", "14"),
                                             ("10 % 4", "2"), ("2**10", "1024"), ("7/2", "3.5"),
                                             ("1,200 * 3", "3600"), ("$5 * 4", "20"),
-                                            ("-3 + 1", "-2")])
+                                            ("-3 + 1", "-2"),
+                                            ("(30 * 20) - (26 * 15) result: 210", "210"),
+                                            ("24 - 3 = 21", "21")])
 def test_calculator(expr: str, want: str) -> None:
     assert calculate(expr) == want
 
@@ -134,6 +136,12 @@ def test_trimming_keeps_anchor_and_task() -> None:
     assert built.token_ids[:len(head)] == head
     small = b.build("R", "What is 2+2?", [Message("C", "ok")])
     assert small.dropped_messages == 0
+
+
+def test_selector_rule_lists_teammates_not_self() -> None:
+    text = anchor_text("P", "selector")
+    assert "NEXT: <NAME>" in text and "ANALYST, CODER, TESTER, REVIEWER or DECIDER" in text
+    assert "PLANNER," not in text.split("chosen from:")[1]
 
 
 def test_fingerprints_distinct_fake_tokenizer() -> None:

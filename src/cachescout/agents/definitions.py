@@ -79,9 +79,10 @@ AGENTS: dict[str, AgentSpec] = {
 }
 
 ROUTING_RULES = {
-    "selector": ("When you are done, end your message with one line\nNEXT: <AGENT>\nnaming the "
-                 "teammate who should act next (one of: " + TEAM + "). Never name yourself. Only "
-                 "the DECIDER may give the FINAL ANSWER."),
+    # {choices} is filled per agent with the five teammates (never the agent itself)
+    "selector": ("Your message MUST end with a last line of the form\nNEXT: <NAME>\nwhere <NAME> is "
+                 "the teammate who should act next, chosen from: {choices}. Only the DECIDER may give "
+                 "the FINAL ANSWER."),
     "fixed": ("Do not choose who speaks next; the team protocol decides. Only the DECIDER may give "
               "the FINAL ANSWER."),
 }
@@ -95,6 +96,9 @@ def anchor_text(letter: str, topology: str) -> str:
                  "If you use a tool, write the CALL line and stop; the result will be shown to you "
                  "and you can continue.\n") if tools else "You cannot call any tools.\n"
     rule = ROUTING_RULES["selector" if topology == "selector" else "fixed"]
+    if topology == "selector":
+        others = [AGENTS[x].name for x in AGENTS if x != letter]
+        rule = rule.format(choices=", ".join(others[:-1]) + " or " + others[-1])
     return (f"{spec.opening} The team is: {TEAM}. Messages from teammates appear as "
             f"[NAME]: text and tool results as [tool:name] result.\n"
             f"Your job: {spec.duties}\n{tool_part}"

@@ -22,6 +22,8 @@ class ToolError(ValueError):
 
 def calculate(expression: str) -> str:
     """Evaluate arithmetic only (numbers, + - * / // % **, parentheses). No names, no calls."""
+    # models sometimes append their own guess ("... result: 210", "... = 210"); keep the expression
+    expression = re.split(r"(?i)\bresult\b|=|\n", expression, maxsplit=1)[0]
     expr = expression.strip().strip("`").replace("×", "*").replace("÷", "/").replace("^", "**")
     expr = re.sub(r"(?<=\d),(?=\d{3}\b)", "", expr).replace("$", "")
     if not expr:
