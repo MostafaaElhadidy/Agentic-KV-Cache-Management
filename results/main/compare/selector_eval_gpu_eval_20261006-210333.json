@@ -1,0 +1,249 @@
+{
+  "kind": "GPU (vLLM 0.31.0)",
+  "config": "configs/experiments/main/local.yaml",
+  "trace": "results/traces/selector_eval.json",
+  "blocks": [
+    100,
+    150,
+    200
+  ],
+  "labels": [
+    "vanilla",
+    "continuum",
+    "warmup_only",
+    "eviction_only",
+    "cachescout"
+  ],
+  "table": {
+    "100": {
+      "vanilla": {
+        "hit_rate": 0.5401379570416228,
+        "ttft_mean_ms": 96.75893805867553,
+        "ttft_median_ms": 74.72931300026175,
+        "ttft_p99_ms": 357.3085965599775,
+        "latency_mean_ms": 407.9965081719016,
+        "latency_p99_ms": 775.1698869200118,
+        "throughput_tps": 7.633067119316386,
+        "turns": 733,
+        "source": "results/main/selector_eval/vanilla/b100_eval/result.json",
+        "warmups_issued": 0
+      },
+      "continuum": {
+        "hit_rate": 0.5402008076300614,
+        "ttft_mean_ms": 99.97064741473952,
+        "ttft_median_ms": 75.81385999992563,
+        "ttft_p99_ms": 380.47881763988545,
+        "latency_mean_ms": 412.93900266439704,
+        "latency_p99_ms": 823.1585528799402,
+        "throughput_tps": 7.622671853832159,
+        "turns": 733,
+        "source": "results/main/selector_eval/continuum/b100_eval/result.json",
+        "warmups_issued": 0
+      },
+      "warmup_only": {
+        "hit_rate": 0.5486227864808384,
+        "ttft_mean_ms": 95.92117190722978,
+        "ttft_median_ms": 74.28724199962744,
+        "ttft_p99_ms": 351.95488152021375,
+        "latency_mean_ms": 408.29218573124973,
+        "latency_p99_ms": 778.7896033600555,
+        "throughput_tps": 7.629925885082746,
+        "turns": 733,
+        "source": "results/main/selector_eval/warmup_only/b100_eval/result.json",
+        "warmups_issued": 114
+      },
+      "eviction_only": {
+        "hit_rate": 0.5587417312194586,
+        "ttft_mean_ms": 96.08882573942634,
+        "ttft_median_ms": 74.09002200029136,
+        "ttft_p99_ms": 369.1809934001133,
+        "latency_mean_ms": 399.9899508362978,
+        "latency_p99_ms": 743.9298026801947,
+        "throughput_tps": 7.646856042057957,
+        "turns": 733,
+        "source": "results/main/selector_eval/eviction_only/b100_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.5583017771003881,
+        "ttft_mean_ms": 98.12823224284934,
+        "ttft_median_ms": 76.50462099991273,
+        "ttft_p99_ms": 336.5380148799704,
+        "latency_mean_ms": 411.9438813083265,
+        "latency_p99_ms": 766.7249823199198,
+        "throughput_tps": 7.630649830001988,
+        "turns": 733,
+        "source": "results/main/selector_eval/cachescout/b100_eval/result.json",
+        "warmups_issued": 115
+      }
+    },
+    "150": {
+      "vanilla": {
+        "hit_rate": 0.6405103467781217,
+        "ttft_mean_ms": 74.50260125374848,
+        "ttft_median_ms": 69.4337820000328,
+        "ttft_p99_ms": 154.30018220013136,
+        "latency_mean_ms": 380.50433802181993,
+        "latency_p99_ms": 653.5076433199347,
+        "throughput_tps": 7.636875409706157,
+        "turns": 733,
+        "source": "results/main/selector_eval/vanilla/b150_eval/result.json",
+        "warmups_issued": 0
+      },
+      "continuum": {
+        "hit_rate": 0.6419559103122103,
+        "ttft_mean_ms": 74.2514042728487,
+        "ttft_median_ms": 70.31558000016958,
+        "ttft_p99_ms": 145.96271947983016,
+        "latency_mean_ms": 384.8332462250911,
+        "latency_p99_ms": 658.5291451198459,
+        "throughput_tps": 7.631117028164421,
+        "turns": 733,
+        "source": "results/main/selector_eval/continuum/b150_eval/result.json",
+        "warmups_issued": 0
+      },
+      "warmup_only": {
+        "hit_rate": 0.6510692456358123,
+        "ttft_mean_ms": 73.96419109958661,
+        "ttft_median_ms": 69.94013500025176,
+        "ttft_p99_ms": 160.1547624400875,
+        "latency_mean_ms": 378.93157181446566,
+        "latency_p99_ms": 647.9040718000394,
+        "throughput_tps": 7.642109268217572,
+        "turns": 733,
+        "source": "results/main/selector_eval/warmup_only/b150_eval/result.json",
+        "warmups_issued": 117
+      },
+      "eviction_only": {
+        "hit_rate": 0.6650220762691891,
+        "ttft_mean_ms": 74.17390546929505,
+        "ttft_median_ms": 70.5396869998367,
+        "ttft_p99_ms": 140.12501271954508,
+        "latency_mean_ms": 379.57950096451685,
+        "latency_p99_ms": 645.1598252803159,
+        "throughput_tps": 7.63511169509378,
+        "turns": 733,
+        "source": "results/main/selector_eval/eviction_only/b150_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.6681017551026821,
+        "ttft_mean_ms": 74.12827798905916,
+        "ttft_median_ms": 70.99447099972167,
+        "ttft_p99_ms": 141.41248104020625,
+        "latency_mean_ms": 384.58565878580833,
+        "latency_p99_ms": 665.9679968798077,
+        "throughput_tps": 7.627805706412948,
+        "turns": 733,
+        "source": "results/main/selector_eval/cachescout/b150_eval/result.json",
+        "warmups_issued": 117
+      }
+    },
+    "200": {
+      "vanilla": {
+        "hit_rate": 0.6804204704366544,
+        "ttft_mean_ms": 72.29868978309509,
+        "ttft_median_ms": 68.69329500023014,
+        "ttft_p99_ms": 140.86062131987995,
+        "latency_mean_ms": 376.5520344843093,
+        "latency_p99_ms": 641.6661399204164,
+        "throughput_tps": 7.648756793675305,
+        "turns": 733,
+        "source": "results/main/selector_eval/vanilla/b200_eval/result.json",
+        "warmups_issued": 0
+      },
+      "continuum": {
+        "hit_rate": 0.6796662633753908,
+        "ttft_mean_ms": 74.7417763547238,
+        "ttft_median_ms": 71.05152700023609,
+        "ttft_p99_ms": 132.72844144026743,
+        "latency_mean_ms": 386.19289829875305,
+        "latency_p99_ms": 656.3431348802258,
+        "throughput_tps": 7.637622983414811,
+        "turns": 733,
+        "source": "results/main/selector_eval/continuum/b200_eval/result.json",
+        "warmups_issued": 0
+      },
+      "warmup_only": {
+        "hit_rate": 0.6856370692770611,
+        "ttft_mean_ms": 71.80279742700466,
+        "ttft_median_ms": 69.08149900027638,
+        "ttft_p99_ms": 135.30226227958312,
+        "latency_mean_ms": 373.0405083356041,
+        "latency_p99_ms": 637.0245036802226,
+        "throughput_tps": 7.651376677981716,
+        "turns": 733,
+        "source": "results/main/selector_eval/warmup_only/b200_eval/result.json",
+        "warmups_issued": 115
+      },
+      "eviction_only": {
+        "hit_rate": 0.6962588187231903,
+        "ttft_mean_ms": 71.64274547748445,
+        "ttft_median_ms": 69.25963199955731,
+        "ttft_p99_ms": 128.78102904021912,
+        "latency_mean_ms": 374.82714621419564,
+        "latency_p99_ms": 631.7130668395112,
+        "throughput_tps": 7.641261352936203,
+        "turns": 733,
+        "source": "results/main/selector_eval/eviction_only/b200_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.6968873246075766,
+        "ttft_mean_ms": 72.06502704775382,
+        "ttft_median_ms": 69.0865409997059,
+        "ttft_p99_ms": 139.28652759994253,
+        "latency_mean_ms": 375.8779117530712,
+        "latency_p99_ms": 638.3481484402728,
+        "throughput_tps": 7.645971660545641,
+        "turns": 733,
+        "source": "results/main/selector_eval/cachescout/b200_eval/result.json",
+        "warmups_issued": 116
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "CacheScout hit rate > vanilla at every budget",
+      "ok": true,
+      "detail": "gains (pp): 100:+1.8, 150:+2.8, 200:+1.6",
+      "paper": "Fig. 8a (+10..18 pp), Fig. 14a"
+    },
+    {
+      "check": "gain shrinks as the cache grows",
+      "ok": true,
+      "detail": "100: +1.8 pp vs 200: +1.6 pp",
+      "paper": "Fig. 14a (vanilla 64.4%->76.6%, CacheScout flat 86-87%)"
+    },
+    {
+      "check": "CacheScout mean TTFT < vanilla at every budget",
+      "ok": false,
+      "detail": "100:+1.4%, 150:-0.5%, 200:-0.3%",
+      "paper": "Fig. 8b (-18..45%)"
+    },
+    {
+      "check": "CacheScout mean per-turn latency < vanilla at every budget",
+      "ok": false,
+      "detail": "100:+1.0%, 150:+1.1%, 200:-0.2%",
+      "paper": "Fig. 10a (-29..38%)"
+    },
+    {
+      "check": "eviction-only gain >= warmup-only gain (eviction is the main source)",
+      "ok": true,
+      "detail": "evict/warm (pp): 100:+1.9/+0.8, 150:+2.5/+1.1, 200:+1.6/+0.5",
+      "paper": "Sec. 5.3, Fig. 12a"
+    },
+    {
+      "check": "warmup alone adds <= 1 pp hit rate",
+      "ok": false,
+      "detail": "100:+0.8, 150:+1.1, 200:+0.5",
+      "paper": "Sec. 5.3 ('at most one percentage point')"
+    },
+    {
+      "check": "CacheScout hit rate > Continuum at every budget",
+      "ok": true,
+      "detail": "100:+1.8 pp, 150:+2.6 pp, 200:+1.7 pp",
+      "paper": "Fig. 8a"
+    }
+  ]
+}

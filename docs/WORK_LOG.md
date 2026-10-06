@@ -167,3 +167,12 @@ Resume with `claude --continue`; the last entry says what was in progress.
 - Pushed main to https://github.com/MostafaaElhadidy/Agentic-KV-Cache-Management (remote was empty; no force).
   Visibility: PUBLIC. Description and topics (kv-cache, vllm, llm-serving, agentic-ai, paper-replication,
   llm-inference) set via gh.
+
+## 2026-10-06 22:22 Real-agents phase started (branch real-agents)
+- Plan approved (docs/REAL_AGENTS_PLAN.md + amendments). GSM8K download approved (test/train jsonl, openai repo).
+- NEXT STEP: fetch GSM8K, build src/cachescout/agents/, driver, tests; then smoke; then PILOT GATE (stop).
+- 22:30 GSM8K fetched (scripts/fetch_gsm8k.sh; checksums in data/gsm8k/SHA256SUMS). Built
+  src/cachescout/agents/ (definitions, tools, routing, prompting+trimming, session, replay, summary, gsm8k),
+  run.py mode: agents + record/replay loading + --set, compare.py --set/agents support, show_session.py.
+  Anchors 150-283 tokens, 6/6 distinct 32-token fingerprints with the real tokenizer. Tests: 115 passed.
+- NEXT STEP: smoke runs (1 session per topology, vanilla), then one cachescout smoke, then PILOT GATE.

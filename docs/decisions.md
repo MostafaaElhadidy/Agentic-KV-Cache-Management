@@ -134,3 +134,20 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
   used it (no labels needed); other blocks get p_surv = 0 (recency only). The literal variant remains available
   (`scope: global`, `block_mapping: all`) and is reported as "CacheScout-literal".
 - Evidence (simulator, tuning trace, Belady diagnostic): see WORK_LOG 2026-10-06.
+
+## 2026-10-06: Real multi-agent workload (branch real-agents)
+- **Interpretation, selector routing.** AutoGen's SelectorGroupChat picks the next speaker with a *separate*
+  selector LLM call. Here every agent ends its own message with `NEXT: <AGENT>`, which the driver parses
+  (src/cachescout/agents/routing.py). Missing, unknown or self-referencing lines trigger a fixed fallback
+  (PLANNER, or CODER if the PLANNER failed); every fallback is counted and reported. Reason: one fewer LLM call
+  per turn, and no extra "selector" anchor that would change the cache workload. Consequence: routing quality
+  depends on the 1.5B model following the format; the fallback rate measures this.
+- **Engineering choice, prompt structure.** System = agent anchor (always explicit, so Qwen's default system
+  prompt never appears) + `Task: <question>` + shared group-chat history as user messages `[NAME]: text` and
+  `[tool:name] result`. Chat template applied by the tokenizer; token IDs sent to vLLM (exact prefixes).
+- **Engineering choice, trimming.** If prompt + max_tokens > max_model_len (1584), the oldest history messages
+  after anchor + task are dropped. The trim rate is reported per run.
+- **Engineering choice, termination.** Session ends on `FINAL ANSWER:` from the DECIDER, at the end of the
+  pipeline chain, or at 14 calls (the last call is a forced DECIDER answer).
+- **Engineering choice, tasks.** GSM8K test split for evaluation, train split for tuning; one fixed permutation
+  per split, seed k takes the k-th disjoint slice; arrivals seeded per problem seed.

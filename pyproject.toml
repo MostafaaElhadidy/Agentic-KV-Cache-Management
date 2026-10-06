@@ -16,3 +16,4 @@ markers = [
 
 [tool.ruff.lint.per-file-ignores]
 "scripts/aggregate_report.py" = ["E501"]   # long Markdown table f-strings
+"src/cachescout/agents/definitions.py" = ["E501"]   # agent prompt text

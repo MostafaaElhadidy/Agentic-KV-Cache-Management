@@ -1,0 +1,29 @@
+# REAL multi-agent GSM8K workload (branch real-agents). Live closed-loop runs:
+#   scripts/gpu_run.sh real 2400 python -m cachescout.run --config configs/experiments/real/local.yaml \
+#       --system vanilla --blocks 100 --set agents.topology=selector --set agents.problem_seed=1
+# Replay of a recorded live run (controlled comparison):
+#   ... --config configs/experiments/real/local.yaml --mode online --trace results/real/<workload>/vanilla/<run>
+experiment: real
+hardware: configs/hardware/local.yaml
+seed: 0
+mode: agents
+num_gpu_blocks_override: 100
+max_model_len: 1584                 # (100-1)*16: every request fits the smallest budget
+agents:
+  topology: selector                # pipeline | random | debate | selector
+  split: test                       # test = evaluation problems; train = tuning problems
+  problem_seed: 1                   # seed k -> k-th disjoint slice of problems + its own arrivals
+  num_sessions: 20
+  arrival_rate: 0.2                 # sessions / s (Poisson)
+  max_tokens: 128
+  max_calls: 14
+  max_tool_calls: 2
+  think_s: 0.2
+cachescout:
+  enabled: true
+  eviction: true
+  warmup: true
+  params: {scope: session, max_active_sessions: 8, session_aggregate: mean, block_mapping: anchor_only,
+           tau: 0.1, e_max: 6, lam: 0.005, delta: 0.01, epsilon: 0.01, fingerprint_blocks: 2, r_min: 0.3}
+warmup: {min_interval_s: 2.0}
+continuum: {ttl_s: 0.3}

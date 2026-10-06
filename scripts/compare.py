@@ -28,7 +28,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from cachescout.config import load_experiment  # noqa: E402
-from cachescout.workload.trace import Trace  # noqa: E402
+from cachescout.run import agents_workload_name, load_trace, set_dotted  # noqa: E402
 
 DEFAULT_SYSTEMS = "vanilla,continuum,warmup_only,eviction_only,cachescout"
 # Fixed slot per entity (dataviz rule: color follows the entity), reference palette (light).
@@ -47,14 +47,17 @@ def result_path(exp: dict[str, Any], trace_name: str, label: str, blocks: int, t
 
 
 def run_gpu(config: str, trace: str | None, label: str, blocks: int, tag: str,
-            variants: set[str], timeout_s: int) -> int:
+            variants: set[str], timeout_s: int, sets: list[str] | None = None,
+            name_hint: str = "default") -> int:
     sel = ["--variant", label] if label in variants else ["--system", label]
     cmd = [str(REPO / "scripts" / "gpu_run.sh"), f"{Path(config).parent.name}_{label}_b{blocks}"
-           f"_{(Path(trace).stem if trace else 'default')}_{tag}", str(timeout_s),
+           f"_{name_hint}_{tag}", str(timeout_s),
            sys.executable, "-m", "cachescout.run", "--config", config, *sel,
            "--blocks", str(blocks), "--tag", tag]
     if trace:
         cmd += ["--trace", trace]
+    for assignment in sets or []:
+        cmd += ["--set", assignment]
     print("[compare] running:", " ".join(cmd[3:]), flush=True)
     return subprocess.run(cmd, cwd=REPO).returncode
 
@@ -70,7 +73,7 @@ def row_from_summary(s: dict[str, Any]) -> dict[str, Any]:
             "throughput_tps": s["throughput_turns_per_s"], "turns": s["num_turns"]}
 
 
-def sim_row(exp: dict[str, Any], trace: Trace, label: str, blocks: int) -> dict[str, Any]:
+def sim_row(exp: dict[str, Any], trace: Any, label: str, blocks: int) -> dict[str, Any]:
     from cachescout.sim.simulator import SimConfig, simulate
 
     params = dict((exp.get("cachescout") or {}).get("params") or {})
@@ -213,13 +216,28 @@ def main() -> int:
     parser.add_argument("--run", action="store_true", help="run missing GPU results")
     parser.add_argument("--sim", action="store_true", help="use the simulator instead of GPU")
     parser.add_argument("--timeout", type=int, default=2400)
+    parser.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",
+                        help="config override passed to every run (e.g. agents.topology=random)")
     args = parser.parse_args()
     exp = load_experiment(REPO / args.config, repo_root=REPO)
-    trace_file = args.trace or exp["trace"]
-    trace = Trace.load(REPO / trace_file)
-    trace_name = trace.meta.get("name", Path(trace_file).stem)
-    if trace.meta.get("role") == "tune":
-        print("WARNING: this is a TUNING trace; do not report it as an evaluation result")
+    for assignment in args.set:
+        set_dotted(exp, assignment)
+    if args.trace:
+        exp["trace"] = args.trace
+    trace = None
+    if exp.get("mode") == "agents":                         # live real-agent workload
+        trace_file = "(live agents)"
+        trace_name = agents_workload_name(exp["agents"])
+        role = "tune" if exp["agents"].get("split", "test") == "train" else "eval"
+        if args.sim:
+            parser.error("--sim needs a trace or a recording (use --trace <recorded run dir>)")
+    else:
+        trace_file = exp["trace"]
+        trace = load_trace(REPO / trace_file)
+        trace_name = trace.meta.get("name", Path(trace_file).stem)
+        role = trace.meta.get("role")
+    if role == "tune":
+        print("WARNING: this is a TUNING workload; do not report it as an evaluation result")
     labels = [s.strip() for s in args.systems.split(",") if s.strip()]
     variants = set((exp.get("variants") or {}).keys())
     blocks = [int(b) for b in args.blocks.split(",")]
@@ -231,7 +249,8 @@ def main() -> int:
                 continue
             path = result_path(exp, trace_name, label, b, args.tag)
             if not path.exists() and args.run:
-                rc = run_gpu(args.config, args.trace, label, b, args.tag, variants, args.timeout)
+                rc = run_gpu(args.config, args.trace, label, b, args.tag, variants, args.timeout,
+                             args.set, trace_name)
                 if rc != 0:
                     print(f"[compare] GPU run failed (rc={rc}) for {label} @ {b}; stopping.")
                     return rc
