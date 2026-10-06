@@ -1,0 +1,16 @@
+# Cloud hardware profile (Phase 2). Values are placeholders until M6.
+name: cloud-a100-80gb
+model:
+  name: meta-llama/Llama-3.1-8B-Instruct   # paper main model (Sec. 5.1)
+  dtype: bfloat16
+vllm:
+  gpu_memory_utilization: 0.90
+  max_model_len: 16384           # TBD from workload footprint
+  max_num_seqs: 256
+  block_size: 16
+  enable_prefix_caching: true
+  enforce_eager: false
+  num_gpu_blocks_override: null
+  tensor_parallel_size: 1
+env:
+  HF_HUB_OFFLINE: "0"

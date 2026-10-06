@@ -1,0 +1,15 @@
+# M1 vanilla vLLM baseline (template; runner not implemented yet).
+experiment: m1_baseline
+hardware: configs/hardware/local.yaml
+policy: lru                       # vanilla vLLM
+seed: 0
+workload:
+  kind: synthetic                 # M2 generator
+  topology: selector              # pipeline | debate | selector | random (paper Fig. 5)
+  num_agents: 6                   # paper Sec. 5.1
+  num_sessions: 50
+  max_turns: 13
+  max_tokens: 128
+  arrival: {process: poisson, rate_sessions_per_s: 0.5}
+kv_budget_blocks: [100, 150, 200] # paper Fig. 14 range
+metrics: [hit_rate, ttft, per_turn_latency, throughput]   # paper Sec. 5.1

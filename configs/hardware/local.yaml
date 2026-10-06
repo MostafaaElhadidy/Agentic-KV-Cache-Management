@@ -1,0 +1,16 @@
+# Local hardware profile: RTX 4060 Laptop 8 GB under WSL2 (≈370 MiB already used by the Windows desktop).
+# Conservative settings; not yet validated by a model-loading run (see docs/PLAN.md M1).
+name: local-rtx4060-8gb
+model:
+  name: Qwen/Qwen2.5-1.5B-Instruct   # substitute for Llama-3.1-8B-Instruct (paper Sec. 5.1)
+  dtype: bfloat16
+vllm:
+  gpu_memory_utilization: 0.60   # ~4.9 GB of 8 GB; weights ~3.1 GB
+  max_model_len: 4096
+  max_num_seqs: 8
+  block_size: 16                 # paper Sec. 2.1 (vLLM default)
+  enable_prefix_caching: true
+  enforce_eager: false           # set true only if needed; log in docs/decisions.md
+  num_gpu_blocks_override: null  # set per experiment (paper Fig. 14 uses 100-200)
+env:
+  HF_HUB_OFFLINE: "1"            # never download models implicitly

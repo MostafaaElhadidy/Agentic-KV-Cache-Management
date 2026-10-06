@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# Virtual envs (the real env lives in ~/testLLM/.venv, outside this repo)
+.venv/
+venv/
+env/
+
+# Results: bulky outputs ignored; experiment records in results/log/ are tracked
+results/*
+!results/.gitkeep
+!results/log/
+results/log/*
+!results/log/.gitkeep
+!results/log/*.md
+!results/log/*.json
+
+# Models, weights, caches
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.gguf
+models/
+hf_cache/
+.cache/
+
+# Windows / editor junk
+*:Zone.Identifier
+*.Zone.Identifier
+.DS_Store
+.vscode/
+.idea/
+
+# Claude Code local-only settings
+.claude/settings.local.json

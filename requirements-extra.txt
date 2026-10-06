@@ -1,0 +1,9 @@
+# Extra packages on top of the existing vLLM env (~/testLLM/.venv). Install with:
+#   uv pip install --python ~/testLLM/.venv/bin/python -r requirements-extra.txt
+# Safeguard: save `uv pip freeze` and run with --dry-run first (docs/decisions.md).
+# Core stack is pinned by the existing env and must NOT be changed here:
+#   vllm==0.31.0  torch==2.13.0+cu132  transformers==5.17.0  (see docs/env_freeze_before.txt)
+pytest==9.1.1
+ruff==0.16.10
+pyyaml==6.0.3   # already present as a vLLM dependency
+# M2 (pending separate approval): autogen-agentchat, datasets
