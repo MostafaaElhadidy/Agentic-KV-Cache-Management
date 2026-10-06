@@ -71,10 +71,19 @@ def main() -> None:
     )
     report("after load")
 
+    # The engine core reports num_gpu_blocks back to the frontend (vllm/v1/engine/core_client.py).
     cache_cfg = llm.llm_engine.vllm_config.cache_config
     num_blocks = cache_cfg.num_gpu_blocks or 0
-    print(f"[KV cache] num_gpu_blocks={num_blocks} block_size={cache_cfg.block_size} "
-          f"-> {num_blocks * cache_cfg.block_size} tokens", flush=True)
+    override = v["num_gpu_blocks_override"]
+    usable = max(num_blocks - 1, 0)  # BlockPool permanently reserves one null block
+    per_seq = -(-v["max_model_len"] // cache_cfg.block_size)  # ceil(max_model_len / block_size)
+    print(f"[KV cache] num_gpu_blocks={num_blocks} (override requested: {override}) "
+          f"usable={usable} block_size={cache_cfg.block_size} "
+          f"-> {usable * cache_cfg.block_size} tokens; "
+          f"one max_model_len sequence needs {per_seq} blocks", flush=True)
+    if override is not None:
+        status = "OK" if num_blocks == override else "MISMATCH"
+        print(f"[KV cache] override check: {status}", flush=True)
 
     out = llm.generate(["The capital of France is"], SamplingParams(temperature=0, max_tokens=16))
     print("GENERATED:", repr(out[0].outputs[0].text), flush=True)

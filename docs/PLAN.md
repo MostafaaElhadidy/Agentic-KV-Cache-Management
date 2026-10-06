@@ -37,7 +37,8 @@ Absolute numbers will differ (smaller model, smaller workloads, different GPU). 
 - [x] Environment inspected; versions recorded in CLAUDE.md; `docs/env_freeze_before.txt` saved
 - [x] Smoke test (imports, CUDA): `pytest -q tests/test_smoke_env.py`
 - [ ] **Deliberate** vLLM generation smoke test (`scripts/smoke_vllm_generate.py`), with you watching VRAM/RAM
-- [ ] Decide `gpu_memory_utilization` and confirm `num_gpu_blocks_override` is honoured in 0.31.0
+- [ ] Confirm `num_gpu_blocks_override` is honoured at runtime (source check done 2026-10-06: it sizes the real allocation; usable = override − 1)
+- [ ] Budget-sweep configs: max_model_len ≤ (budget − 1) × 16, e.g. ≤ 1584 for 100 blocks
 - [ ] Metrics module: hit rate (`num_cached_tokens` / prompt tokens per request, Sec. 5.1), TTFT, per-turn latency, throughput
 - [ ] Baseline runner: replay a request trace against vLLM (offline engine first, then OpenAI server for TTFT under load)
 - [ ] Results saved with resolved config + `git rev-parse HEAD` + env freeze hash
