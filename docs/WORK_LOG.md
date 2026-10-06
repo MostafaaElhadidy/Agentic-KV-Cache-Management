@@ -131,3 +131,9 @@ Resume with `claude --continue`; the last entry says what was in progress.
   - eviction_only (tuned constants): GPU hit 0.6248 vs vanilla 0.5878 (+3.7 pp); simulator 0.6214, 97.9% of
     requests exact, mean |diff| 2.0 tokens (step-count/age differences) (results/tune_gpu/eviction_only/b100_seq/).
   - Fidelity level achieved: full vLLM hook (scheduler_cls extension point), no fallback needed.
+- 16:53 M5: compare.py written (run/load GPU results or --sim; table, trend checks vs paper, plot).
+  Simulator on EVAL trace (results/main/compare/selector_eval_sim_eval_20261006-165243.*): CacheScout +3.3/+2.6/+1.0
+  pp @100/150/200; literal Alg. 1 +0.2/-1.0/-0.9; no_prediction (tau=0) +3.0/+3.1/+1.6 (≥ full at 150/200);
+  Continuum == vanilla exactly (soft TTL pins coincide with LRU's most-recent blocks → degenerate baseline).
+  Palette validator (node) unavailable; used the skill's pre-validated reference palette + marker shapes.
+- 16:53 Starting GPU main sweep (selector_eval, 5 systems × 100/150/200 blocks) via compare.py --run.

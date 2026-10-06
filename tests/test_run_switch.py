@@ -36,3 +36,15 @@ def test_system_flags() -> None:
     assert system_flags("warmup_only") == ("lru", True)
     assert system_flags("cachescout") == ("cachescout", True)
     assert system_flags("continuum") == ("continuum", False)
+
+
+def test_apply_variant_overrides_params() -> None:
+    from cachescout.run import apply_variant
+
+    exp = {"cachescout": {"params": {"tau": 0.1, "scope": "session"}},
+           "variants": {"literal": {"system": "eviction_only",
+                                    "params": {"scope": "global", "block_mapping": "all"}}}}
+    assert apply_variant(exp, "literal") == "eviction_only"
+    assert exp["cachescout"]["params"] == {"tau": 0.1, "scope": "global", "block_mapping": "all"}
+    with pytest.raises(ValueError):
+        apply_variant(exp, "missing")

@@ -195,11 +195,25 @@ async def drive_sequential(engine: Any, trace: Trace) -> dict[str, Any]:
     return {"records": records, "warmups_issued": 0, "warmups_gated": 0, "coordinator_R": None}
 
 
-def run(config: str, system_cli: str | None, overrides: dict[str, Any]) -> Path:
+def apply_variant(exp: dict[str, Any], variant: str) -> str:
+    """A named variant from the config's `variants:` table: {system, params} overrides.
+    Returns the system to run. Used for extra ablations (e.g. literal Alg. 1, tau = 0)."""
+    spec = (exp.get("variants") or {}).get(variant)
+    if spec is None:
+        raise ValueError(f"variant {variant!r} not defined in config `variants:`")
+    cs = exp.setdefault("cachescout", {})
+    cs["params"] = {**(cs.get("params") or {}), **(spec.get("params") or {})}
+    return spec["system"]
+
+
+def run(config: str, system_cli: str | None, overrides: dict[str, Any],
+        variant: str | None = None) -> Path:
     exp = load_experiment(REPO / config, repo_root=REPO)
     for k, v in overrides.items():
         if v is not None:
             exp[k] = v
+    if variant is not None:
+        system_cli = apply_variant(exp, variant)
     hw = exp["hardware_cfg"]
     if exp.get("num_gpu_blocks_override") is not None:
         hw["vllm"]["num_gpu_blocks_override"] = int(exp["num_gpu_blocks_override"])
@@ -211,7 +225,9 @@ def run(config: str, system_cli: str | None, overrides: dict[str, Any]) -> Path:
     trace = Trace.load(trace_path)
     tag = exp.get("tag") or datetime.now().strftime("%Y%m%d-%H%M%S")
     blocks = hw["vllm"].get("num_gpu_blocks_override")
-    out_dir = REPO / "results" / exp["experiment"] / f"{system}" / f"b{blocks}_{tag}"
+    label = variant or system
+    trace_name = trace.meta.get("name", Path(exp["trace"]).stem)
+    out_dir = (REPO / "results" / exp["experiment"] / trace_name / label / f"b{blocks}_{tag}")
     out_dir.mkdir(parents=True, exist_ok=True)
     stats_path = out_dir / "engine_runtime_stats.json"
     print(f"[run] experiment={exp['experiment']} system={system} trace={exp['trace']} "
@@ -234,7 +250,8 @@ def run(config: str, system_cli: str | None, overrides: dict[str, Any]) -> Path:
     summary = summarize(records, block_size=bs)
     engine_stats = json.loads(stats_path.read_text()) if stats_path.exists() else None
     payload = {
-        "experiment": exp["experiment"], "system": system, "mode": exp.get("mode", "online"),
+        "experiment": exp["experiment"], "system": system, "variant": variant,
+        "label": label, "trace_name": trace_name, "mode": exp.get("mode", "online"),
         "config_path": config, "config": exp, "trace_meta": trace.meta,
         "num_gpu_blocks_reported": num_blocks, "wall_s": wall,
         "provenance": provenance(hw), "summary": summary.to_dict(),
@@ -262,9 +279,12 @@ def main() -> int:
     parser.add_argument("--trace", default=None)
     parser.add_argument("--mode", choices=("online", "sequential"), default=None)
     parser.add_argument("--tag", default=None)
+    parser.add_argument("--variant", default=None, help="named entry of the config `variants:`")
     args = parser.parse_args()
+    if args.variant and args.system:
+        parser.error("use either --system or --variant")
     run(args.config, args.system, {"num_gpu_blocks_override": args.blocks, "trace": args.trace,
-                                   "mode": args.mode, "tag": args.tag})
+                                   "mode": args.mode, "tag": args.tag}, variant=args.variant)
     return 0
 
 

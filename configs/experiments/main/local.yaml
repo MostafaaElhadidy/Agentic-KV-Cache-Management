@@ -1,0 +1,25 @@
+# M5 main evaluation, local (RTX 4060 8 GB). Constants were tuned on tuning traces only (docs/decisions.md).
+#   python -m cachescout.run --config configs/experiments/main/local.yaml --system cachescout --blocks 100
+#   python scripts/compare.py --config configs/experiments/main/local.yaml --blocks 100,150,200 --run
+experiment: main
+hardware: configs/hardware/local.yaml
+seed: 0
+trace: results/traces/selector_eval.json      # evaluation trace (seed 1), never used for tuning
+mode: online
+num_gpu_blocks_override: 150                 # default budget; sweeps override with --blocks
+max_model_len: 1584                          # <= (100-1)*16 so all budgets 100-200 admit every request
+cachescout:
+  enabled: true                              # the switch: false = vanilla vLLM
+  eviction: true                             # survival-guided eviction (Sec. 3.3)
+  warmup: true                               # background prefetch (Sec. 3.4)
+  params: {scope: session, max_active_sessions: 8, session_aggregate: mean, block_mapping: anchor_only,
+           tau: 0.1, e_max: 6, lam: 0.005, delta: 0.01, epsilon: 0.01, fingerprint_blocks: 2, r_min: 0.3}
+warmup: {min_interval_s: 2.0}
+continuum: {ttl_s: 0.3}                      # paper Sec. 5.1
+variants:
+  cachescout_literal:                        # Alg. 1 as written: global a_t, every block -> agent
+    system: eviction_only
+    params: {scope: global, block_mapping: all}
+  no_prediction:                             # tau = 0: all edges kept -> survival ~flat (anchor protection only)
+    system: eviction_only
+    params: {tau: 0.0}

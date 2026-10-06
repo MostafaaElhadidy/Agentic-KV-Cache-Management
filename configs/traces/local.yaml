@@ -49,3 +49,7 @@ traces:
   # tiny trace for smoke tests of the GPU runner
   - {name: smoke, topology: selector, num_sessions: 4, arrival_rate: 2.0, seed: 999, role: smoke}
   - {name: tiny, topology: selector, num_sessions: 1, arrival_rate: 1.0, seed: 998, role: smoke}
+  # load sweep (Fig. 11-style): same sessions as selector_eval (seed 1), higher arrival rates
+  - {name: selector_eval_r1, topology: selector, num_sessions: 60, arrival_rate: 1.0, seed: 1}
+  - {name: selector_eval_r2, topology: selector, num_sessions: 60, arrival_rate: 2.0, seed: 1}
+  - {name: selector_eval_r4, topology: selector, num_sessions: 60, arrival_rate: 4.0, seed: 1}
