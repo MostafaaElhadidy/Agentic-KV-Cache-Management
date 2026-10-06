@@ -155,3 +155,12 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
   pipeline chain, or at 14 calls (the last call is a forced DECIDER answer).
 - **Engineering choice, tasks.** GSM8K test split for evaluation, train split for tuning; one fixed permutation
   per split, seed k takes the k-th disjoint slice; arrivals seeded per problem seed.
+- **Tried and rejected (user-defined criterion): AutoGen-style separate selector call.** A SELECTOR router call
+  after each agent turn, its reply constrained with vLLM 0.31 guided choice
+  (`SamplingParams(structured_outputs=StructuredOutputsParams(choice=[5 teammate names]))`). Router pilot (train
+  problems seed 102, 5 sessions, results/real/gsm8k_train_selector_s102/vanilla/b100_pilot_router/result.json):
+  model-made routing 17/17 = 100% (criterion > 90% met), but choices degenerate: DECIDER 64.7% (> 60% limit),
+  PLANNER 23.5%, ANALYST 11.8%, CODER/TESTER/REVIEWER 0%; every session alternated PLANNER<->DECIDER;
+  measured R 0.74; ~370 extra tokens per agent turn. Per the agreed rule it is NOT adopted. The code path stays
+  available (`agents.router: true`, default false). The selector topology keeps the agent's own `NEXT:` line,
+  with no further prompt tuning, and its fallback rate is reported prominently.

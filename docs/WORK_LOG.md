@@ -195,3 +195,8 @@ Resume with `claude --continue`; the last entry says what was in progress.
 - STOPPED at the pilot gate, waiting for the user's "go". NEXT STEP after go: sim-vs-GPU sequential cross-check on
   recorded real sessions (amendment 2), then tuning on train problems, then campaign (replay first, then live).
 - 22:47 User said GO with amendments (router pilot first; then sim cross-check, tuning, campaign replay->live). Implemented AutoGen-style separate SELECTOR call constrained via vLLM 0.31 SamplingParams(structured_outputs=StructuredOutputsParams(choice=[...])) (vllm/sampling_params.py:88-92,341; backends xgrammar/llguidance installed). Agent cap counts agent calls only. 119 tests pass. NEXT: router pilot (selector, 100 blocks, train seed 102, 5 sessions, vanilla).
+- 22:50 Router pilot (results/real/gsm8k_train_selector_s102/vanilla/b100_pilot_router/result.json):
+  100% model routing, but DECIDER chosen 64.7% (>60%) -> degenerate (P<->D alternation), R 0.74, +370 tok/turn.
+  NOT adopted (user criterion). Keeping NEXT-line selector, no more prompt tuning; fallback rate to be reported.
+- NEXT STEP: record tuning sessions (vanilla live @100, train seed 101, 20 sessions x 4 topologies), then
+  sim-vs-GPU sequential cross-check on a recording, then tuning, then campaign.
