@@ -101,10 +101,10 @@ class SimBlockPool:
                 del self.free[b]
             self.ref[b] += 1
         if self.rt is not None:
-            self.rt.on_blocks_used(hit, agent)
+            self.rt.on_blocks_used(hit, agent, session)
         new = self._allocate(total_blocks - len(hit), now)
         if self.rt is not None:
-            self.rt.on_blocks_used(new, agent)
+            self.rt.on_blocks_used(new, agent, session, new=True)
         blocks = hit + new
         full_prompt_blocks = len(tokens) // self.bs
         for i in range(len(hit), kv_tokens // self.bs):   # cache newly computed full blocks
@@ -280,3 +280,26 @@ def simulate(trace: Trace, cfg: SimConfig) -> dict[str, Any]:
         "warmups_issued": coord.issued if coord is not None else 0,
         "warmups_gated": coord.gated if coord is not None else 0,
     }
+
+
+def simulate_sequential(trace: Trace, cfg: SimConfig) -> dict[str, Any]:
+    """One request at a time in trace dispatch order (no warmups): the simulator counterpart of
+    `cachescout.run --mode sequential`, for exact per-request comparison with vLLM."""
+    from cachescout.workload.stats import dispatch_order
+
+    policy, _ = system_flags(cfg.system)
+    params = CacheScoutParams.from_dict({**cfg.params, "policy": policy or "lru"})
+    rt = CacheScoutRuntime(params) if policy is not None else None
+    pool = SimBlockPool(cfg.num_gpu_blocks, cfg.block_size, rt)
+    sessions = {s.session_id: s for s in trace.sessions}
+    records = []
+    for _, sid, i in dispatch_order(trace):
+        s = sessions[sid]
+        tokens = trace.prompt(s, i)
+        out = s.turns[i].output_tokens
+        cached = pool.run(f"{sid}|t{i}", tokens, out, sid, params.fingerprint_blocks, 0.0)
+        records.append(TurnRecord(f"{sid}|t{i}", len(tokens), cached, out, 0.0, None, 0.0,
+                                  session_id=sid, agent_id=s.turns[i].agent, turn_idx=i))
+    return {"summary": summarize(records, block_size=cfg.block_size).to_dict(),
+            "records": [r.to_dict() for r in records],
+            "runtime": rt.summary() if rt is not None else None}

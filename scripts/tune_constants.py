@@ -49,13 +49,13 @@ def main() -> int:
     print(f"vanilla mean hit = {baseline['mean_hit']:.4f}")
     rows = []
     if not args.warmup:
-        scopes = [("global", 8), ("session", 4), ("session", 8), ("session", 16)]
+        scopes = [("global", 8), ("session", 8)]
         grid = itertools.product((0.1, 0.2, 0.3, 0.5), (2, 3, 4, 6), (0.001, 0.005, 0.02, 0.1),
-                                 (0.01, 0.1), scopes)
-        for tau, e_max, lam, delta, (scope, active) in grid:
+                                 (0.01, 0.1), scopes, ("all", "anchor_only"))
+        for tau, e_max, lam, delta, (scope, active), mapping in grid:
             p = {"tau": tau, "e_max": e_max, "lam": lam, "delta": delta, "scope": scope,
                  "max_active_sessions": active, "session_aggregate": "mean",
-                 "epsilon": 0.01, "fingerprint_blocks": 2}
+                 "block_mapping": mapping, "epsilon": 0.01, "fingerprint_blocks": 2}
             rows.append(evaluate(traces, "eviction_only", p))
         name = "eviction_sweep.json"
     else:

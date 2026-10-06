@@ -38,12 +38,12 @@ Absolute numbers will differ (smaller model, smaller workloads, different GPU). 
 - [x] Smoke test (imports, CUDA): `pytest -q tests/test_smoke_env.py`
 - [x] **Deliberate** vLLM generation smoke test passed 2026-10-06 (`smoke_run3.log`): 256 blocks, override OK, ~3.7 GiB used, eager mode
 - [x] `num_gpu_blocks_override` honoured at runtime (256 allocated, 255 usable: vLLM reserves one null block)
-- [ ] Budget-sweep configs: max_model_len ≤ (budget − 1) × 16, e.g. ≤ 1584 for 100 blocks
+- [x] Budget-sweep configs use max_model_len 1584 (fits 100 blocks)
 - [x] Metrics module (`src/cachescout/metrics/`): hit rate, TTFT, per-turn latency, throughput; unit-tested; vLLM sources in `docs/vllm_internals.md`
-- [ ] GPU check `scripts/check_prefix_metrics.py` passes (shared prefix, last-token rule, LRU eviction at 256 blocks, counters), run by user
-- [ ] Server + streaming collector (TTFT under load)
-- [ ] Baseline runner: replay a request trace against vLLM (offline engine first, then OpenAI server for TTFT under load)
-- [ ] Results saved with resolved config + `git rev-parse HEAD` + env freeze hash
+- [x] GPU check `scripts/check_prefix_metrics.py` passes 10/10 (results/m1_metrics_check/20261006-153348)
+- [x] Online driver with streaming TTFT (`python -m cachescout.run`, AsyncLLM in-process instead of an HTTP server)
+- [x] Baseline runner: `python -m cachescout.run --system vanilla` (online + sequential modes)
+- [x] Results saved with resolved config + git commit + versions (result.json)
 **Verify:** a two-request prefix test where the 2nd request shows cached tokens ≈ shared prefix; a block-budget test
 where an LRU-evicted prefix shows 0 cached tokens.
 **Working local settings (2026-10-06, `configs/hardware/local.yaml`):**
@@ -58,27 +58,26 @@ Measured: weights 2.98 GiB; total GPU used ~3.7 GiB (incl. ~0.4 GiB Windows desk
 
 ## M2. Agentic workload / trace generation
 **Goal:** traces of (session, turn, agent, prompt tokens, output length, arrival time).
-- [ ] Synthetic generator: 6 agents, transition matrices from Fig. 5 (Pipeline/Debate/Selector/Random), anchor lengths
-      giving ~53–62% anchor share (Fig. 2), seeded Poisson arrivals
-- [ ] Trace stats script: φ per turn (Eq. 1), reuse per block (Fig. 3a), R (Eq. 2), online top-1 accuracy (Fig. 4b)
-- [ ] (Needs approval to install `autogen-agentchat`, `datasets`) small real 6-agent SelectorGroupChat runs on GSM8K and MT-Bench, recorded to trace files
+- [x] Synthetic generator: 6 agents, Fig. 5 matrices, anchor share 0.54-0.62, seeded Poisson arrivals
+- [x] Trace stats (`scripts/make_traces.py` → results/traces/stats.json)
+- [ ] ~~Real AutoGen runs~~ not done: synthetic traces used (see decisions.md / REPORT)
 **Verify:** R measured on the synthetic traces ≈ the paper values for each matrix (1.0 / 0.78 / 0.57 / 0.12) within tolerance; unit tests.
 **Risks:** the 1.5B model routes differently from the 8B (open_questions E3); unreleased prompts (C1).
 
 ## M3. Cache-management component (simulator first)
 **Goal:** Transition Learner + Survival Scorer + LRU in a pure-Python block-cache simulator (no GPU).
-- [ ] Simulator mimicking vLLM prefix caching (16-token chained block hashes, free-queue LRU, block budget)
-- [ ] Transition Learner (Eqs. 3–5), threshold graph + BFS (Eqs. 7–8), Score (Eq. 9) exactly per Alg. 1
-- [ ] Continuum-style TTL baseline (interpretation)
-- [ ] Reproduce the Fig. 14a *trend* in simulation across 100–200 blocks
+- [x] Simulator (exact vs vLLM on 703/703 requests, sequential)
+- [x] Transition Learner, graph + BFS, Score (Eq. 9), Alg. 1 (`src/cachescout/core/`)
+- [x] Continuum-style TTL baseline (soft pinning, interpretation)
+- [x] Fig. 14a trend in simulation (tuning traces): gain shrinks with budget
 **Verify:** unit tests per equation against hand-computed values; LRU limit (Score → recency-only) matches the plain LRU simulator.
 **Risks:** simulator may not match vLLM's real eviction behaviour, so M4 cross-checks it.
 
 ## M4. Learned component in vLLM (runtime plugin)
 **Goal:** the same logic hooked into vLLM 0.31's block pool / eviction, plus warmup.
-- [ ] **Ask before starting:** chosen hook mechanism (open_questions A1/A2)
-- [ ] ObserveTouch at prefix-match time; fingerprinting (B2); eviction ordering via ScoreBlock; single env var toggle
-- [ ] Warmup via the serving API, gated by R ≥ R_min, rate-limited, excluded from learning (B9)
+- [x] Hook mechanism: `scheduler_cls` subclass of AsyncScheduler (user granted autonomy)
+- [x] ObserveTouch, fingerprint (2 blocks), ScoreBlock victim selection, CACHESCOUT_CONFIG env var
+- [x] Warmup via AsyncLLM API, R ≥ R_min gate, rate-limited, `cswarm-` excluded from learning
 - [ ] Microbenchmarks for Fig. 15 (state size, ObserveTouch/PredictSurvival latency)
 **Verify:** vLLM-with-plugin hit rate matches the simulator on the same trace within a few pp; with the plugin
 disabled, results equal vanilla vLLM.

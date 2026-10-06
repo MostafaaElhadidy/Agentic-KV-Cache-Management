@@ -103,3 +103,31 @@ Resume with `claude --continue`; the last entry says what was in progress.
 - 16:08 Stage 1 PASS: tiny vanilla, 13 turns, hit 0.624, peak gpu_used=3878M peak ram_used=3611M min avail=8344M. Stage 2 (smoke, 4 sessions) next.
 - 16:09 Stage 2 PASS: smoke vanilla 42 turns hit 0.738, peak gpu_used=3878M peak ram_used=3632M min avail=8323M. Stage 2b: smoke with CacheScout hook.
 - 16:10 Stage 2b PASS: smoke with CacheScoutScheduler hook (engine core loaded it; 42 dispatches, 15 warmups excluded, acc 0.74, observe 43 us, select 27 us). Hit = vanilla (no pressure at 200 blocks on 4 sessions).
+- 16:10 Stage 3: full-size tuning trace (selector_tune, 60 sessions/703 calls), vanilla, 100 blocks.
+- 16:13 Stage 3 PASS: full tuning trace vanilla @100 blocks: 703 turns, hit 0.585 (simulator predicted 0.597), peak GPU 3878M, RAM 3672M. Crash #1 not reproduced; most likely cause = concurrent CPU sweep during model load. Rule kept: nothing else runs during GPU jobs. Next: re-run tuning sweep (CPU only, no GPU job).
+- 16:24 Tuning sweep v2 (512 configs, session-mean scope added): best still global, 0.6954 vs vanilla
+  0.6930 (results/tuning/eviction_sweep_v1_all_mapping.json). Session scope did not help.
+- Diagnostic: Belady/MIN upper bound in the simulator (sequential order, tuning trace): vanilla 0.588/0.672/0.712,
+  Belady 0.711/0.764/0.771 at 100/150/200 → real headroom (+12/+9/+6 pp) that CacheScout did not capture.
+  Region breakdown @100: Belady raises anchor-region hit 0.84→0.95 and history 0.26→0.40; CacheScout 0.84→0.85.
+- Root cause: Alg. 1 line 12 maps EVERY touched block (incl. session history) to the agent, so stale history of
+  hot agents (P, C) inherits high survival and displaces anchors of less frequent agents.
+- Change (interpretation of Sec. 3.3 "inherits the survival score of its corresponding agent anchor", open question
+  B3): `block_mapping: anchor_only` — only blocks shared by >= 2 sessions (= anchor blocks, detected without
+  labels) inherit survival; history blocks rank by recency only. Probe (sequential, tuning trace):
+  anchor_only 0.626/0.690-0.697/0.724-0.730 vs vanilla 0.588/0.672/0.712 (+3.8/+2.5/+1.8 pp).
+- Next: sweep v3 with block_mapping ∈ {all, anchor_only}.
+- 16:33 Sweep v3 (results/tuning/eviction_sweep.json, tuning traces only): best = scope session(8, mean)
+  + block_mapping anchor_only, tau 0.1, E_max 6, lambda 0.005/step, delta 0.01: mean hit 0.7096 vs vanilla 0.6930.
+  Literal (global/all) best 0.6954; global/anchor_only 0.7084; session/all 0.6890. tau=0 gives 0.7108 (flat
+  survival → gain then comes only from anchor-vs-history protection); kept tau 0.1 so Eq. 7 stays meaningful and
+  will report a tau=0 "no-prediction" ablation.
+- Warmup sweep (results/tuning/warmup_sweep.json): hit-rate objective flat (0.7089-0.7095); argmax r_min 0.7 simply
+  disables warmup. Chose r_min 0.3 (gate on for structured topologies, off for Random R≈0.12), interval 2.0 s.
+- 16:34 M4 cross-check: sequential GPU runs on tuning trace @100 blocks (vanilla, lru_hook, eviction_only) vs simulator.
+- 16:48 M4 VERIFIED on GPU (sequential mode, tuning trace, 100 blocks; crosscheck.json next to each result):
+  - vanilla vs simulator: 703/703 requests exact, hit 0.5878 both (results/tune_gpu/vanilla/b100_seq/).
+  - lru_hook (hook installed, neutral) vs vanilla: identical, 703/703 exact (results/tune_gpu/lru_hook/b100_seq/).
+  - eviction_only (tuned constants): GPU hit 0.6248 vs vanilla 0.5878 (+3.7 pp); simulator 0.6214, 97.9% of
+    requests exact, mean |diff| 2.0 tokens (step-count/age differences) (results/tune_gpu/eviction_only/b100_seq/).
+  - Fidelity level achieved: full vLLM hook (scheduler_cls extension point), no fallback needed.

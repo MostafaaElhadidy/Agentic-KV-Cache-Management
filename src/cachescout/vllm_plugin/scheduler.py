@@ -74,9 +74,10 @@ class CacheScoutScheduler(AsyncScheduler):
             result = orig_get_computed(request)
             hashes = list(request.block_hashes[:k])
             fp: Any = tuple(hashes) if hashes else ("tok", tuple(request.prompt_token_ids[:16]))
-            agent = rt.observe_dispatch(request.request_id, fp, session_of(request))
+            session = session_of(request)
+            agent = rt.observe_dispatch(request.request_id, fp, session)
             blocks = result[0].blocks[0] if result[0].blocks else ()
-            rt.on_blocks_used([b.block_id for b in blocks if not b.is_null], agent)
+            rt.on_blocks_used([b.block_id for b in blocks if not b.is_null], agent, session)
             return result
 
         def allocate_slots(request: Any, *a: Any, **kw: Any) -> Any:
@@ -133,7 +134,8 @@ class CacheScoutScheduler(AsyncScheduler):
                     pool.metrics_collector.on_block_allocated(block)
             req = self._cs_current_request
             if req is not None:
-                rt.on_blocks_used([b.block_id for b in ret], rt.agent_of_request(req.request_id))
+                rt.on_blocks_used([b.block_id for b in ret], rt.agent_of_request(req.request_id),
+                                  session_of(req), new=True)
             return ret
 
         return get_new_blocks

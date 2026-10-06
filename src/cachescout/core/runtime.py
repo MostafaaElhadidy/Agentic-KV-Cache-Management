@@ -35,6 +35,8 @@ class CacheScoutParams:
     scope: str = "global"             # Alg. 1 literal = global current agent (open_questions B4)
     max_active_sessions: int = 8      # session scope: most recent sessions considered active
     session_aggregate: str = "mean"   # session scope: combine per-session survival (mean | max)
+    block_mapping: str = "all"        # all = Alg. 1 line 12 literal; anchor_only (B3): only blocks
+                                      # shared by >= 2 sessions inherit survival, others get 0
     continuum_ttl_s: float = 0.3      # Sec. 5.1 Continuum TTL
     warmup_prefix: str = "cswarm-"    # request-id prefix of warmup requests (Sec. 4)
 
@@ -47,6 +49,8 @@ class CacheScoutParams:
             raise ValueError("fingerprint_blocks must be >= 1")
         if self.session_aggregate not in ("mean", "max"):
             raise ValueError("session_aggregate must be mean or max")
+        if self.block_mapping not in ("all", "anchor_only"):
+            raise ValueError("block_mapping must be all or anchor_only")
 
     @classmethod
     def from_dict(cls, d: dict[str, Any] | None) -> "CacheScoutParams":
@@ -97,6 +101,8 @@ class CacheScoutRuntime:
         self.block_agent: dict[int, Agent] = {}
         self.block_last: dict[int, int] = {}
         self.block_pin_until: dict[int, float] = {}
+        self.block_first_session: dict[int, str | None] = {}
+        self.block_shared: set[int] = set()
         self.request_agent: OrderedDict[str, Agent] = OrderedDict()  # bounded
         self.current: Agent | None = None                       # global scope a_t
         self.session_current: OrderedDict[str, Agent] = OrderedDict()  # session scope
@@ -168,13 +174,24 @@ class CacheScoutRuntime:
         self.stats.observe_ns += time.perf_counter_ns() - t0
         return a
 
-    def on_blocks_used(self, block_ids: Sequence[int], agent: Agent | None) -> None:
-        """Blocks touched (prefix hit) or allocated for a request: agentOf[b], lastAccess[b]."""
+    def on_blocks_used(self, block_ids: Sequence[int], agent: Agent | None,
+                       session: str | None = None, new: bool = False) -> None:
+        """Blocks touched (prefix hit) or allocated for a request: agentOf[b], lastAccess[b].
+
+        `new=True` for freshly allocated blocks (their previous content was evicted). For
+        `block_mapping: anchor_only`, a block becomes an anchor block once requests from two
+        different sessions have used it (anchors are shared across sessions; history is not).
+        """
         for b in block_ids:
             if agent is not None:
                 self.block_agent[b] = agent
             self.block_last[b] = self.step
             self.block_pin_until.pop(b, None)
+            if new or b not in self.block_first_session:
+                self.block_first_session[b] = session
+                self.block_shared.discard(b)
+            elif session is not None and self.block_first_session[b] != session:
+                self.block_shared.add(b)
 
     def on_blocks_freed(self, block_ids: Sequence[int], now: float | None = None) -> None:
         """Blocks returned to the free queue. lastAccess = free time (interpretation: the request
@@ -198,6 +215,8 @@ class CacheScoutRuntime:
         """Eq. 9 for one free cached block (ScoreBlock, Alg. 1 lines 23-27)."""
         agent = self.block_agent.get(c.block_id)
         p_surv = self.survival.get(agent, 0.0) if agent is not None else 0.0
+        if self.p.block_mapping == "anchor_only" and c.block_id not in self.block_shared:
+            p_surv = 0.0
         age = self.step - self.block_last.get(c.block_id, self.step)
         return block_score(p_surv, age, c.num_tokens, self.p.lam, self.p.delta)
 

@@ -1,0 +1,16 @@
+# GPU runs on the TUNING trace only (scale-up tests, sim-vs-GPU checks, constant confirmation).
+experiment: tune_gpu
+hardware: configs/hardware/local.yaml
+seed: 0
+trace: results/traces/selector_tune.json
+mode: online
+num_gpu_blocks_override: 100
+max_model_len: 1584
+cachescout:
+  enabled: true
+  eviction: true
+  warmup: true
+  params: {scope: session, max_active_sessions: 8, session_aggregate: mean, block_mapping: anchor_only,
+           tau: 0.1, e_max: 6, lam: 0.005, delta: 0.01, epsilon: 0.01, fingerprint_blocks: 2, r_min: 0.3}
+warmup: {min_interval_s: 2.0}
+continuum: {ttl_s: 0.3}

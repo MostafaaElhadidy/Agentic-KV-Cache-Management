@@ -110,3 +110,27 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
 - **M1 check script** (`scripts/check_prefix_metrics.py`): requests strictly sequential, `max_tokens=8` with
   `ignore_eos=True` (fixed output length so block arithmetic is exact), synthetic token-ID prompts (seeded),
   `reset_prefix_cache()` between checks; counter comparison uses before/after snapshots.
+
+## 2026-10-06: CacheScout constants (tuned on tuning traces only; simulator)
+- **Engineering choice / interpretation.** Paper gives no values (open_questions B1). Tuned in the simulator on
+  `selector_tune` + `debate_tune` (seeds 101/102), objective = mean hit rate over 100/150/200 blocks. Evaluation
+  traces (seeds 1-3) were never used for tuning. Files: results/tuning/eviction_sweep.json (512 configs),
+  results/tuning/eviction_sweep_v1_all_mapping.json, results/tuning/warmup_sweep.json.
+- Final: epsilon 0.01, tau 0.1, E_max 6, lambda 0.005 per scheduler step, delta 0.01, fingerprint 2 blocks,
+  scope session (8 most recent sessions, per-session Eq. 8 tables averaged), block_mapping anchor_only,
+  R_min 0.3, warmup min interval 2.0 s, at most one warmup in flight.
+- tau=0.0 scored 0.7108 vs 0.7096 (noise level) but disables the transition graph; tau 0.1 kept for fidelity.
+- R_min: hit-rate objective is flat; 0.7 (argmax) disables warmup entirely, so 0.3 was chosen to keep the
+  paper's gate semantics (Sec. 3.4: warm for structured execution, not for random).
+
+## 2026-10-06: Session scope and anchor-only block mapping (interpretations of B4 and B3)
+- **Interpretation, B4.** Alg. 1's single global current agent learns noise when ~8 sessions interleave
+  (learned R 0.18, top-1 0.43 vs true R 0.57). Session scope: transitions counted per session (session id is
+  framework metadata, Sec. 3.1 "exchanges lightweight runtime metadata"; vLLM 0.31 `Request.session_id`).
+  Survival = mean over the 8 most recent sessions of Eq. 8 (from each session's current agent).
+- **Interpretation, B3.** Sec. 3.3 says each block "inherits the survival score of its corresponding agent
+  anchor". Literal Alg. 1 line 12 maps all touched blocks to the agent; that lets stale history of hot agents
+  displace anchors. `anchor_only`: a block counts as an anchor block once requests from >= 2 different sessions
+  used it (no labels needed); other blocks get p_surv = 0 (recency only). The literal variant remains available
+  (`scope: global`, `block_mapping: all`) and is reported as "CacheScout-literal".
+- Evidence (simulator, tuning trace, Belady diagnostic): see WORK_LOG 2026-10-06.

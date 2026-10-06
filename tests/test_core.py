@@ -237,3 +237,16 @@ def test_session_mean_aggregation() -> None:
     assert rt.survival[a] == pytest.approx(0.5)      # 1 from S1, 0 from S2
     assert rt.survival[b] == pytest.approx(0.25)     # hop 1 -> 0.5 from S1
     assert rt.survival[c] == pytest.approx(0.5) and rt.survival[d] == pytest.approx(0.25)
+
+
+def test_anchor_only_mapping_requires_two_sessions() -> None:
+    rt = make_rt(block_mapping="anchor_only")
+    rt.observe_dispatch("r1", "fpA", session="s1")
+    a = rt.fingerprint_to_agent["fpA"]
+    rt.on_blocks_used([1, 2], a, "s1", new=True)     # created by session s1
+    rt.on_blocks_used([1], a, "s2")                  # block 1 reused by another session
+    rt.survival = {a: 1.0}
+    c1, c2 = Candidate(1, True, 16), Candidate(2, True, 16)
+    assert rt.score(c1) > rt.score(c2)               # 2 is history-like -> survival 0
+    rt.on_blocks_used([1], a, "s3", new=True)        # block reallocated -> no longer shared
+    assert rt.score(c1) == pytest.approx(rt.score(c2))
