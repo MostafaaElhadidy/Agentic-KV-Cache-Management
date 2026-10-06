@@ -20,6 +20,7 @@ Phase 2: cloud GPUs (A100/H100). Same code; hardware/model settings only in `con
 - `docs/decisions.md`: every non-paper choice (labelled paper / interpretation / engineering choice)
 - `docs/vllm_internals.md`: verified vLLM 0.31.0 internals with file:line refs (metrics, KV sizing, block pool)
 - `docs/project_instructions.md`: text for the claude.ai Project
+- `docs/REPORT.md` (results), `docs/WORK_LOG.md` (chronological log), `docs/CLOUD_RUNBOOK.md` (M6)
 
 ## Commands
 ```bash
@@ -28,16 +29,19 @@ pytest -q                                     # smoke tests (no model loading)
 ruff check .                                  # lint
 python scripts/smoke_vllm_generate.py --config configs/hardware/local.yaml   # LOADS MODEL: only when user asks
 python scripts/check_prefix_metrics.py --plan-only                            # block arithmetic, no GPU
-python scripts/check_prefix_metrics.py   # LOADS MODEL: M1 prefix-cache/eviction check, user runs it
-# Baseline benchmark / experiment runner: not implemented yet (M1). Planned:
-#   python -m cachescout.run --config configs/experiments/<exp>/local.yaml
+python scripts/check_prefix_metrics.py   # LOADS MODEL: M1 prefix-cache/eviction check
+python scripts/make_traces.py            # synthetic traces -> results/traces/
+# GPU runs: always through the safe wrapper (one job at a time, timeout, memory monitor)
+scripts/gpu_run.sh <name> 2400 python -m cachescout.run --config configs/experiments/main/local.yaml --system vanilla|cachescout|eviction_only|warmup_only|continuum --blocks 100
+python scripts/compare.py --config configs/experiments/main/local.yaml --blocks 100,150,200 [--run|--sim]
+bash scripts/run_all_local.sh && python scripts/aggregate_report.py   # full campaign + report tables
 ```
 
 ## Layout
 ```
 paper/        the PDF (source of truth)
 docs/         notes, plan, questions, decisions
-src/cachescout/  package (empty until M1)
+src/cachescout/  core/ (algorithms), vllm_plugin/ (hook), sim/, workload/, metrics/, run.py
 configs/hardware/{local,cloud}.yaml       GPU/model/vLLM settings
 configs/experiments/<exp>/{local,cloud}.yaml
 scripts/      runnable scripts; scripts/hooks/ for Claude Code hooks
@@ -58,7 +62,7 @@ results/      outputs (git-ignored) ; results/log/ experiment records (tracked)
 - Run `pytest -q` (and `ruff check .`) before declaring anything done.
 - Prefer a patch/plugin over editing vLLM source; log it in `docs/decisions.md`.
 - Never reinstall or upgrade vLLM/torch (or install large packages / download models) without asking.
-- Don't load models or run vLLM generation unless the user asks for it in that session.
+- GPU jobs only via scripts/gpu_run.sh, never two at once, nothing CPU-heavy alongside (WSL crash #1).
 - Keep code hardware-agnostic; GPU/model settings live in configs.
 - Update `docs/PLAN.md` checkboxes after each milestone.
 - The user is new to Linux/WSL: explain commands simply.

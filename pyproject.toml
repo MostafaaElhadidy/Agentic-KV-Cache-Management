@@ -13,3 +13,6 @@ pythonpath = ["src"]
 markers = [
     "gpu: needs the CUDA GPU (no model loading)",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/aggregate_report.py" = ["E501"]   # long Markdown table f-strings

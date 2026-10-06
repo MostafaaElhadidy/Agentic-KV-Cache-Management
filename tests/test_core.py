@@ -250,3 +250,15 @@ def test_anchor_only_mapping_requires_two_sessions() -> None:
     assert rt.score(c1) > rt.score(c2)               # 2 is history-like -> survival 0
     rt.on_blocks_used([1], a, "s3", new=True)        # block reallocated -> no longer shared
     assert rt.score(c1) == pytest.approx(rt.score(c2))
+
+
+def test_fast_threshold_graph_matches_eq3() -> None:
+    import random
+
+    rng = random.Random(3)
+    lr = TransitionLearner(0.05)
+    for _ in range(500):
+        lr.observe(rng.randrange(12), rng.randrange(12))
+    g = threshold_graph(lr, 0.1)
+    for a in lr.agents:
+        assert g[a] == [b for b in lr.agents if b != a and lr.prob(a, b) >= 0.1]

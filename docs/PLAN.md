@@ -78,22 +78,28 @@ Measured: weights 2.98 GiB; total GPU used ~3.7 GiB (incl. ~0.4 GiB Windows desk
 - [x] Hook mechanism: `scheduler_cls` subclass of AsyncScheduler (user granted autonomy)
 - [x] ObserveTouch, fingerprint (2 blocks), ScoreBlock victim selection, CACHESCOUT_CONFIG env var
 - [x] Warmup via AsyncLLM API, R ≥ R_min gate, rate-limited, `cswarm-` excluded from learning
-- [ ] Microbenchmarks for Fig. 15 (state size, ObserveTouch/PredictSurvival latency)
+- [x] Microbenchmarks for Fig. 15 (`scripts/microbench_overhead.py`; 1-2 orders of magnitude slower than paper)
 **Verify:** vLLM-with-plugin hit rate matches the simulator on the same trace within a few pp; with the plugin
 disabled, results equal vanilla vLLM.
 **Risks:** engine core runs in a separate process (the patch must load there); internal API drift.
 
 ## M5. Evaluation against baselines (local)
-- [ ] vLLM vs Continuum-TTL vs CacheScout on all local workloads (hit rate, mean/median/P99 TTFT, per-turn latency, throughput)
-- [ ] Ablation: vLLM / eviction only / prefetch only / full (Fig. 12)
-- [ ] Block budget sweep 100–200+ (Fig. 14a); prefetch gate on/off (Fig. 14b)
-- [ ] Topology sweep Pipeline/Debate/Selector/Random
-- [ ] Hyperparameter sensitivity (open_questions B1); 3 seeds; write-up vs paper
+- [x] vLLM vs Continuum-TTL vs CacheScout (selector_eval, 100/150/200 blocks; `scripts/compare.py`)
+- [x] Ablation: vanilla / eviction only / warmup only / full + literal Alg. 1 + no-prediction
+- [x] Block budget sweep 100-200 (3 seeds); [ ] prefetch gate on/off not run (warmup has no measurable effect locally)
+- [x] Topology sweep Pipeline/Debate/Selector/Random (100/150 blocks)
+- [x] Constants tuned on tuning traces (results/tuning); 3 eval seeds; docs/REPORT.md
 **Verify:** `experiment-reviewer` agent passes; every result has config + versions + seed.
 
 ## M6. Cloud scale-up
-- [ ] `configs/hardware/cloud.yaml` for A100-80GB / H100; Llama-3.1-8B-Instruct; larger budgets and paper-range loads (0.2–50 sess/s)
+- [x] Prepared (not run): cloud configs + docs/CLOUD_RUNBOOK.md; Llama-3.1-8B; loads up to 50 sess/s
 - [ ] Re-run M5 at paper scale; optional larger model (Qwen3-235B is likely out of budget, so a mid-size substitute)
 - [ ] Optional: CPU-offload tier + CPU-resident preference (open_questions A3)
 **Verify:** compare with the paper's absolute numbers; document every remaining gap honestly.
 **Risks:** cost; vLLM version on the cloud image must equal the local one (0.31.0) unless decided otherwise.
+
+## Status 2026-10-06 (end of autonomous local phase)
+- M1-M5 done locally; M6 prepared, not run. Results and honest comparison with the paper: docs/REPORT.md.
+- Fidelity: full vLLM hook (scheduler_cls). Local success criteria (top of this file): 1 yes (small gains, all
+  positive); 2 yes (eviction ≥ warmup); 3 NO (random still gains); 4 NO (no TTFT/latency gain on Selector; yes on
+  Pipeline); 5 yes (76% accuracy, R ordering matches); 6 partly (µs-to-100s-of-µs, slower than paper).

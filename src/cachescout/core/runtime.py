@@ -13,7 +13,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any
 
 from cachescout.core.learner import TransitionLearner
-from cachescout.core.scorer import block_score, survival_table
+from cachescout.core.scorer import block_score, survival_table, threshold_graph
 
 Agent = Hashable
 POLICIES = ("lru", "cachescout", "continuum")
@@ -276,9 +276,11 @@ class CacheScoutRuntime:
             sources = self.current_agents()
             per_agent: dict[Agent, float] = {}
             tables: dict[Agent, dict[Agent, float]] = {}
+            graph = threshold_graph(self.learner, self.p.tau)       # built once per refresh
             for src in sources:
                 if src not in tables:
-                    tables[src] = survival_table(self.learner, [src], self.p.tau, self.p.e_max)
+                    tables[src] = survival_table(self.learner, [src], self.p.tau, self.p.e_max,
+                                                 graph=graph)
                 for a, v in tables[src].items():
                     per_agent[a] = per_agent.get(a, 0.0) + v
             n = max(len(sources), 1)

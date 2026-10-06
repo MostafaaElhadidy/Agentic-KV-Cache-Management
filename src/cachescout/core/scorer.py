@@ -11,10 +11,17 @@ INF = math.inf
 
 
 def threshold_graph(learner: TransitionLearner, tau: float) -> dict[Agent, list[Agent]]:
-    """Eq. 7: (a, b) in E iff P(b | a) >= tau. Self-loops are excluded (never observed, Alg. 1)."""
+    """Eq. 7: (a, b) in E iff P(b | a) >= tau. Self-loops are excluded (never observed, Alg. 1).
+
+    Computes each row total once (O(A^2) instead of calling Eq. 3 per pair, which is O(A^3)).
+    """
+    agents = learner.agents
+    n, eps = len(agents), learner.epsilon
     graph: dict[Agent, list[Agent]] = {}
-    for a in learner.agents:
-        graph[a] = [b for b in learner.agents if b != a and learner.prob(a, b) >= tau]
+    for a in agents:
+        row = learner.counts.get(a, {})
+        denom = sum(row.values()) + eps * n
+        graph[a] = [b for b in agents if b != a and (row.get(b, 0) + eps) / denom >= tau]
     return graph
 
 
@@ -46,10 +53,13 @@ def survival_score(hop: float, e_max: int) -> float:
 
 
 def survival_table(
-    learner: TransitionLearner, current: Iterable[Agent], tau: float, e_max: int
+    learner: TransitionLearner, current: Iterable[Agent], tau: float, e_max: int,
+    graph: dict[Agent, list[Agent]] | None = None,
 ) -> dict[Agent, float]:
-    """p~_surv for every reachable agent; agents missing from the result have score 0."""
-    hops = bfs_hops(threshold_graph(learner, tau), current)
+    """p~_surv for every reachable agent; agents missing from the result have score 0.
+    A prebuilt `graph` (Eq. 7) may be passed to avoid rebuilding it for several sources."""
+    g = threshold_graph(learner, tau) if graph is None else graph
+    hops = bfs_hops(g, current)
     return {a: survival_score(h, e_max) for a, h in hops.items()}
 
 

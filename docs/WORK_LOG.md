@@ -145,3 +145,14 @@ Resume with `claude --continue`; the last entry says what was in progress.
   model. Eviction-only ≥ warmup-only ✓; warmup-only +0.5..+1.1 pp; Continuum ≈ vanilla. "Gain shrinks" passes
   only marginally and is non-monotone (largest at 150) → not claimed.
 - Next: scripts/run_all_local.sh steps 2-5 (variants, seeds, topologies, load) in background.
+- 19:12 Campaign done: 57 GPU runs total, all exit 0 (logs/run_all_local.log, results/main/compare/*).
+  Highlights: pipeline +13.1 pp @100 (TTFT -8.7%); debate +1.3/+0.8; random +3.3/+5.0 (NOT ~0 as paper expects:
+  gain comes from anchor protection, cf. no_prediction ≈ full); literal Alg. 1 +0.4/+0.1/-1.0; seeds 2/3 selector
+  gains +2.6/+1.8/+0.8 and +3.5/+2.1/+1.2; TTFT/latency/throughput differences inconsistent (noise level).
+  Load sweep @150: throughput saturates ~15.5-16 turns/s for both systems.
+- 19:16 Overhead microbench (results/microbench/overhead.json). Optimised threshold_graph (row totals once,
+  graph built once per refresh): identical simulator results, observe 100→37 us @6 agents, 2005→172 us @24.
+  (GPU runs used the slower version; affects overhead only, not decisions.)
+- 19:16 scripts/aggregate_report.py → results/report/{summary.json,tables.md,fig_*.png};
+  docs/REPORT.md written (all numbers cite result files). Removed one unsupported claim (run-to-run variance was
+  never measured). PLAN.md / CLAUDE.md updated. Final commit next.
