@@ -9,6 +9,17 @@ def blocks_for(prompt_tokens: int, max_tokens: int, block_size: int) -> int:
     return math.ceil((prompt_tokens + max_tokens) / block_size)
 
 
+def kv_bytes_per_token(num_layers: int, num_kv_heads: int, head_dim: int,
+                       dtype_bytes: int = 2) -> int:
+    """KV-cache bytes per token: K and V, for every layer and KV head (bf16 = 2 bytes)."""
+    return 2 * num_layers * num_kv_heads * head_dim * dtype_bytes
+
+
+def kv_bytes_per_block(num_layers: int, num_kv_heads: int, head_dim: int,
+                       block_size: int = 16, dtype_bytes: int = 2) -> int:
+    return block_size * kv_bytes_per_token(num_layers, num_kv_heads, head_dim, dtype_bytes)
+
+
 def usable_blocks(num_gpu_blocks: int) -> int:
     """vLLM reserves one null block (docs/vllm_internals.md §6)."""
     return max(num_gpu_blocks - 1, 0)

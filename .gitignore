@@ -53,3 +53,8 @@ data/gsm8k/*
 !data/gsm8k/SHA256SUMS
 # bulky per-call prompt dumps of real-agent runs
 results/**/prompts.jsonl.gz
+
+# Demo runs (scripts/demo.py) are local; only the example cited in the README is tracked
+results/demo/*
+!results/demo/demo_20261007-064340/
+!results/demo/replay_demo_20261007-064340/

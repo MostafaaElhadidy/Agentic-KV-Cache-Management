@@ -99,11 +99,15 @@ def check(results: list[dict], name: str, actual: int, expected: int, note: str)
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="configs/experiments/m1_metrics_check/local.yaml")
+    parser.add_argument("--hardware", default=None,
+                        help="hardware profile replacing the config's (e.g. box_24gb.yaml)")
     parser.add_argument("--plan-only", action="store_true",
                         help="print the block arithmetic and exit without importing vLLM")
     args = parser.parse_args()
-    exp = load_experiment(REPO / args.config, repo_root=REPO)
+    exp = load_experiment(REPO / args.config, repo_root=REPO, hardware=args.hardware)
     hw = exp["hardware_cfg"]
+    if exp.get("max_model_len") is not None:          # experiment-level override (as in run.py)
+        hw["vllm"]["max_model_len"] = int(exp["max_model_len"])
     v = hw["vllm"]
     bs, mml, max_tokens = v["block_size"], v["max_model_len"], exp["max_tokens"]
     num_blocks = v.get("num_gpu_blocks_override")
