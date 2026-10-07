@@ -233,3 +233,48 @@ Resume with `claude --continue`; the last entry says what was in progress.
   fingerprints.py + check_fingerprints.py + tokenizer test (Llama/Qwen-7B skip: not cached).
 - Fixed latent bug: m1_metrics_check/cloud.yaml would fail (max_model_len 4096 with 256 blocks).
 - Corrected a doc claim before committing: huggingface_hub 1.33 has no huggingface_hub.commands module.
+
+## 2026-10-07 13:07 CURRENT STATE (session handover; read this first)
+**Repository:** https://github.com/MostafaaElhadidy/Agentic-KV-Cache-Management (public). Local `main` =
+`origin/main` = `ea9eee4`. Branches left: `main`, `fix-setup-branch-ref` (merged, can be deleted).
+`box-prep` and `real-agents` were merged and deleted (local + GitHub). All commits use the noreply address.
+
+**Done and merged into main:**
+- M1-M5 locally on the RTX 4060 (synthetic traces): vLLM 0.31.0 `scheduler_cls` plugin (verified: neutral hook
+  == vanilla 703/703, simulator exact), 57 GPU runs, docs/REPORT.md. Result: +2.7/+2.2/+1.2 pp hit rate at
+  100/150/200 blocks (3 seeds), no consistent speed-up.
+- Real multi-agent GSM8K workload (PR #1): 6 Qwen2.5-1.5B agents, real tools, record-and-replay; 72 replay +
+  72 live runs, docs/REPORT_REAL_AGENTS.md. Replay +5.7/+6.3/+6.5 pp, positive in 35/36; selector fallback 77%.
+- scripts/demo.py (your own task; `--compare` = REPLAY vanilla vs cachescout) + README "Try it yourself".
+- Remote-box prep (PR #2): docs/NEW_BOX_SETUP.md, docs/BOX_CHEATSHEET.md, updated docs/CLOUD_RUNBOOK.md,
+  scripts/box_preflight.sh (read-only), configs/hardware/box_{24,48,80}gb.yaml, configs/experiments/real/cloud.yaml,
+  `--hardware`, campaign `local|cloud`, check_fingerprints.py. Plus a setup-doc fix (PR #3).
+- Tests: 124 passed, 2 skipped (Llama / Qwen-7B tokenizer checks skip until those tokenizers are downloaded).
+
+**Not done / pending:**
+1. Beginner guide PDF: requested by the user, not started (scope and content still to be agreed).
+2. Waiting for the instructor's Linux box; GPU size unknown (24, 48 or 80 GB). Nothing has run on a remote box.
+3. Open decisions (from the box-prep summary):
+   - re-tune constants on Llama recordings? (recommendation: keep the laptop constants unless tune_real.py shows
+     a clear gain);
+   - 24 GB profile uses enforce_eager=true (safe, slower).
+4. Local only, not committed: results/demo/*20261007-072609 (a demo run by the user; now git-ignored). This
+   handover edit of CLAUDE.md + WORK_LOG.md is also uncommitted, as the user asked for no changes to main yet.
+
+**Exact next steps:**
+- When the box is available, follow docs/BOX_CHEATSHEET.md in order:
+  1. ssh + tmux;
+  2. git clone;
+  3. uv + Python 3.12 venv;
+  4. `uv pip install vllm==0.31.0` + requirements-extra.txt;
+  5. `hf auth login` + `hf download meta-llama/Llama-3.1-8B-Instruct` (gated: request access first;
+     fallback Qwen/Qwen2.5-7B-Instruct);
+  6. `bash scripts/box_preflight.sh` (must end with 0 FAIL; note the suggested profile);
+  7. fetch_gsm8k + make_traces (cloud) + pytest + `python scripts/check_fingerprints.py` (Llama header check;
+     if FAIL raise fingerprint_blocks in configs/experiments/real/cloud.yaml);
+  8. m1 check with `--hardware <profile>`;
+  9. real campaign stages `tune_record xcheck eval_record replay live` with `cloud` + HARDWARE;
+  10. `python scripts/aggregate_real.py --exp real_cloud`, rsync results home.
+- Then write a cloud report (Llama-3.1-8B vs the laptop results: does a costlier prefill turn hit-rate gains into
+  TTFT gains? does a stronger model lower the selector fallback rate?).
+- Optionally run the synthetic-trace experiments from docs/CLOUD_RUNBOOK.md §5 on the box.

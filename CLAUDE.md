@@ -2,7 +2,13 @@
 
 Faithful replication of "Learning Agent Execution for KV-Cache Management in Agentic Serving"
 (CacheScout, arXiv:2608.14624, `paper/cachescout.pdf`). Phase 1: local, small scale (8 GB GPU).
-Phase 2: cloud GPUs (A100/H100). Same code; hardware/model settings only in `configs/`.
+Phase 2: a remote Linux GPU box (24/48/80 GB, Llama-3.1-8B). Same code; hardware/model settings only in `configs/`.
+
+## Status (2026-10-07): read `docs/WORK_LOG.md` (last entry) first
+- Done and merged into `main` (public GitHub repo, PRs #1-#3): M1-M5 locally (synthetic traces), real multi-agent
+  GSM8K workload (72 replay + 72 live runs, `docs/REPORT_REAL_AGENTS.md`), `scripts/demo.py`, remote-box prep.
+- Pending: (1) beginner guide PDF (user's request, not started); (2) waiting for the instructor's Linux box (GPU
+  size unknown) -> then follow `docs/BOX_CHEATSHEET.md`. Nothing has run on a remote box yet.
 
 ## Environment (verified 2026-10-06)
 - Windows 11 + WSL2, Ubuntu 26.04.1, kernel 6.18. Linux/bash only; repo and HF cache stay in `~/` (not `/mnt/c`).
@@ -36,18 +42,21 @@ python scripts/make_traces.py            # synthetic traces -> results/traces/
 scripts/gpu_run.sh <name> 2400 python -m cachescout.run --config configs/experiments/main/local.yaml --system vanilla|cachescout|eviction_only|warmup_only|continuum --blocks 100
 python scripts/compare.py --config configs/experiments/main/local.yaml --blocks 100,150,200 [--run|--sim]
 bash scripts/run_all_local.sh && python scripts/aggregate_report.py   # full campaign + report tables
+bash scripts/run_real_campaign.sh <stage> [local|cloud]               # real agents (HARDWARE=<profile> on a box)
+python scripts/demo.py --task "<question>" --topology pipeline [--compare]   # LOADS MODEL (via gpu_run.sh)
+bash scripts/box_preflight.sh                                         # read-only check on a remote box
 ```
 
 ## Layout
 ```
 paper/        the PDF (source of truth)
 docs/         notes, plan, questions, decisions
-src/cachescout/  core/ (algorithms), vllm_plugin/ (hook), sim/, workload/, metrics/, run.py
-configs/hardware/{local,cloud}.yaml       GPU/model/vLLM settings
+src/cachescout/  core/ (algorithms), vllm_plugin/ (hook), sim/, workload/, agents/, metrics/, run.py
+configs/hardware/{local,cloud,box_24gb,box_48gb,box_80gb}.yaml   GPU/model/vLLM settings
 configs/experiments/<exp>/{local,cloud}.yaml
 scripts/      runnable scripts; scripts/hooks/ for Claude Code hooks
 tests/        pytest
-results/      outputs (git-ignored) ; results/log/ experiment records (tracked)
+results/      small cited results tracked; raw logs, traces, prompt dumps, local demo runs git-ignored
 .claude/      agents, commands, settings (ruff hook on edit)
 ```
 
@@ -64,6 +73,8 @@ results/      outputs (git-ignored) ; results/log/ experiment records (tracked)
 - Prefer a patch/plugin over editing vLLM source; log it in `docs/decisions.md`.
 - Never reinstall or upgrade vLLM/torch (or install large packages / download models) without asking.
 - GPU jobs only via scripts/gpu_run.sh, never two at once, nothing CPU-heavy alongside (WSL crash #1).
+- Commit before each campaign stage (results record the commit; git_dirty must be false). Gate commits on the
+  real pytest exit code. Commits use the noreply address; never push or merge without the user's approval.
 - Keep code hardware-agnostic; GPU/model settings live in configs.
 - Update `docs/PLAN.md` checkboxes after each milestone.
 - The user is new to Linux/WSL: explain commands simply.
