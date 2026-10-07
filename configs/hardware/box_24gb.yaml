@@ -1,0 +1,21 @@
+# Remote box with a ~24 GB GPU (e.g. L4, A10G, RTX 3090/4090), Llama-3.1-8B-Instruct in bf16.
+# Memory estimate (docs/NEW_BOX_SETUP.md §GPU profiles): 0.90 x ~22.5 GiB usable = ~20.2 GiB;
+# weights ~15.0 GiB; activations/CUDA context ~2.5 GiB (eager) -> ~2.7 GiB KV = ~1,380 blocks of 2 MiB.
+# Paper-budget experiments override this to 100-200 blocks anyway. Check vLLM's log line
+# "Available KV cache memory" on the first smoke run; lower max_num_seqs if it is tight.
+name: box-24gb
+model:
+  name: meta-llama/Llama-3.1-8B-Instruct   # ungated fallback: Qwen/Qwen2.5-7B-Instruct (see setup doc)
+  dtype: bfloat16
+vllm:
+  gpu_memory_utilization: 0.90
+  max_model_len: 4096
+  max_num_seqs: 32
+  max_num_batched_tokens: 4096   # lower profiling/activation peak than the default 8192
+  block_size: 16
+  enable_prefix_caching: true
+  enforce_eager: true            # skip CUDA-graph capture (~1 GiB) on the smallest card; slower decode
+  num_gpu_blocks_override: null  # experiments set 100/150/200 (paper Fig. 14)
+  tensor_parallel_size: 1
+env:
+  HF_HUB_OFFLINE: "1"            # download the model first (setup doc step 6); never download mid-run

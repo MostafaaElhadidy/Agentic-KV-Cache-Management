@@ -32,13 +32,17 @@ def load_yaml(path: str | Path) -> dict[str, Any]:
     return data
 
 
-def load_experiment(path: str | Path, repo_root: str | Path | None = None) -> dict[str, Any]:
+def load_experiment(path: str | Path, repo_root: str | Path | None = None,
+                    hardware: str | Path | None = None) -> dict[str, Any]:
     """Load an experiment config and attach its resolved hardware config under `hardware_cfg`.
 
-    `hardware:` is resolved relative to `repo_root` (default: current directory). An
+    `hardware:` is resolved relative to `repo_root` (default: current directory); the optional
+    `hardware` argument replaces it (e.g. a GPU-size profile on a remote box). An
     experiment-level `num_gpu_blocks_override` replaces the hardware value.
     """
     exp = load_yaml(path)
+    if hardware is not None:
+        exp["hardware"] = str(hardware)
     root = Path(repo_root) if repo_root is not None else Path.cwd()
     hw = load_yaml(root / exp["hardware"])
     if "num_gpu_blocks_override" in exp:

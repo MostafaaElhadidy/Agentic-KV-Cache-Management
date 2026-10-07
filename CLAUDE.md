@@ -20,7 +20,8 @@ Phase 2: cloud GPUs (A100/H100). Same code; hardware/model settings only in `con
 - `docs/decisions.md`: every non-paper choice (labelled paper / interpretation / engineering choice)
 - `docs/vllm_internals.md`: verified vLLM 0.31.0 internals with file:line refs (metrics, KV sizing, block pool)
 - `docs/project_instructions.md`: text for the claude.ai Project
-- `docs/REPORT.md` (synthetic results), `docs/REPORT_REAL_AGENTS.md` (real multi-agent GSM8K workload, branch real-agents), `docs/WORK_LOG.md`, `docs/CLOUD_RUNBOOK.md`
+- `docs/REPORT.md` (synthetic results), `docs/REPORT_REAL_AGENTS.md` (real multi-agent GSM8K workload), `docs/WORK_LOG.md`
+- Remote GPU box: `docs/NEW_BOX_SETUP.md`, `docs/BOX_CHEATSHEET.md`, `docs/CLOUD_RUNBOOK.md`, `scripts/box_preflight.sh`
 
 ## Commands
 ```bash

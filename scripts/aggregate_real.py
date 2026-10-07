@@ -1,6 +1,7 @@
 """Aggregate the REAL multi-agent campaign into report tables + figures. Every value cites its source.
 
-    python scripts/aggregate_real.py   -> results/report_real/{summary.json, tables.md, fig_*.png}
+    python scripts/aggregate_real.py                    -> results/report_real/...  (laptop campaign)
+    python scripts/aggregate_real.py --exp real_cloud   -> results/report_real_cloud/...  (remote box)
 
 Replay (controlled: identical recorded prompts for both systems) is the headline; live closed-loop
 runs are reported separately (outputs diverge between systems, so differences are not attributable to
@@ -16,6 +17,7 @@ from typing import Any
 
 REPO = Path(__file__).resolve().parents[1]
 RES = REPO / "results"
+EXP = "real"                      # results/<EXP>/... ; set by --exp
 OUT = RES / "report_real"
 TOPOS = ("pipeline", "random", "debate", "selector")
 SEEDS = (1, 2, 3)
@@ -66,11 +68,11 @@ def load(path: Path) -> dict | None:
 
 
 def replay_path(t: str, seed: int, system: str, b: int) -> Path:
-    return RES / "real" / f"replay_gsm8k_test_{t}_s{seed}" / system / f"b{b}_replay" / "result.json"
+    return RES / EXP / f"replay_gsm8k_test_{t}_s{seed}" / system / f"b{b}_replay" / "result.json"
 
 
 def live_path(t: str, seed: int, system: str, b: int) -> Path:
-    return RES / "real" / f"gsm8k_test_{t}_s{seed}" / system / f"b{b}_eval" / "result.json"
+    return RES / EXP / f"gsm8k_test_{t}_s{seed}" / system / f"b{b}_eval" / "result.json"
 
 
 def opt(x: float | None) -> str:
@@ -117,6 +119,13 @@ def fmt(pair: tuple[float, float] | None, unit: str = "") -> str:
 
 
 def main() -> int:
+    global EXP, OUT
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--exp", default="real", help="experiment folder under results/ (real_cloud on a box)")
+    EXP = ap.parse_args().exp
+    OUT = RES / ("report_real" if EXP == "real" else f"report_{EXP}")
     OUT.mkdir(parents=True, exist_ok=True)
     summary: dict[str, Any] = {"workload": {}, "replay": {}, "live": {}}
     md: list[str] = []
@@ -192,7 +201,7 @@ def main() -> int:
     (OUT / "tables.md").write_text("\n".join(md) + "\n")
     figures(summary)
     print("\n".join(md))
-    print("\nSaved results/report_real/{summary.json, tables.md, fig_real_*.png}")
+    print(f"\nSaved {rel(OUT)}/{{summary.json, tables.md, fig_real_*.png}}")
     return 0
 
 

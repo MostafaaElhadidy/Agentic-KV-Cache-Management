@@ -341,3 +341,66 @@ def test_demo_compare_table_excludes_warmups(tmp_path, monkeypatch) -> None:
     table = demo.compare_table(paths)
     lines = [ln for ln in table.splitlines() if ln.startswith(("vanilla", "cachescout"))]
     assert all("40/100" in ln for ln in lines), table
+
+
+@pytest.mark.parametrize(("model", "config"), [
+    ("Qwen/Qwen2.5-1.5B-Instruct", "configs/experiments/real/local.yaml"),
+    ("meta-llama/Llama-3.1-8B-Instruct", "configs/experiments/real/cloud.yaml"),
+    ("Qwen/Qwen2.5-7B-Instruct", "configs/experiments/real/cloud.yaml"),
+])
+def test_fingerprints_distinct_per_model(model: str, config: str) -> None:
+    """Tokenizer-only: the six agents must have distinct plugin fingerprints (first
+    fingerprint_blocks x 16 tokens) under the model's chat template. Llama 3.1 prepends a shared
+    'Cutting Knowledge Date / Today Date' header. Skips if the tokenizer is not cached locally."""
+    from pathlib import Path
+
+    from cachescout.agents.fingerprints import fingerprint_report
+    from cachescout.agents.prompting import hf_chat_tokenizer
+    from cachescout.agents.routing import TOPOLOGIES
+    from cachescout.config import load_experiment
+
+    transformers = pytest.importorskip("transformers")
+    try:
+        tok = transformers.AutoTokenizer.from_pretrained(model, local_files_only=True)
+    except Exception:
+        pytest.skip(f"{model} tokenizer not cached (run: hf download {model})")
+    repo = Path(__file__).resolve().parents[1]
+    blocks = load_experiment(repo / config, repo_root=repo)["cachescout"]["params"][
+        "fingerprint_blocks"]
+    t = hf_chat_tokenizer(tok)
+    for topo in TOPOLOGIES:
+        r = fingerprint_report(t, topo, blocks)
+        assert r.distinct, (f"{model}/{topo}: fingerprints collide within {r.window_tokens} tokens "
+                            f"(shared prefix {r.shared_prefix_tokens}); set fingerprint_blocks >= "
+                            f"{r.min_blocks_needed}")
+
+
+def test_fingerprint_report_detects_collision() -> None:
+    from cachescout.agents.fingerprints import fingerprint_report
+
+    def long_header(messages):                 # 40 identical header tokens, then the content
+        return [7] * 40 + fake_tokenize(messages)
+    assert fingerprint_report(fake_tokenize, "pipeline", 2).distinct
+    r = fingerprint_report(long_header, "pipeline", 2)
+    assert not r.distinct and r.shared_prefix_tokens >= 40 and r.min_blocks_needed >= 3
+    assert fingerprint_report(long_header, "pipeline", r.min_blocks_needed).distinct
+
+
+def test_box_profiles_and_hardware_override() -> None:
+    from pathlib import Path
+
+    from cachescout.config import load_experiment, load_yaml
+    from cachescout.kv_blocks import kv_bytes_per_block, kv_bytes_per_token
+
+    repo = Path(__file__).resolve().parents[1]
+    for name in ("box_24gb", "box_48gb", "box_80gb"):
+        hw = load_yaml(repo / f"configs/hardware/{name}.yaml")
+        assert hw["model"]["name"] == "meta-llama/Llama-3.1-8B-Instruct"
+        assert 0 < hw["vllm"]["gpu_memory_utilization"] <= 0.95
+        assert hw["env"]["HF_HUB_OFFLINE"] == "1"
+    exp = load_experiment(repo / "configs/experiments/real/cloud.yaml", repo_root=repo,
+                          hardware="configs/hardware/box_24gb.yaml")
+    assert exp["hardware_cfg"]["name"] == "box-24gb" and exp["experiment"] == "real_cloud"
+    assert kv_bytes_per_token(32, 8, 128) == 131072          # Llama-3.1-8B: 128 KiB/token
+    assert kv_bytes_per_block(32, 8, 128) == 2 * 2**20       # 2 MiB per 16-token block
+    assert kv_bytes_per_block(28, 2, 128) == 458752          # Qwen2.5-1.5B (verified locally)

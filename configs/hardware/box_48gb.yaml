@@ -1,0 +1,18 @@
+# Remote box with a ~48 GB GPU (e.g. L40S, RTX A6000), Llama-3.1-8B-Instruct in bf16.
+# Memory estimate: 0.90 x ~44.4 GiB usable = ~40 GiB; weights ~15.0 GiB; activations + CUDA graphs
+# ~3 GiB -> ~22 GiB KV = ~11,000 blocks of 2 MiB. Verify with vLLM's "Available KV cache memory".
+name: box-48gb
+model:
+  name: meta-llama/Llama-3.1-8B-Instruct
+  dtype: bfloat16
+vllm:
+  gpu_memory_utilization: 0.90
+  max_model_len: 4096
+  max_num_seqs: 128
+  block_size: 16
+  enable_prefix_caching: true
+  enforce_eager: false
+  num_gpu_blocks_override: null
+  tensor_parallel_size: 1
+env:
+  HF_HUB_OFFLINE: "1"

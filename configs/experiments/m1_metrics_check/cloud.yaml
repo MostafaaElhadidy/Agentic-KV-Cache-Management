@@ -3,6 +3,7 @@ experiment: m1_metrics_check
 hardware: configs/hardware/cloud.yaml
 seed: 0
 num_gpu_blocks_override: 256   # overrides the hardware profile for this check only
+max_model_len: 2048            # one full sequence (128 blocks) must fit in 255 usable blocks
 max_tokens: 8
 token_id_range: [1000, 120000]   # Llama-3.1 vocab is 128256 (special tokens >= 128000)
 checks:

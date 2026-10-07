@@ -48,7 +48,7 @@ def result_path(exp: dict[str, Any], trace_name: str, label: str, blocks: int, t
 
 def run_gpu(config: str, trace: str | None, label: str, blocks: int, tag: str,
             variants: set[str], timeout_s: int, sets: list[str] | None = None,
-            name_hint: str = "default") -> int:
+            name_hint: str = "default", hardware: str | None = None) -> int:
     sel = ["--variant", label] if label in variants else ["--system", label]
     cmd = [str(REPO / "scripts" / "gpu_run.sh"), f"{Path(config).parent.name}_{label}_b{blocks}"
            f"_{name_hint}_{tag}", str(timeout_s),
@@ -58,6 +58,8 @@ def run_gpu(config: str, trace: str | None, label: str, blocks: int, tag: str,
         cmd += ["--trace", trace]
     for assignment in sets or []:
         cmd += ["--set", assignment]
+    if hardware:
+        cmd += ["--hardware", hardware]
     print("[compare] running:", " ".join(cmd[3:]), flush=True)
     return subprocess.run(cmd, cwd=REPO).returncode
 
@@ -218,8 +220,10 @@ def main() -> int:
     parser.add_argument("--timeout", type=int, default=2400)
     parser.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",
                         help="config override passed to every run (e.g. agents.topology=random)")
+    parser.add_argument("--hardware", default=None,
+                        help="hardware profile for every run, e.g. configs/hardware/box_48gb.yaml")
     args = parser.parse_args()
-    exp = load_experiment(REPO / args.config, repo_root=REPO)
+    exp = load_experiment(REPO / args.config, repo_root=REPO, hardware=args.hardware)
     for assignment in args.set:
         set_dotted(exp, assignment)
     if args.trace:
@@ -250,7 +254,7 @@ def main() -> int:
             path = result_path(exp, trace_name, label, b, args.tag)
             if not path.exists() and args.run:
                 rc = run_gpu(args.config, args.trace, label, b, args.tag, variants, args.timeout,
-                             args.set, trace_name)
+                             args.set, trace_name, args.hardware)
                 if rc != 0:
                     print(f"[compare] GPU run failed (rc={rc}) for {label} @ {b}; stopping.")
                     return rc

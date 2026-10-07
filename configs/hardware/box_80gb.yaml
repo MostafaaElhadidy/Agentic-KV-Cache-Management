@@ -1,0 +1,19 @@
+# Remote box with an ~80 GB GPU (A100 80GB / H100 80GB), Llama-3.1-8B-Instruct in bf16.
+# Same vLLM settings as configs/hardware/cloud.yaml (the original M6 profile), but offline mode.
+# Memory estimate: 0.90 x ~79 GiB usable = ~71 GiB; weights ~15.0 GiB; activations + CUDA graphs
+# ~4 GiB -> ~52 GiB KV = ~26,000 blocks of 2 MiB.
+name: box-80gb
+model:
+  name: meta-llama/Llama-3.1-8B-Instruct
+  dtype: bfloat16
+vllm:
+  gpu_memory_utilization: 0.90
+  max_model_len: 4096
+  max_num_seqs: 256
+  block_size: 16
+  enable_prefix_caching: true
+  enforce_eager: false
+  num_gpu_blocks_override: null
+  tensor_parallel_size: 1
+env:
+  HF_HUB_OFFLINE: "1"

@@ -182,3 +182,24 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
   unclear DECIDER reply), back to C. Measured R = 1.00. The paper's debate (Fig. 4a/5) is stochastic: after the
   reviewer the next speaker varies (R = 0.78). Our results for "debate" therefore correspond to a fully
   predictable coder/reviewer/judge loop, not to the paper's debate statistics.
+
+## 2026-10-07: Remote-box preparation (branch box-prep)
+- **Engineering choice.** GPU-size profiles `configs/hardware/box_{24,48,80}gb.yaml` for Llama-3.1-8B-Instruct
+  (bf16): 24 GB uses `enforce_eager: true`, `max_num_seqs: 32`, `max_num_batched_tokens: 4096`; 48 GB uses
+  eager off, 128 seqs; 80 GB = the original `cloud.yaml` settings (eager off, 256 seqs). All use
+  `gpu_memory_utilization: 0.90`, `num_gpu_blocks_override: null` (experiments set 100/150/200 blocks) and
+  `HF_HUB_OFFLINE=1` (download first, never mid-run). Memory arithmetic in docs/NEW_BOX_SETUP.md §9
+  (KV 128 KiB/token, 2 MiB/block for Llama-3.1-8B; computed by `cachescout.kv_blocks`, tested). KV-memory
+  estimates are estimates; vLLM's "Available KV cache memory" log line is authoritative.
+- **Engineering choice.** `--hardware <profile>` on run.py / compare.py / check_prefix_metrics.py and
+  `HARDWARE=` on run_real_campaign.sh select the profile without editing experiment configs (defaults unchanged).
+- **Bug fix (latent in the original cloud prep).** `m1_metrics_check/cloud.yaml` combined 256 blocks
+  (255 usable) with the profile's `max_model_len: 4096` (needs 256 blocks), so vLLM would refuse to start.
+  It now sets `max_model_len: 2048`, and check_prefix_metrics.py honours an experiment-level `max_model_len`
+  like run.py.
+- **Fingerprints under Llama 3.1.** Its chat template prepends a shared header ("Cutting Knowledge Date / Today
+  Date") before each system prompt; `scripts/check_fingerprints.py` / the tokenizer test verify that the six
+  agents still differ within the plugin's 2-block window. Not verifiable locally (gated tokenizer not cached);
+  if it fails on the box, raise `fingerprint_blocks` in configs/experiments/real/cloud.yaml.
+- **Ungated fallback model:** Qwen/Qwen2.5-7B-Instruct (Apache-2.0; 56 KiB KV/token). Results with it must be
+  labelled as Qwen2.5-7B, not as the paper's model.

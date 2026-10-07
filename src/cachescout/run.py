@@ -351,8 +351,9 @@ def apply_variant(exp: dict[str, Any], variant: str) -> str:
 
 
 def run(config: str, system_cli: str | None, overrides: dict[str, Any],
-        variant: str | None = None, sets: list[str] | None = None) -> Path:
-    exp = load_experiment(REPO / config, repo_root=REPO)
+        variant: str | None = None, sets: list[str] | None = None,
+        hardware: str | None = None) -> Path:
+    exp = load_experiment(REPO / config, repo_root=REPO, hardware=hardware)
     for k, v in overrides.items():
         if v is not None:
             exp[k] = v
@@ -455,12 +456,15 @@ def main() -> int:
     parser.add_argument("--variant", default=None, help="named entry of the config `variants:`")
     parser.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",
                         help="override a config value, e.g. --set agents.topology=random")
+    parser.add_argument("--hardware", default=None,
+                        help="hardware profile replacing the config's `hardware:` "
+                             "(e.g. configs/hardware/box_48gb.yaml)")
     args = parser.parse_args()
     if args.variant and args.system:
         parser.error("use either --system or --variant")
     run(args.config, args.system, {"num_gpu_blocks_override": args.blocks, "trace": args.trace,
                                    "mode": args.mode, "tag": args.tag}, variant=args.variant,
-        sets=args.set)
+        sets=args.set, hardware=args.hardware)
     return 0
 
 

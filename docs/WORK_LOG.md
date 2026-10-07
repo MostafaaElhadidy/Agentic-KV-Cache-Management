@@ -224,3 +224,12 @@ Resume with `claude --continue`; the last entry says what was in progress.
   Mermaid, fetch_gsm8k in quickstart, false caveats removed). 119 tests pass.
 - STOPPED for the user's review. Nothing pushed or merged.
 - 2026-10-07 06:52 Docs: open-loop replay + deterministic debate notes (README, decisions). Added scripts/demo.py (your task; --compare = live vanilla recording + REPLAY vanilla vs cachescout). Example run (results/demo/*20261007-064340*): replay hit 22.3% vs 27.9%, TTFT 1306 vs 1341 ms; agents answered the custom task wrongly (CODER copied the calculator example). Fixed a demo table bug (warmups counted in per-task sums) found on that run. 121 tests pass.
+
+## 2026-10-07 12:49 Remote-box preparation (branch box-prep, no GPU used, nothing pushed)
+- Reused existing cloud prep (cloud.yaml profile, CLOUD_RUNBOOK, traces/cloud.yaml, cloud experiment configs).
+- Added NEW_BOX_SETUP.md, BOX_CHEATSHEET.md, box_preflight.sh (read-only; tested locally: found and fixed its
+  own CUDA-version parsing for the "CUDA UMD Version" header), box_{24,48,80}gb profiles, real/cloud.yaml,
+  --hardware option, run_real_campaign.sh local|cloud, tune_real.py --config, aggregate_real.py --exp,
+  fingerprints.py + check_fingerprints.py + tokenizer test (Llama/Qwen-7B skip: not cached).
+- Fixed latent bug: m1_metrics_check/cloud.yaml would fail (max_model_len 4096 with 256 blocks).
+- Corrected a doc claim before committing: huggingface_hub 1.33 has no huggingface_hub.commands module.
