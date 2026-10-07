@@ -49,8 +49,8 @@ cd Agentic-KV-Cache-Management
 git log --oneline -3
 ```
 - **You should see** the latest commits.
-- **If the files from this guide are missing** (for example `scripts/box_preflight.sh`), the `box-prep` branch
-  isn't merged yet: run `git checkout box-prep`.
+- **If the files from this guide are missing** (for example `scripts/box_preflight.sh`), your checkout is old
+  or on another branch: run `git checkout main && git pull`.
 
 ## 4. Install Python 3.12 with uv (no root)
 
