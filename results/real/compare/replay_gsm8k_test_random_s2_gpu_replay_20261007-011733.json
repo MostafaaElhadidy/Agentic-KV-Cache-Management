@@ -1,0 +1,120 @@
+{
+  "kind": "GPU (vLLM 0.31.0)",
+  "config": "configs/experiments/real/local.yaml",
+  "trace": "results/real/gsm8k_test_random_s2/vanilla/b100_eval",
+  "blocks": [
+    100,
+    150,
+    200
+  ],
+  "labels": [
+    "vanilla",
+    "cachescout"
+  ],
+  "table": {
+    "100": {
+      "vanilla": {
+        "hit_rate": 0.15940613401054893,
+        "ttft_mean_ms": 1838.7288169628678,
+        "ttft_median_ms": 1686.8183320002572,
+        "ttft_p99_ms": 6398.78678959969,
+        "latency_mean_ms": 2995.860201010483,
+        "latency_p99_ms": 7029.02221152108,
+        "throughput_tps": 1.6309793951905902,
+        "turns": 189,
+        "source": "results/real/replay_gsm8k_test_random_s2/vanilla/b100_replay/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.1671522121338237,
+        "ttft_mean_ms": 1744.289591291192,
+        "ttft_median_ms": 1602.8827959999035,
+        "ttft_p99_ms": 6094.300393399317,
+        "latency_mean_ms": 2863.6718301057517,
+        "latency_p99_ms": 6664.420259480104,
+        "throughput_tps": 1.6559508847332973,
+        "turns": 189,
+        "source": "results/real/replay_gsm8k_test_random_s2/cachescout/b100_replay/result.json",
+        "warmups_issued": 11
+      }
+    },
+    "150": {
+      "vanilla": {
+        "hit_rate": 0.301553462378012,
+        "ttft_mean_ms": 260.4650198043494,
+        "ttft_median_ms": 111.4530820013897,
+        "ttft_p99_ms": 1782.8738622012327,
+        "latency_mean_ms": 1395.638594074385,
+        "latency_p99_ms": 3964.5826962809956,
+        "throughput_tps": 1.7686471196253157,
+        "turns": 189,
+        "source": "results/real/replay_gsm8k_test_random_s2/vanilla/b150_replay/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.31487128090574756,
+        "ttft_mean_ms": 268.4255243861424,
+        "ttft_median_ms": 113.1774570021662,
+        "ttft_p99_ms": 1657.3172869600246,
+        "latency_mean_ms": 1421.3014649419824,
+        "latency_p99_ms": 4009.080914201623,
+        "throughput_tps": 1.7542542165450956,
+        "turns": 189,
+        "source": "results/real/replay_gsm8k_test_random_s2/cachescout/b150_replay/result.json",
+        "warmups_issued": 17
+      }
+    },
+    "200": {
+      "vanilla": {
+        "hit_rate": 0.36257081461222895,
+        "ttft_mean_ms": 108.20228907906558,
+        "ttft_median_ms": 93.63602999655996,
+        "ttft_p99_ms": 301.23801647976546,
+        "latency_mean_ms": 1240.1545020263434,
+        "latency_p99_ms": 3885.9193478396633,
+        "throughput_tps": 1.774890182265745,
+        "turns": 189,
+        "source": "results/real/replay_gsm8k_test_random_s2/vanilla/b200_replay/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.4064652573107859,
+        "ttft_mean_ms": 109.10370084657285,
+        "ttft_median_ms": 96.78701200027717,
+        "ttft_p99_ms": 439.117705957324,
+        "latency_mean_ms": 1218.7647046773461,
+        "latency_p99_ms": 3748.500640920829,
+        "throughput_tps": 1.782900404536786,
+        "turns": 189,
+        "source": "results/real/replay_gsm8k_test_random_s2/cachescout/b200_replay/result.json",
+        "warmups_issued": 15
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "CacheScout hit rate > vanilla at every budget",
+      "ok": true,
+      "detail": "gains (pp): 100:+0.8, 150:+1.3, 200:+4.4",
+      "paper": "Fig. 8a (+10..18 pp), Fig. 14a"
+    },
+    {
+      "check": "gain shrinks as the cache grows",
+      "ok": false,
+      "detail": "100: +0.8 pp vs 200: +4.4 pp",
+      "paper": "Fig. 14a (vanilla 64.4%->76.6%, CacheScout flat 86-87%)"
+    },
+    {
+      "check": "CacheScout mean TTFT < vanilla at every budget",
+      "ok": false,
+      "detail": "100:-5.1%, 150:+3.1%, 200:+0.8%",
+      "paper": "Fig. 8b (-18..45%)"
+    },
+    {
+      "check": "CacheScout mean per-turn latency < vanilla at every budget",
+      "ok": false,
+      "detail": "100:-4.4%, 150:+1.8%, 200:-1.7%",
+      "paper": "Fig. 10a (-29..38%)"
+    }
+  ]
+}

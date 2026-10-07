@@ -1,0 +1,120 @@
+{
+  "kind": "GPU (vLLM 0.31.0)",
+  "config": "configs/experiments/real/local.yaml",
+  "trace": "(live agents)",
+  "blocks": [
+    100,
+    150,
+    200
+  ],
+  "labels": [
+    "vanilla",
+    "cachescout"
+  ],
+  "table": {
+    "100": {
+      "vanilla": {
+        "hit_rate": 0.38444946074742914,
+        "ttft_mean_ms": 152.71665212934877,
+        "ttft_median_ms": 85.27800899901194,
+        "ttft_p99_ms": 1168.1633586504172,
+        "latency_mean_ms": 1521.8734723534124,
+        "latency_p99_ms": 3624.47170325031,
+        "throughput_tps": 0.8998894452435348,
+        "turns": 116,
+        "source": "results/real/gsm8k_test_debate_s3/vanilla/b100_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.4753733714648872,
+        "ttft_mean_ms": 180.22654669184703,
+        "ttft_median_ms": 80.4481270024553,
+        "ttft_p99_ms": 1195.8426229479664,
+        "latency_mean_ms": 1576.9638297918086,
+        "latency_p99_ms": 3533.5028054383292,
+        "throughput_tps": 0.9301361628798398,
+        "turns": 120,
+        "source": "results/real/gsm8k_test_debate_s3/cachescout/b100_eval/result.json",
+        "warmups_issued": 66
+      }
+    },
+    "150": {
+      "vanilla": {
+        "hit_rate": 0.4771382029901779,
+        "ttft_mean_ms": 95.834871924172,
+        "ttft_median_ms": 77.54233350351569,
+        "ttft_p99_ms": 372.872858109913,
+        "latency_mean_ms": 1428.7196786101697,
+        "latency_p99_ms": 3428.1986375591077,
+        "throughput_tps": 0.9151917931192773,
+        "turns": 118,
+        "source": "results/real/gsm8k_test_debate_s3/vanilla/b150_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.5514642584501438,
+        "ttft_mean_ms": 87.92413993131392,
+        "ttft_median_ms": 77.4203939945437,
+        "ttft_p99_ms": 203.68631583492973,
+        "latency_mean_ms": 1452.2807233674355,
+        "latency_p99_ms": 3418.603073756385,
+        "throughput_tps": 0.9072956115618648,
+        "turns": 117,
+        "source": "results/real/gsm8k_test_debate_s3/cachescout/b150_eval/result.json",
+        "warmups_issued": 72
+      }
+    },
+    "200": {
+      "vanilla": {
+        "hit_rate": 0.5191331570468982,
+        "ttft_mean_ms": 91.38778619858348,
+        "ttft_median_ms": 79.2268920049537,
+        "ttft_p99_ms": 265.31739799829654,
+        "latency_mean_ms": 1592.3264077363688,
+        "latency_p99_ms": 3608.1480747976457,
+        "throughput_tps": 0.9264313518644474,
+        "turns": 121,
+        "source": "results/real/gsm8k_test_debate_s3/vanilla/b200_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.5366060358762692,
+        "ttft_mean_ms": 89.15416095013758,
+        "ttft_median_ms": 75.15325799613493,
+        "ttft_p99_ms": 320.5466219995284,
+        "latency_mean_ms": 1383.6645919008565,
+        "latency_p99_ms": 3510.09777640138,
+        "throughput_tps": 0.9368883243362839,
+        "turns": 121,
+        "source": "results/real/gsm8k_test_debate_s3/cachescout/b200_eval/result.json",
+        "warmups_issued": 67
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "CacheScout hit rate > vanilla at every budget",
+      "ok": true,
+      "detail": "gains (pp): 100:+9.1, 150:+7.4, 200:+1.7",
+      "paper": "Fig. 8a (+10..18 pp), Fig. 14a"
+    },
+    {
+      "check": "gain shrinks as the cache grows",
+      "ok": true,
+      "detail": "100: +9.1 pp vs 200: +1.7 pp",
+      "paper": "Fig. 14a (vanilla 64.4%->76.6%, CacheScout flat 86-87%)"
+    },
+    {
+      "check": "CacheScout mean TTFT < vanilla at every budget",
+      "ok": false,
+      "detail": "100:+18.0%, 150:-8.3%, 200:-2.4%",
+      "paper": "Fig. 8b (-18..45%)"
+    },
+    {
+      "check": "CacheScout mean per-turn latency < vanilla at every budget",
+      "ok": false,
+      "detail": "100:+3.6%, 150:+1.6%, 200:-13.1%",
+      "paper": "Fig. 10a (-29..38%)"
+    }
+  ]
+}

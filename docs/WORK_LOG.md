@@ -214,3 +214,12 @@ Resume with `claude --continue`; the last entry says what was in progress.
 - 2026-10-07 02:53 replay stage done: 72/72 runs exit 0. Headline (results/report_real/tables.md, preliminary
   aggregation): mean over topologies+seeds +5.7/+6.3/+6.5 pp hit @100/150/200; latency changes small/noisy.
 - NEXT STEP: live stage (60 remaining runs: vanilla 150/200, cachescout 100/150/200; 4 topologies x 3 seeds).
+- 2026-10-07 05:27 live stage done: 60/60 runs exit 0 (72 live + 72 replay runs total, all git_dirty=false).
+  Aggregation: results/report_real/{summary.json,tables.md,fig_real_*.png}. Replay (headline) +5.7/+6.3/+6.5 pp,
+  positive in 35/36 pairs, TTFT -2.9/-0.9/-1.2%. Live +5.3/+6.0/+8.6 pp; live latency dominated by divergence
+  (e.g. selector@150 seed 3: CacheScout run generated longer conversations, TTFT 1419 vs 135 ms).
+  Engine prediction accuracy: selector .81, pipeline/debate .94-.95, random .17-.18. Live accuracy .461 vs .475.
+- Wrote docs/REPORT_REAL_AGENTS.md (3 claims corrected after verification: anchor range 175-292, output mean 49,
+  throughput per-run -0.9..+8.0%); README updated (synthetic results labelled, real-agent section, scope box,
+  Mermaid, fetch_gsm8k in quickstart, false caveats removed). 119 tests pass.
+- STOPPED for the user's review. Nothing pushed or merged.

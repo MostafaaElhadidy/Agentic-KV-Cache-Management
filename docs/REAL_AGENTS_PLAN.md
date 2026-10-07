@@ -169,3 +169,8 @@ Safety rules unchanged:
 7. Before the final report: verify `git log --format='%an <%ae>' | sort -u` shows only the noreply address.
 Resume rule: on a usage limit, error or crash, append the current state and the exact next step to
 docs/WORK_LOG.md first. Commit as I go on `real-agents`. No campaign, no push, no merge without approval.
+
+## Status (2026-10-07)
+Done: agents/tools/routing/driver/record-replay, 119 tests, GSM8K fetch, pilots, router pilot (rejected per
+criterion), sim cross-check on real sessions (155/155 exact), λ re-tuning on train recordings, 12 recordings,
+72 replay runs, 60 more live runs, docs/REPORT_REAL_AGENTS.md, README. Not pushed/merged (awaiting approval).

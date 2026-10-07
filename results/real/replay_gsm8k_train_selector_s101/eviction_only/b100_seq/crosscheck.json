@@ -1,0 +1,10 @@
+{
+  "gpu_result": "results/real/replay_gsm8k_train_selector_s101/eviction_only/b100_seq/result.json",
+  "system": "eviction_only",
+  "requests": 155,
+  "exact_matches": 155,
+  "exact_fraction": 1.0,
+  "mean_abs_diff_tokens": 0.0,
+  "gpu_hit_rate": 0.30521250072476375,
+  "sim_hit_rate": 0.30521250072476375
+}

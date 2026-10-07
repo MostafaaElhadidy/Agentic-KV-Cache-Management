@@ -6,8 +6,16 @@ single 8 GB laptop GPU, with an honest scorecard.**
 ![Python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)
 ![vLLM](https://img.shields.io/badge/vLLM-0.31.0-0b7285)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
-![Tests](https://img.shields.io/badge/tests-86%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-119%20passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-partial%20replication-orange)
+
+> **Scope.** Two workloads, the same vLLM plugin:
+> - **(1) Synthetic traces** built from the paper's agent-transition tables;
+> - **(2) a real multi-agent workload:** six LLM agents solving GSM8K with real tools, a recorded transcript per
+>   session, and a record-and-replay comparison.
+>
+> Single RTX 4060 Laptop GPU (8 GB), Qwen2.5-1.5B-Instruct; the paper used Llama-3.1-8B on 8 large GPUs.
+> Independent, unofficial replication.
 
 ## TL;DR
 
@@ -19,19 +27,22 @@ single 8 GB laptop GPU, with an honest scorecard.**
   - A one-flag on/off switch, ablations and baselines.
   - A vLLM-exact cache simulator, a synthetic multi-agent workload generator and a full benchmarking pipeline.
   - 57 GPU runs on an RTX 4060 Laptop (8 GB).
-- **Headline result.**
-  - CacheScout raises the KV-cache hit rate over vanilla vLLM in **every** run: **+2.7 / +2.2 / +1.2 pp** at
-    100 / 150 / 200 cache blocks (mean of 3 seeds).
-  - On a deterministic pipeline workload it reaches **+13.1 pp**, with 8.7% lower mean TTFT.
+- **Headline results.**
+  - **Real agents, replay** (identical prompts for both systems): **+5.7 / +6.3 / +6.5 pp** cache hit rate at
+    100 / 150 / 200 blocks, positive in 35 of 36 runs. TTFT changes are small (−0.9% to −2.9%) and not
+    consistent.
+  - **Synthetic traces:** +2.7 / +2.2 / +1.2 pp (mean of 3 seeds), positive in every run. On a deterministic
+    pipeline workload it reaches +13.1 pp, with 8.7% lower mean TTFT.
 - **Honest caveat.**
-  - The gains are 5–10× smaller than the paper's, there is no consistent speed-up, and two of the paper's claims
-    did not reproduce.
+  - The gains are smaller than the paper's (+10–18 pp) and there is no consistent speed-up.
+  - On the synthetic traces two claims did not reproduce.
+  - The 1.5B model ignores the selector protocol 77% of the time.
   - The positive results depend on two documented interpretations of ambiguous parts of the paper.
 
 <p align="center">
   <img src="results/report/fig_cache_sweep.png" alt="KV-cache hit rate vs GPU cache budget for vanilla vLLM, eviction-only and CacheScout, with the paper's Fig. 14a values as dashed reference lines" width="560">
 </p>
-<p align="center"><sub><b>Cache-size sweep on real vLLM (Selector workload, mean of 3 seeds).</b> CacheScout (pink) stays
+<p align="center"><sub><b>Synthetic traces: cache-size sweep on real vLLM (Selector workload, mean of 3 seeds).</b> CacheScout (pink) stays
 above vanilla vLLM (blue, dashed) at every budget, and the gap narrows as memory grows, the same direction as the
 paper's Fig. 14a (grey reference lines). The gap is much smaller than the paper's. The eviction-only line lies
 exactly under CacheScout. Source: <code>results/report/fig_cache_sweep.png</code>,
@@ -54,8 +65,13 @@ pattern online, and give blocks of *agents likely to run soon* a higher chance o
 
 ```mermaid
 flowchart LR
-    subgraph Client["Agent framework / driver"]
-        A["Agents<br/>Planner · Coder · Reviewer ..."] -->|"requests"| R["cachescout.run<br/>(trace replay)"]
+    subgraph Client["Workload driver (cachescout.run)"]
+        G["GSM8K problem"] --> A["6 real agents<br/>Planner · Analyst · Coder · Tester · Reviewer · Decider"]
+        A <-->|"CALL calculator / scratchpad"| TL["Tools<br/>(really executed)"]
+        A -->|"routing: pipeline · random · debate · selector"| A
+        X["Synthetic traces<br/>or recorded sessions (replay)"]
+        A -->|"chat-template prompts"| R["requests"]
+        X --> R
         R --> W["Warmup coordinator<br/>prefetch predicted anchor (Eqs. 10-11)"]
     end
     subgraph Engine["vLLM 0.31.0 engine core"]
@@ -104,9 +120,9 @@ cachescout:
 Ablations and baselines: `--system eviction_only | warmup_only | continuum`, plus named variants
 `--variant cachescout_literal` (Algorithm 1 exactly as written) and `--variant no_prediction` (τ = 0).
 
-## Results
+## Results: synthetic traces
 
-Real vLLM 0.31.0, Qwen2.5-1.5B-Instruct, RTX 4060 Laptop, Selector workload. Each value is the **mean of 3
+Real vLLM 0.31.0, Qwen2.5-1.5B-Instruct, RTX 4060 Laptop, synthetic Selector traces. Each value is the **mean of 3
 evaluation seeds** (60 sessions, ~730 LLM calls per run). Source: `results/report/summary.json` (`readme_table`
 and `seeds`), which lists every per-run file, e.g.
 `results/main/selector_eval/cachescout/b100_eval/result.json`.
@@ -120,7 +136,7 @@ and `seeds`), which lists every per-run file, e.g.
 | 200 blocks | vanilla vLLM | 70.2% | 70.5 ms | 371.7 ms | 6.47 turns/s |
 | 200 blocks | **CacheScout** | **71.4%** (+1.2 ± 0.4 pp) | 70.3 ms (−0.3 ± 0.1%) | 371.6 ms (−0.0 ± 0.3%) | 6.47 turns/s |
 
-**Paper vs this replication** (paper: Llama-3.1-8B on 8× RTX PRO 6000; real AutoGen workloads):
+**Paper vs this replication, synthetic traces** (paper: Llama-3.1-8B on 8× RTX PRO 6000; real AutoGen workloads):
 
 | Claim | Paper | This replication | Source |
 |---|---|---|---|
@@ -137,7 +153,63 @@ and `seeds`), which lists every per-run file, e.g.
 More: topology and load-sweep tables in `results/report/tables.md`, the per-topology figure
 `results/report/fig_topologies.png`, and the full analysis in [`docs/REPORT.md`](docs/REPORT.md).
 
+## Real multi-agent workload
+
+**What is real:**
+- Six Qwen2.5-1.5B agents talk through chat-template prompts, and every output feeds the later prompts.
+- A safe calculator and a scratchpad really execute, and their results go back into the conversation.
+- The next agent is chosen by the topology rule (pipeline, random, debate) or by the agent's own `NEXT:` line
+  (selector).
+- Tasks are real GSM8K test problems: 3 disjoint sets of 20, scored against the gold answers.
+- Every session is recorded; `scripts/show_session.py <run_dir>` prints one as a readable conversation.
+
+**Two comparisons:**
+- **Replay (headline, controlled):** each live vanilla session is recorded once, then its exact prompts are
+  replayed under vanilla and CacheScout.
+- **Live closed-loop:** each system generates its own conversation.
+
+Live runs **diverge between systems**: the same problem at temperature 0 yields different conversations under
+different engine configurations. Live latency differences therefore can't be attributed to CacheScout alone.
+
+<p align="center">
+  <img src="results/report_real/fig_real_replay_gain.png" alt="CacheScout minus vanilla hit rate per topology and cache budget for the real multi-agent workload in replay mode, with error bars over 3 seeds" width="560">
+</p>
+<p align="center"><sub><b>Real agents, replay (identical prompts), mean ± std of 3 seeds.</b> Source:
+<code>results/report_real/fig_real_replay_gain.png</code>, data in <code>results/report_real/summary.json</code>.</sub></p>
+
+| Mean over 4 topologies × 3 seeds | 100 blocks | 150 blocks | 200 blocks | Source |
+|---|---|---|---|---|
+| Replay: Δ hit rate | **+5.7 pp** | **+6.3 pp** | **+6.5 pp** | `results/report_real/summary.json` (`replay.all@*`) |
+| Replay: Δ mean TTFT | −2.9% | −0.9% | −1.2% | same |
+| Replay: Δ per-turn latency | −1.9% | −0.0% | −1.0% | same |
+| Live: Δ hit rate | +5.3 pp | +6.0 pp | +8.6 pp | `results/report_real/summary.json` (`live.all@*`) |
+| Live: Δ mean TTFT (diverging outputs, not attributable) | +11.2% | +104.6% | −18.5% | same |
+
+| Topology (vanilla recordings, 100 blocks) | Measured R | Selector fallback | GSM8K accuracy | Replay Δ hit @100 / 150 / 200 |
+|---|---|---|---|---|
+| pipeline | 1.00 | n/a | 0.53 | +5.7 / +9.6 / +9.9 pp |
+| random | 0.14 | n/a | 0.38 | +2.2 / +1.6 / +3.9 pp |
+| debate (rule-based) | 1.00 | n/a | 0.42 | +6.4 / +4.1 / +2.4 pp |
+| selector | 0.77 | **77% of routing decisions** | 0.50 | +8.6 / +9.7 / +9.8 pp |
+
+Per-run files are listed in `results/report_real/summary.json` (e.g.
+`results/real/replay_gsm8k_test_selector_s1/cachescout/b100_replay/result.json`). Full analysis:
+[`docs/REPORT_REAL_AGENTS.md`](docs/REPORT_REAL_AGENTS.md).
+
+- **GSM8K accuracy** is identical across systems in replay by construction. Live it is 0.461 vs 0.475, a
+  divergence effect, not a cache effect.
+- **The selector protocol is mostly ignored by the 1.5B model** (77% round-robin fallbacks), so that topology is
+  largely round-robin. A separate constrained selector call was tried and rejected because it chose DECIDER
+  64.7% of the time (`docs/decisions.md`).
+- The engine-side next-agent prediction accuracy is 0.81 (selector), 0.94–0.95 (pipeline, debate) and 0.17–0.18
+  (random).
+- The simulator matched real vLLM exactly on recorded real sessions: 155/155 requests for vanilla, the neutral
+  hook and CacheScout.
+
 ## What reproduced, and what did not
+
+These points refer to the **synthetic traces**; the real-workload differences are listed at the end of this
+section.
 
 **Reproduced (direction and ordering)**
 - CacheScout's hit rate beats vanilla vLLM at every budget, in all 9 seed × budget runs (+0.8 to +3.5 pp).
@@ -165,11 +237,19 @@ More: topology and load-sweep tables in `results/report/tables.md`, the per-topo
 
 Algorithm 1 implemented literally gained only +0.4 / +0.1 / −1.0 pp.
 
+**On the real multi-agent workload**
+- Gains are 2–5× larger than on the synthetic traces (replay +5.7 to +6.5 pp; up to +9.9 pp per topology).
+  Still below the paper's +10–18 pp on average.
+- Random routing gives the smallest gain (+1.6 to +3.9 pp), which is directionally what the paper predicts.
+- The gain does **not** shrink as the cache grows.
+- TTFT and latency improvements stay small and inconsistent.
+
 ## Quickstart
 
 **Prerequisites:** Windows 11 + WSL2 (Ubuntu) or native Linux, an NVIDIA GPU (8 GB is enough), an existing
 Python 3.12 environment with **vLLM 0.31.0**, and the model `Qwen/Qwen2.5-1.5B-Instruct` in your Hugging Face
-cache.
+cache. The real-agent workload also needs GSM8K: `bash scripts/fetch_gsm8k.sh` downloads it into the
+git-ignored `data/` folder and verifies the tracked checksums.
 
 ```bash
 git clone https://github.com/MostafaaElhadidy/Agentic-KV-Cache-Management.git
@@ -177,7 +257,7 @@ cd Agentic-KV-Cache-Management
 source ~/your-vllm-env/bin/activate            # an environment that already has vllm==0.31.0
 pip install -r requirements-extra.txt          # or: uv pip install -r ...  (pytest, ruff, pyyaml, matplotlib)
 
-pytest -q                                       # 86 tests, no GPU needed
+pytest -q                                       # 119 tests, no GPU needed
 python scripts/make_traces.py                  # regenerate the synthetic traces (deterministic seeds)
 python scripts/compare.py --config configs/experiments/main/local.yaml --blocks 100,150,200 --sim   # no GPU
 ```
@@ -195,6 +275,19 @@ bash scripts/run_all_local.sh && python scripts/aggregate_report.py             
 
 Each run takes about 2 minutes and writes `results/main/<trace>/<system>/b<blocks>_<tag>/result.json`, which
 holds the config, git commit, package versions, every request and a summary. Never run two GPU jobs at once.
+
+**Real multi-agent workload** (about 2.5 minutes per run of 20 sessions):
+
+```bash
+bash scripts/fetch_gsm8k.sh                                   # GSM8K test/train + checksum check
+RCFG=configs/experiments/real/local.yaml
+scripts/gpu_run.sh real 2400 python -m cachescout.run --config $RCFG --system vanilla --blocks 100 \
+    --set agents.topology=selector --set agents.problem_seed=1          # live, recorded
+python scripts/show_session.py results/real/gsm8k_test_selector_s1/vanilla/b100_eval   # read a session
+scripts/gpu_run.sh replay 2400 python -m cachescout.run --config $RCFG --system cachescout --blocks 100 \
+    --set mode=online --trace results/real/gsm8k_test_selector_s1/vanilla/b100_eval     # controlled replay
+bash scripts/run_real_campaign.sh replay && python scripts/aggregate_real.py           # campaign + report
+```
 
 ## Hardware and environment
 
@@ -222,13 +315,14 @@ src/cachescout/
   vllm_plugin/   CacheScoutScheduler (vLLM scheduler_cls hook)
   sim/           vLLM-exact prefix-cache simulator
   workload/      Fig. 5 topologies, trace generator, trace statistics
+  agents/        real multi-agent GSM8K workload: agents, tools, routing, sessions, record/replay
   metrics/       TurnRecord, summaries (paper Sec. 5.1 metrics)
   run.py         experiment runner (the on/off switch)
 configs/         hardware (local/cloud), traces, experiments
 scripts/         compare.py, gpu_run.sh, run_all_local.sh, aggregate_report.py, tuning, checks
 results/         tracked results cited by the docs (raw logs and regenerable traces are git-ignored)
 docs/            REPORT, WORK_LOG, decisions, open questions, paper notes, vLLM internals, cloud runbook
-tests/           86 pytest tests (no GPU)
+tests/           119 pytest tests (no GPU)
 paper/           the paper PDF (CC BY 4.0) and attribution
 ```
 
@@ -236,8 +330,15 @@ paper/           the paper PDF (CC BY 4.0) and attribution
 
 - **Small model, short prompts.** Prefill is cheap at 1.5B parameters and ~340 tokens, which likely hides any
   latency benefit.
-- **Synthetic workloads.** Real AutoGen runs and datasets were not used. Session-history reuse is much lower than
-  in the paper (≈1 vs 12–15 reuses per block), and requests are smaller (≤ 44 vs ~93 blocks).
+- **Synthetic traces.** Session-history reuse is much lower than in the paper (≈1 vs 12–15 reuses per block),
+  and requests are smaller (≤ 44 vs ~93 blocks).
+- **Real-agent workload.**
+  - It uses our own six-agent driver, not the AutoGen framework, so the selector is the agent's own `NEXT:`
+    line, not a separate selector call.
+  - The 1.5B model follows the protocols poorly (77% selector fallbacks) and reaches GSM8K accuracy of only
+    0.38–0.53.
+  - Live runs diverge between systems.
+  - 20 sessions per run at 0.2 sessions/s.
 - **Guessed constants and two interpretations.** The paper gives no values for ε, τ, E_max, λ, δ or R_min. They
   were tuned on separate tuning traces, never on the evaluation traces.
 - **Statistics.** 3 seeds for the main sweep; single seed for topologies, load and extra ablations. Run-to-run
@@ -249,12 +350,14 @@ paper/           the paper PDF (CC BY 4.0) and attribution
 
 - **Cloud phase** (prepared, not run): Llama-3.1-8B on an A100/H100, the same sweeps up to 50 sessions/s. Exact
   commands are in [`docs/CLOUD_RUNBOOK.md`](docs/CLOUD_RUNBOOK.md).
-- **Real AutoGen SelectorGroupChat traces** with an 8B model, to test the workload deviations above.
+- **Larger model for the real-agent workload** (an 8B model follows tool and routing protocols far better than
+  1.5B), and higher session load.
 - **Faster runtime:** cached per-agent scores and a heap instead of a full scan, toward the paper's µs overhead.
 
 ## Documentation
 
-- [`docs/REPORT.md`](docs/REPORT.md): full results and analysis, every number linked to a result file
+- [`docs/REPORT.md`](docs/REPORT.md): synthetic-trace results and analysis, every number linked to a result file
+- [`docs/REPORT_REAL_AGENTS.md`](docs/REPORT_REAL_AGENTS.md): real multi-agent workload (replay and live)
 - [`docs/WORK_LOG.md`](docs/WORK_LOG.md): chronological log of every step, failure and fix
 - [`docs/decisions.md`](docs/decisions.md) and [`docs/open_questions.md`](docs/open_questions.md): every choice
   not given by the paper
