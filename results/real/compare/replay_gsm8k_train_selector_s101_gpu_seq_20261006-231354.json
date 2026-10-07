@@ -1,0 +1,28 @@
+{
+  "kind": "GPU (vLLM 0.31.0)",
+  "config": "configs/experiments/real/local.yaml",
+  "trace": "results/real/gsm8k_train_selector_s101/vanilla/b100_rec",
+  "blocks": [
+    100
+  ],
+  "labels": [
+    "eviction_only"
+  ],
+  "table": {
+    "100": {
+      "eviction_only": {
+        "hit_rate": 0.30521250072476375,
+        "ttft_mean_ms": 86.16287370959687,
+        "ttft_median_ms": 76.64154200028861,
+        "ttft_p99_ms": 224.30846208102597,
+        "latency_mean_ms": 1058.9321955740866,
+        "latency_p99_ms": 3249.167475318318,
+        "throughput_tps": 0.9442453987273679,
+        "turns": 155,
+        "source": "results/real/replay_gsm8k_train_selector_s101/eviction_only/b100_seq/result.json",
+        "warmups_issued": 0
+      }
+    }
+  },
+  "checks": []
+}

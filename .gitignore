@@ -45,3 +45,11 @@ hf_cache/
 
 # Claude Code local-only settings
 .claude/settings.local.json
+
+# Datasets (downloaded by scripts/fetch_gsm8k.sh); only checksums are tracked
+data/*
+!data/gsm8k/
+data/gsm8k/*
+!data/gsm8k/SHA256SUMS
+# bulky per-call prompt dumps of real-agent runs
+results/**/prompts.jsonl.gz

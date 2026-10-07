@@ -156,3 +156,71 @@ Resume with `claude --continue`; the last entry says what was in progress.
 - 19:16 scripts/aggregate_report.py → results/report/{summary.json,tables.md,fig_*.png};
   docs/REPORT.md written (all numbers cite result files). Removed one unsupported claim (run-to-run variance was
   never measured). PLAN.md / CLAUDE.md updated. Final commit next.
+
+## 2026-10-06 20:56 Public release on GitHub
+- Audit: personal email only in commit author fields; secrets none; no files > 5 MB; paper PDF kept (embedded
+  license CC BY 4.0, attribution in paper/README.md); setup_prompt.md and smoke_run2.log removed from history.
+- Backup: ~/CacheScout_backup.bundle. History rewritten with git-filter-repo (temporary uvx env): all authors and
+  committers = Mostafa <110402955+MostafaaElhadidy@users.noreply.github.com>; verified 0 occurrences of the
+  personal email in patches and messages. Local (not global) git identity set to the noreply address.
+- Added README.md, LICENSE (MIT), paper/README.md; .gitignore updated; small cited results tracked.
+- Pushed main to https://github.com/MostafaaElhadidy/Agentic-KV-Cache-Management (remote was empty; no force).
+  Visibility: PUBLIC. Description and topics (kv-cache, vllm, llm-serving, agentic-ai, paper-replication,
+  llm-inference) set via gh.
+
+## 2026-10-06 22:22 Real-agents phase started (branch real-agents)
+- Plan approved (docs/REAL_AGENTS_PLAN.md + amendments). GSM8K download approved (test/train jsonl, openai repo).
+- NEXT STEP: fetch GSM8K, build src/cachescout/agents/, driver, tests; then smoke; then PILOT GATE (stop).
+- 22:30 GSM8K fetched (scripts/fetch_gsm8k.sh; checksums in data/gsm8k/SHA256SUMS). Built
+  src/cachescout/agents/ (definitions, tools, routing, prompting+trimming, session, replay, summary, gsm8k),
+  run.py mode: agents + record/replay loading + --set, compare.py --set/agents support, show_session.py.
+  Anchors 150-283 tokens, 6/6 distinct 32-token fingerprints with the real tokenizer. Tests: 115 passed.
+- NEXT STEP: smoke runs (1 session per topology, vanilla), then one cachescout smoke, then PILOT GATE.
+- 22:32 Smoke 1 (pipeline, vanilla, 1 session; used ONE test problem test:844 — prompt iteration from now on uses train problems only): plumbing OK; CODER wrote Python instead of CALL lines, outputs hit 128-token cap. Clarified tool/format instructions in anchors.
+- 22:35 Smoke 2 (selector, train seed 101, 2 sessions): fallback rate 0.875 — model writes '[PLANNER]: DECIDER' instead of NEXT lines; old fallback looped P<->C until cap. Added lenient name-only parsing (counted) + round-robin fallback; decisions.md updated.
+- 22:39 Smoke 3 (selector, train seed 101): strict NEXT lines 2/15 (13%), fallbacks 13/15, final answer
+  3/3, tool failures 0/3. Stopped prompt iteration (1.5B model mostly ignores the NEXT protocol -> report as
+  finding). git_dirty now ignores untracked files (results/), so committed code => git_dirty=false.
+- NEXT STEP: PILOT GATE: selector @100 blocks, 5 sessions, train seed 102 (tuning problems), vanilla + cachescout
+  live; then STOP and report to the user. Do NOT start the campaign.
+- 22:42 PILOT GATE done (selector, 100 blocks, 5 sessions, train seed 102 = tuning problems
+  train:4868,4549,1141,6014,483; commit 038f48e, git_dirty=false):
+  - vanilla (results/real/gsm8k_train_selector_s102/vanilla/b100_pilot/result.json): fallback 31/38 (0.816),
+    strict NEXT 0.184, tool failures 0/4, FINAL ANSWER 4/5, accuracy 2/5, trim 0/46, hit 0.233, TTFT 603 ms.
+  - cachescout (.../cachescout/b100_pilot/result.json): fallback 20/29 (0.690), tool failures 1/10, FINAL
+    ANSWER 5/5, accuracy 3/5, trim 0/42, hit 0.317, TTFT 251 ms, 20 warmups, engine prediction acc 0.66.
+  - Same problems + temperature 0, but trajectories DIFFER between systems (46 vs 42 calls, different answers):
+    live closed-loop outputs are not deterministic across engine configurations (batching/numerics), so live
+    differences (incl. accuracy) are not attributable to CacheScout -> replay is the controlled comparison.
+- STOPPED at the pilot gate, waiting for the user's "go". NEXT STEP after go: sim-vs-GPU sequential cross-check on
+  recorded real sessions (amendment 2), then tuning on train problems, then campaign (replay first, then live).
+- 22:47 User said GO with amendments (router pilot first; then sim cross-check, tuning, campaign replay->live). Implemented AutoGen-style separate SELECTOR call constrained via vLLM 0.31 SamplingParams(structured_outputs=StructuredOutputsParams(choice=[...])) (vllm/sampling_params.py:88-92,341; backends xgrammar/llguidance installed). Agent cap counts agent calls only. 119 tests pass. NEXT: router pilot (selector, 100 blocks, train seed 102, 5 sessions, vanilla).
+- 22:50 Router pilot (results/real/gsm8k_train_selector_s102/vanilla/b100_pilot_router/result.json):
+  100% model routing, but DECIDER chosen 64.7% (>60%) -> degenerate (P<->D alternation), R 0.74, +370 tok/turn.
+  NOT adopted (user criterion). Keeping NEXT-line selector, no more prompt tuning; fallback rate to be reported.
+- NEXT STEP: record tuning sessions (vanilla live @100, train seed 101, 20 sessions x 4 topologies), then
+  sim-vs-GPU sequential cross-check on a recording, then tuning, then campaign.
+- 22:50 Stage tune_record started (commit 1657167, tracked tree clean).
+- 23:03 tune_record done (4 runs, rc 0, git_dirty=false): train seed 101, 20 sessions each.
+  pipeline 165 calls acc .35 hit .251; random 185 acc .45 hit .160 trim .016 R .13; debate 131 acc .45 hit .374
+  R 1.00 (rule-based debate is deterministic); selector 155 acc .40 fallback .82 R .86 hit .237. ~2.5 min/run.
+- NEXT STEP: xcheck stage (sequential replay of selector tuning recording: vanilla, lru_hook, eviction_only).
+- 23:18 xcheck: 155/155 exact (vanilla, lru_hook, eviction_only; eviction 0.305 vs 0.240) -> simulator
+  valid on real sessions. tune_real: vanilla .3265, current .3783, best .3803 (lam .001) -> adopted (gain = 0.2 pp
+  threshold). NEXT STEP: eval_record (12 live vanilla @100 runs, test seeds 1-3), then replay stage.
+- 23:52 eval_record done (12 live vanilla @100 runs, test seeds 1-3, all git_dirty=false). Note: seed 1
+  contains test:844, the one test problem seen in smoke run 1 (before prompt iteration moved to train problems).
+- NEXT STEP: replay stage (72 runs: 4 topologies x 3 seeds x {vanilla, cachescout} x {100,150,200}).
+- 2026-10-07 02:53 replay stage done: 72/72 runs exit 0. Headline (results/report_real/tables.md, preliminary
+  aggregation): mean over topologies+seeds +5.7/+6.3/+6.5 pp hit @100/150/200; latency changes small/noisy.
+- NEXT STEP: live stage (60 remaining runs: vanilla 150/200, cachescout 100/150/200; 4 topologies x 3 seeds).
+- 2026-10-07 05:27 live stage done: 60/60 runs exit 0 (72 live + 72 replay runs total, all git_dirty=false).
+  Aggregation: results/report_real/{summary.json,tables.md,fig_real_*.png}. Replay (headline) +5.7/+6.3/+6.5 pp,
+  positive in 35/36 pairs, TTFT -2.9/-0.9/-1.2%. Live +5.3/+6.0/+8.6 pp; live latency dominated by divergence
+  (e.g. selector@150 seed 3: CacheScout run generated longer conversations, TTFT 1419 vs 135 ms).
+  Engine prediction accuracy: selector .81, pipeline/debate .94-.95, random .17-.18. Live accuracy .461 vs .475.
+- Wrote docs/REPORT_REAL_AGENTS.md (3 claims corrected after verification: anchor range 175-292, output mean 49,
+  throughput per-run -0.9..+8.0%); README updated (synthetic results labelled, real-agent section, scope box,
+  Mermaid, fetch_gsm8k in quickstart, false caveats removed). 119 tests pass.
+- STOPPED for the user's review. Nothing pushed or merged.
+- 2026-10-07 06:52 Docs: open-loop replay + deterministic debate notes (README, decisions). Added scripts/demo.py (your task; --compare = live vanilla recording + REPLAY vanilla vs cachescout). Example run (results/demo/*20261007-064340*): replay hit 22.3% vs 27.9%, TTFT 1306 vs 1341 ms; agents answered the custom task wrongly (CODER copied the calculator example). Fixed a demo table bug (warmups counted in per-task sums) found on that run. 121 tests pass.

@@ -1,0 +1,28 @@
+{
+  "kind": "GPU (vLLM 0.31.0)",
+  "config": "configs/experiments/real/local.yaml",
+  "trace": "(live agents)",
+  "blocks": [
+    100
+  ],
+  "labels": [
+    "vanilla"
+  ],
+  "table": {
+    "100": {
+      "vanilla": {
+        "hit_rate": 0.1878338547587192,
+        "ttft_mean_ms": 2966.1258800746427,
+        "ttft_median_ms": 2946.0008940004627,
+        "ttft_p99_ms": 6892.3809981992235,
+        "latency_mean_ms": 4392.793308167694,
+        "latency_p99_ms": 9584.027595601949,
+        "throughput_tps": 1.479424650234377,
+        "turns": 161,
+        "source": "results/real/gsm8k_test_pipeline_s1/vanilla/b100_eval/result.json",
+        "warmups_issued": 0
+      }
+    }
+  },
+  "checks": []
+}

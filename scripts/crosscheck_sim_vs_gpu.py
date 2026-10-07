@@ -12,8 +12,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
+from cachescout.run import load_trace  # noqa: E402
 from cachescout.sim.simulator import SimConfig, simulate_sequential  # noqa: E402
-from cachescout.workload.trace import Trace  # noqa: E402
 
 
 def main() -> int:
@@ -21,7 +21,7 @@ def main() -> int:
     gpu = json.loads(path.read_text())
     assert gpu["mode"] == "sequential", "cross-check needs a --mode sequential GPU run"
     cfg = gpu["config"]
-    trace = Trace.load(REPO / cfg["trace"])
+    trace = load_trace(REPO / cfg["trace"])
     params = (cfg.get("cachescout") or {}).get("params") or {}
     sim = simulate_sequential(trace, SimConfig(num_gpu_blocks=gpu["num_gpu_blocks_reported"],
                                                system=gpu["system"], params=params))

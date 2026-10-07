@@ -134,3 +134,51 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
   used it (no labels needed); other blocks get p_surv = 0 (recency only). The literal variant remains available
   (`scope: global`, `block_mapping: all`) and is reported as "CacheScout-literal".
 - Evidence (simulator, tuning trace, Belady diagnostic): see WORK_LOG 2026-10-06.
+
+## 2026-10-06: Real multi-agent workload (branch real-agents)
+- **Interpretation, selector routing.** AutoGen's SelectorGroupChat picks the next speaker with a *separate*
+  selector LLM call. Here every agent ends its own message with `NEXT: <AGENT>`, which the driver parses
+  (src/cachescout/agents/routing.py). If there is no strict `NEXT:` line, a final line that is only an agent
+  name (`DECIDER`, `[DECIDER]`, `[PLANNER]: DECIDER`) is accepted and counted as a *lenient* route. Missing,
+  unknown or self-referencing names trigger a **round-robin fallback** (next agent in team order
+  P,A,C,T,R,D, like AutoGen's RoundRobinGroupChat), counted and reported. (First version used "fallback to
+  PLANNER / CODER"; on train problems it looped PLANNER↔CODER until the call cap, so it was replaced before any
+  evaluation run. Smoke evidence: results/real/gsm8k_train_selector_s101/vanilla/b100_smoke.) Reason: one fewer LLM call
+  per turn, and no extra "selector" anchor that would change the cache workload. Consequence: routing quality
+  depends on the 1.5B model following the format; the fallback rate measures this.
+- **Engineering choice, prompt structure.** System = agent anchor (always explicit, so Qwen's default system
+  prompt never appears) + `Task: <question>` + shared group-chat history as user messages `[NAME]: text` and
+  `[tool:name] result`. Chat template applied by the tokenizer; token IDs sent to vLLM (exact prefixes).
+- **Engineering choice, trimming.** If prompt + max_tokens > max_model_len (1584), the oldest history messages
+  after anchor + task are dropped. The trim rate is reported per run.
+- **Engineering choice, termination.** Session ends on `FINAL ANSWER:` from the DECIDER, at the end of the
+  pipeline chain, or at 14 calls (the last call is a forced DECIDER answer).
+- **Engineering choice, tasks.** GSM8K test split for evaluation, train split for tuning; one fixed permutation
+  per split, seed k takes the k-th disjoint slice; arrivals seeded per problem seed.
+- **Tried and rejected (user-defined criterion): AutoGen-style separate selector call.** A SELECTOR router call
+  after each agent turn, its reply constrained with vLLM 0.31 guided choice
+  (`SamplingParams(structured_outputs=StructuredOutputsParams(choice=[5 teammate names]))`). Router pilot (train
+  problems seed 102, 5 sessions, results/real/gsm8k_train_selector_s102/vanilla/b100_pilot_router/result.json):
+  model-made routing 17/17 = 100% (criterion > 90% met), but choices degenerate: DECIDER 64.7% (> 60% limit),
+  PLANNER 23.5%, ANALYST 11.8%, CODER/TESTER/REVIEWER 0%; every session alternated PLANNER<->DECIDER;
+  measured R 0.74; ~370 extra tokens per agent turn. Per the agreed rule it is NOT adopted. The code path stays
+  available (`agents.router: true`, default false). The selector topology keeps the agent's own `NEXT:` line,
+  with no further prompt tuning, and its fallback rate is reported prominently.
+- **Simulator validity on real sessions.** Sequential replay of the selector tuning recording on vLLM vs the
+  simulator: 155/155 requests exact for vanilla, lru_hook AND eviction_only
+  (results/real/replay_gsm8k_train_selector_s101/*/b100_seq/crosscheck.json). Constants were therefore re-tuned
+  in the simulator.
+- **Re-tuned constant for the real workload (tuning problems only).** Grid of 512 configs on the four vanilla
+  recordings of GSM8K TRAIN problems (seed 101), objective = mean hit rate over 100/150/200 blocks
+  (results/tuning/real_eviction_sweep.json): vanilla 0.3265, previous constants 0.3783, best 0.3803 (only
+  lambda 0.005 -> 0.001). Gain 0.20 pp = exactly the pre-set adoption threshold (0.2 pp), so lambda = 0.001 is
+  adopted for configs/experiments/real/local.yaml; a borderline change. Synthetic-trace configs unchanged.
+- **Replay is open-loop (engineering choice).** `mode: online` with a recorded live run as `trace` sends the
+  recorded prompt token IDs with `max_tokens` = the recorded output length and `ignore_eos`. The model's
+  replay-time generations are discarded and do NOT feed later prompts; arrival times and inter-call gaps are
+  also the recorded ones. This keeps the request stream identical across systems, so only the cache policy
+  differs, but it does not react to the system's own speed or outputs (unlike the live closed-loop runs).
+- **Debate topology is deterministic (interpretation).** Our debate routes P→C→R→D and, on `REVISE` (or an
+  unclear DECIDER reply), back to C. Measured R = 1.00. The paper's debate (Fig. 4a/5) is stochastic: after the
+  reviewer the next speaker varies (R = 0.78). Our results for "debate" therefore correspond to a fully
+  predictable coder/reviewer/judge loop, not to the paper's debate statistics.

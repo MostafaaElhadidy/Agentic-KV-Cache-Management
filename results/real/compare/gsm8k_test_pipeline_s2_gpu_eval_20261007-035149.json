@@ -1,0 +1,120 @@
+{
+  "kind": "GPU (vLLM 0.31.0)",
+  "config": "configs/experiments/real/local.yaml",
+  "trace": "(live agents)",
+  "blocks": [
+    100,
+    150,
+    200
+  ],
+  "labels": [
+    "vanilla",
+    "cachescout"
+  ],
+  "table": {
+    "100": {
+      "vanilla": {
+        "hit_rate": 0.20322758789961343,
+        "ttft_mean_ms": 1882.142417813631,
+        "ttft_median_ms": 1225.9699649985123,
+        "ttft_p99_ms": 8049.844918399322,
+        "latency_mean_ms": 3321.7018073663676,
+        "latency_p99_ms": 10039.66750699911,
+        "throughput_tps": 1.2586074858294092,
+        "turns": 161,
+        "source": "results/real/gsm8k_test_pipeline_s2/vanilla/b100_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.20891892430675996,
+        "ttft_mean_ms": 4599.639002580986,
+        "ttft_median_ms": 4487.81400500593,
+        "ttft_p99_ms": 10067.919185399953,
+        "latency_mean_ms": 5925.550037263377,
+        "latency_p99_ms": 11883.931904602068,
+        "throughput_tps": 1.4602774076815734,
+        "turns": 167,
+        "source": "results/real/gsm8k_test_pipeline_s2/cachescout/b100_eval/result.json",
+        "warmups_issued": 16
+      }
+    },
+    "150": {
+      "vanilla": {
+        "hit_rate": 0.31683945192581187,
+        "ttft_mean_ms": 269.98089921539076,
+        "ttft_median_ms": 118.8271729988628,
+        "ttft_p99_ms": 2051.576390101255,
+        "latency_mean_ms": 1610.7341780777847,
+        "latency_p99_ms": 4453.365019640623,
+        "throughput_tps": 1.679736540752997,
+        "turns": 167,
+        "source": "results/real/gsm8k_test_pipeline_s2/vanilla/b150_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.34506670686666163,
+        "ttft_mean_ms": 688.5852017930706,
+        "ttft_median_ms": 369.2281100011314,
+        "ttft_p99_ms": 3027.6031942429813,
+        "latency_mean_ms": 2205.814406792988,
+        "latency_p99_ms": 5867.5212099618475,
+        "throughput_tps": 1.610346230628151,
+        "turns": 169,
+        "source": "results/real/gsm8k_test_pipeline_s2/cachescout/b150_eval/result.json",
+        "warmups_issued": 66
+      }
+    },
+    "200": {
+      "vanilla": {
+        "hit_rate": 0.4060544513757919,
+        "ttft_mean_ms": 114.05248646444626,
+        "ttft_median_ms": 91.92358899963438,
+        "ttft_p99_ms": 513.9312228860219,
+        "latency_mean_ms": 1435.1255546766504,
+        "latency_p99_ms": 3837.1134606959095,
+        "throughput_tps": 1.6809565588285293,
+        "turns": 170,
+        "source": "results/real/gsm8k_test_pipeline_s2/vanilla/b200_eval/result.json",
+        "warmups_issued": 0
+      },
+      "cachescout": {
+        "hit_rate": 0.442240602904792,
+        "ttft_mean_ms": 122.9574563746155,
+        "ttft_median_ms": 87.42162449561874,
+        "ttft_p99_ms": 642.9728360123407,
+        "latency_mean_ms": 1548.3916342935117,
+        "latency_p99_ms": 3801.8829683623335,
+        "throughput_tps": 1.6443869674724523,
+        "turns": 160,
+        "source": "results/real/gsm8k_test_pipeline_s2/cachescout/b200_eval/result.json",
+        "warmups_issued": 80
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "CacheScout hit rate > vanilla at every budget",
+      "ok": true,
+      "detail": "gains (pp): 100:+0.6, 150:+2.8, 200:+3.6",
+      "paper": "Fig. 8a (+10..18 pp), Fig. 14a"
+    },
+    {
+      "check": "gain shrinks as the cache grows",
+      "ok": false,
+      "detail": "100: +0.6 pp vs 200: +3.6 pp",
+      "paper": "Fig. 14a (vanilla 64.4%->76.6%, CacheScout flat 86-87%)"
+    },
+    {
+      "check": "CacheScout mean TTFT < vanilla at every budget",
+      "ok": false,
+      "detail": "100:+144.4%, 150:+155.0%, 200:+7.8%",
+      "paper": "Fig. 8b (-18..45%)"
+    },
+    {
+      "check": "CacheScout mean per-turn latency < vanilla at every budget",
+      "ok": false,
+      "detail": "100:+78.4%, 150:+36.9%, 200:+7.9%",
+      "paper": "Fig. 10a (-29..38%)"
+    }
+  ]
+}

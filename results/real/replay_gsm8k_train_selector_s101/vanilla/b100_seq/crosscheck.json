@@ -1,0 +1,10 @@
+{
+  "gpu_result": "results/real/replay_gsm8k_train_selector_s101/vanilla/b100_seq/result.json",
+  "system": "vanilla",
+  "requests": 155,
+  "exact_matches": 155,
+  "exact_fraction": 1.0,
+  "mean_abs_diff_tokens": 0.0,
+  "gpu_hit_rate": 0.24008813126920625,
+  "sim_hit_rate": 0.24008813126920625
+}

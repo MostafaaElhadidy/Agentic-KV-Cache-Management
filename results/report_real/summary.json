@@ -1,0 +1,2074 @@
+{
+  "workload": {
+    "pipeline": {
+      "R": 1.0,
+      "calls": 163,
+      "accuracy": 0.5333333333333333,
+      "final_rate": 0.9666666666666667,
+      "trim_rate": 0.01205043329490088,
+      "tool_calls": 55.333333333333336,
+      "tool_fail": 4.666666666666667,
+      "prompt_mean": 622.7059049602658,
+      "prompt_max": 1444,
+      "fallback_rate": null,
+      "strict_next": null,
+      "problem_ids": {
+        "seed1": [
+          "test:844",
+          "test:793",
+          "test:856",
+          "test:376",
+          "test:186",
+          "test:709",
+          "test:498",
+          "test:103",
+          "test:281",
+          "test:838",
+          "test:1242",
+          "test:991",
+          "test:652",
+          "test:927",
+          "test:713",
+          "test:712",
+          "test:1058",
+          "test:661",
+          "test:1201",
+          "test:620"
+        ],
+        "seed2": [
+          "test:902",
+          "test:873",
+          "test:1060",
+          "test:247",
+          "test:310",
+          "test:835",
+          "test:863",
+          "test:776",
+          "test:1223",
+          "test:387",
+          "test:359",
+          "test:1179",
+          "test:401",
+          "test:810",
+          "test:569",
+          "test:604",
+          "test:928",
+          "test:105",
+          "test:869",
+          "test:377"
+        ],
+        "seed3": [
+          "test:230",
+          "test:704",
+          "test:1069",
+          "test:607",
+          "test:69",
+          "test:1140",
+          "test:995",
+          "test:71",
+          "test:779",
+          "test:971",
+          "test:1026",
+          "test:507",
+          "test:324",
+          "test:1142",
+          "test:702",
+          "test:977",
+          "test:373",
+          "test:1173",
+          "test:393",
+          "test:672"
+        ]
+      },
+      "sources": [
+        "results/real/gsm8k_test_pipeline_s1/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s2/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s3/vanilla/b100_eval/result.json"
+      ]
+    },
+    "random": {
+      "R": 0.14308825836726025,
+      "calls": 181.33333333333334,
+      "accuracy": 0.3833333333333333,
+      "final_rate": 0.8833333333333333,
+      "trim_rate": 0.00202020202020202,
+      "tool_calls": 38.333333333333336,
+      "tool_fail": 4,
+      "prompt_mean": 639.4436604980465,
+      "prompt_max": 1451,
+      "fallback_rate": null,
+      "strict_next": null,
+      "problem_ids": {
+        "seed1": [
+          "test:844",
+          "test:793",
+          "test:856",
+          "test:376",
+          "test:186",
+          "test:709",
+          "test:498",
+          "test:103",
+          "test:281",
+          "test:838",
+          "test:1242",
+          "test:991",
+          "test:652",
+          "test:927",
+          "test:713",
+          "test:712",
+          "test:1058",
+          "test:661",
+          "test:1201",
+          "test:620"
+        ],
+        "seed2": [
+          "test:902",
+          "test:873",
+          "test:1060",
+          "test:247",
+          "test:310",
+          "test:835",
+          "test:863",
+          "test:776",
+          "test:1223",
+          "test:387",
+          "test:359",
+          "test:1179",
+          "test:401",
+          "test:810",
+          "test:569",
+          "test:604",
+          "test:928",
+          "test:105",
+          "test:869",
+          "test:377"
+        ],
+        "seed3": [
+          "test:230",
+          "test:704",
+          "test:1069",
+          "test:607",
+          "test:69",
+          "test:1140",
+          "test:995",
+          "test:71",
+          "test:779",
+          "test:971",
+          "test:1026",
+          "test:507",
+          "test:324",
+          "test:1142",
+          "test:702",
+          "test:977",
+          "test:373",
+          "test:1173",
+          "test:393",
+          "test:672"
+        ]
+      },
+      "sources": [
+        "results/real/gsm8k_test_random_s1/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_random_s2/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_random_s3/vanilla/b100_eval/result.json"
+      ]
+    },
+    "debate": {
+      "R": 1.0,
+      "calls": 121.66666666666667,
+      "accuracy": 0.4166666666666667,
+      "final_rate": 1.0,
+      "trim_rate": 0.0,
+      "tool_calls": 45.666666666666664,
+      "tool_fail": 3.3333333333333335,
+      "prompt_mean": 536.4431604224994,
+      "prompt_max": 995,
+      "fallback_rate": null,
+      "strict_next": null,
+      "problem_ids": {
+        "seed1": [
+          "test:844",
+          "test:793",
+          "test:856",
+          "test:376",
+          "test:186",
+          "test:709",
+          "test:498",
+          "test:103",
+          "test:281",
+          "test:838",
+          "test:1242",
+          "test:991",
+          "test:652",
+          "test:927",
+          "test:713",
+          "test:712",
+          "test:1058",
+          "test:661",
+          "test:1201",
+          "test:620"
+        ],
+        "seed2": [
+          "test:902",
+          "test:873",
+          "test:1060",
+          "test:247",
+          "test:310",
+          "test:835",
+          "test:863",
+          "test:776",
+          "test:1223",
+          "test:387",
+          "test:359",
+          "test:1179",
+          "test:401",
+          "test:810",
+          "test:569",
+          "test:604",
+          "test:928",
+          "test:105",
+          "test:869",
+          "test:377"
+        ],
+        "seed3": [
+          "test:230",
+          "test:704",
+          "test:1069",
+          "test:607",
+          "test:69",
+          "test:1140",
+          "test:995",
+          "test:71",
+          "test:779",
+          "test:971",
+          "test:1026",
+          "test:507",
+          "test:324",
+          "test:1142",
+          "test:702",
+          "test:977",
+          "test:373",
+          "test:1173",
+          "test:393",
+          "test:672"
+        ]
+      },
+      "sources": [
+        "results/real/gsm8k_test_debate_s1/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_debate_s2/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_debate_s3/vanilla/b100_eval/result.json"
+      ]
+    },
+    "selector": {
+      "R": 0.7672627377342869,
+      "calls": 164.66666666666666,
+      "accuracy": 0.5,
+      "final_rate": 0.9,
+      "trim_rate": 0.03246068490358534,
+      "tool_calls": 32,
+      "tool_fail": 4,
+      "prompt_mean": 591.7029039750748,
+      "prompt_max": 1455,
+      "fallback_rate": 0.7682336182336182,
+      "strict_next": 0.23176638176638178,
+      "problem_ids": {
+        "seed1": [
+          "test:844",
+          "test:793",
+          "test:856",
+          "test:376",
+          "test:186",
+          "test:709",
+          "test:498",
+          "test:103",
+          "test:281",
+          "test:838",
+          "test:1242",
+          "test:991",
+          "test:652",
+          "test:927",
+          "test:713",
+          "test:712",
+          "test:1058",
+          "test:661",
+          "test:1201",
+          "test:620"
+        ],
+        "seed2": [
+          "test:902",
+          "test:873",
+          "test:1060",
+          "test:247",
+          "test:310",
+          "test:835",
+          "test:863",
+          "test:776",
+          "test:1223",
+          "test:387",
+          "test:359",
+          "test:1179",
+          "test:401",
+          "test:810",
+          "test:569",
+          "test:604",
+          "test:928",
+          "test:105",
+          "test:869",
+          "test:377"
+        ],
+        "seed3": [
+          "test:230",
+          "test:704",
+          "test:1069",
+          "test:607",
+          "test:69",
+          "test:1140",
+          "test:995",
+          "test:71",
+          "test:779",
+          "test:971",
+          "test:1026",
+          "test:507",
+          "test:324",
+          "test:1142",
+          "test:702",
+          "test:977",
+          "test:373",
+          "test:1173",
+          "test:393",
+          "test:672"
+        ]
+      },
+      "sources": [
+        "results/real/gsm8k_test_selector_s1/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_selector_s2/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_selector_s3/vanilla/b100_eval/result.json"
+      ]
+    }
+  },
+  "replay": {
+    "pipeline@100": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.2072982316389732,
+      "cachescout_hit": 0.26466509106423447,
+      "dhit_pp": [
+        5.736685942526128,
+        2.299854452431104
+      ],
+      "dhit_pp_per_seed": [
+        3.927288822718722,
+        4.957967724121004,
+        8.324801280738658
+      ],
+      "dttft_pct": [
+        -5.203010188401358,
+        10.971418795816867
+      ],
+      "dttft_pct_per_seed": [
+        -4.392305282784569,
+        5.3405687477528385,
+        -16.557294030172343
+      ],
+      "dlat_pct": [
+        -3.741411695530173,
+        6.281633680141235
+      ],
+      "dlat_pct_per_seed": [
+        -4.1691526288087815,
+        2.7431604831971157,
+        -9.798242940978852
+      ],
+      "dcompletion_pct": [
+        -3.6095048649992054,
+        6.03068896592913
+      ],
+      "dcompletion_pct_per_seed": [
+        -4.05859304477697,
+        2.6331742565142813,
+        -9.403095806734928
+      ],
+      "dthr_pct": [
+        1.3272416248418277,
+        1.9691272519760512
+      ],
+      "dthr_pct_per_seed": [
+        2.242155315746319,
+        -0.932897066672389,
+        2.672466625451553
+      ],
+      "vanilla_ttft_ms": 2108.877730897118,
+      "cachescout_ttft_ms": 2004.500675860479,
+      "vanilla_lat_ms": 3528.878302115707,
+      "cachescout_lat_ms": 3394.4329181044695,
+      "vanilla_completion_s": 29.731198677816426,
+      "cachescout_completion_s": 28.620426797050094,
+      "vanilla_thr": 1.2287795576422154,
+      "cachescout_thr": 1.2441526181715485,
+      "engine_pred_acc": 0.9431924882629108,
+      "sources": [
+        "results/real/replay_gsm8k_test_pipeline_s1/vanilla/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s1/cachescout/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s2/vanilla/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s2/cachescout/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s3/vanilla/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s3/cachescout/b100_replay/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "pipeline@150": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.31947888667619917,
+      "cachescout_hit": 0.41567280816910485,
+      "dhit_pp": [
+        9.619392149290569,
+        2.5926037060538114
+      ],
+      "dhit_pp_per_seed": [
+        6.7118009798102785,
+        10.45591213106707,
+        11.69046333699436
+      ],
+      "dttft_pct": [
+        -7.94752721527698,
+        5.519950855777125
+      ],
+      "dttft_pct_per_seed": [
+        -2.0527291703949846,
+        -8.79531330726242,
+        -12.994539168173535
+      ],
+      "dlat_pct": [
+        -1.5098653445899668,
+        1.0442245683430806
+      ],
+      "dlat_pct_per_seed": [
+        -1.009755999531603,
+        -2.7100899657968913,
+        -0.8097500684414061
+      ],
+      "dcompletion_pct": [
+        -1.4021227259814917,
+        0.9679336906234698
+      ],
+      "dcompletion_pct_per_seed": [
+        -0.9424232141448052,
+        -2.514243924573123,
+        -0.7497010392265469
+      ],
+      "dthr_pct": [
+        0.14348663105309134,
+        0.3763618742286194
+      ],
+      "dthr_pct_per_seed": [
+        0.03308846587870562,
+        0.5627014333797975,
+        -0.1653300060992291
+      ],
+      "vanilla_ttft_ms": 349.98342653055334,
+      "cachescout_ttft_ms": 325.37343599503987,
+      "vanilla_lat_ms": 1756.4394396923028,
+      "cachescout_lat_ms": 1730.4465530941357,
+      "vanilla_completion_s": 15.341123494600287,
+      "cachescout_completion_s": 15.131081934766916,
+      "vanilla_thr": 1.3904576524100896,
+      "cachescout_thr": 1.3927290966963486,
+      "engine_pred_acc": 0.9491228070175438,
+      "sources": [
+        "results/real/replay_gsm8k_test_pipeline_s1/vanilla/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s1/cachescout/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s2/vanilla/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s2/cachescout/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s3/vanilla/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s3/cachescout/b150_replay/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "pipeline@200": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.36536579602764485,
+      "cachescout_hit": 0.4644513645396233,
+      "dhit_pp": [
+        9.908556851197847,
+        1.684332418440951
+      ],
+      "dhit_pp_per_seed": [
+        8.112104781353423,
+        10.161379394980674,
+        11.452186377259444
+      ],
+      "dttft_pct": [
+        -4.0402561370167955,
+        1.236891544944657
+      ],
+      "dttft_pct_per_seed": [
+        -3.486191531505367,
+        -5.457314756856979,
+        -3.1772621226880404
+      ],
+      "dlat_pct": [
+        -0.5448040618586281,
+        1.3114406976480322
+      ],
+      "dlat_pct_per_seed": [
+        0.9679221755590328,
+        -1.2409907614424176,
+        -1.3613435996924994
+      ],
+      "dcompletion_pct": [
+        -0.49818777262578734,
+        1.2117173368869407
+      ],
+      "dcompletion_pct_per_seed": [
+        0.8996944548990804,
+        -1.1451398203265462,
+        -1.2491179524498963
+      ],
+      "dthr_pct": [
+        0.24121705073080202,
+        0.3350770707825799
+      ],
+      "dthr_pct_per_seed": [
+        -0.08671120034794422,
+        0.5830123883015847,
+        0.22734996423876552
+      ],
+      "vanilla_ttft_ms": 130.45645379971555,
+      "cachescout_ttft_ms": 125.32161263299881,
+      "vanilla_lat_ms": 1524.5133378678463,
+      "cachescout_lat_ms": 1516.3176471817721,
+      "vanilla_completion_s": 13.449599777533027,
+      "cachescout_completion_s": 13.382281883616573,
+      "vanilla_thr": 1.402235670560698,
+      "cachescout_thr": 1.4054175011577745,
+      "engine_pred_acc": 0.9498316498316498,
+      "sources": [
+        "results/real/replay_gsm8k_test_pipeline_s1/vanilla/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s1/cachescout/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s2/vanilla/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s2/cachescout/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s3/vanilla/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_pipeline_s3/cachescout/b200_replay/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "random@100": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.19278895619940017,
+      "cachescout_hit": 0.2149897064250515,
+      "dhit_pp": [
+        2.2200750225651333,
+        1.2623830472788578
+      ],
+      "dhit_pp_per_seed": [
+        2.779776832769962,
+        0.7746078123274769,
+        3.105840422597961
+      ],
+      "dttft_pct": [
+        -6.958372677767329,
+        5.10780847935302
+      ],
+      "dttft_pct_per_seed": [
+        -12.727406444009958,
+        -5.136114950744419,
+        -3.011596638547609
+      ],
+      "dlat_pct": [
+        -4.0716229424844546,
+        6.249200411611319
+      ],
+      "dlat_pct_per_seed": [
+        -10.143479721068417,
+        -4.412367802080508,
+        2.3409786956955614
+      ],
+      "dcompletion_pct": [
+        -3.9996503412911646,
+        5.999386801238119
+      ],
+      "dcompletion_pct_per_seed": [
+        -9.898351562178009,
+        -4.196191483737721,
+        2.0955920220422364
+      ],
+      "dthr_pct": [
+        3.305430349235198,
+        4.151593120073839
+      ],
+      "dthr_pct_per_seed": [
+        8.049352094248018,
+        1.5310732690028361,
+        0.3358656844547392
+      ],
+      "vanilla_ttft_ms": 2200.4015556064915,
+      "cachescout_ttft_ms": 1974.8153603327169,
+      "vanilla_lat_ms": 3366.3363752572136,
+      "cachescout_lat_ms": 3135.498644632372,
+      "vanilla_completion_s": 32.74765759506645,
+      "cachescout_completion_s": 30.54479983506711,
+      "vanilla_thr": 1.3671317627035615,
+      "cachescout_thr": 1.4109745728573133,
+      "engine_pred_acc": 0.18031873370206122,
+      "sources": [
+        "results/real/replay_gsm8k_test_random_s1/vanilla/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s1/cachescout/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s2/vanilla/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s2/cachescout/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s3/vanilla/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s3/cachescout/b100_replay/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "random@150": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.31362332434788537,
+      "cachescout_hit": 0.33004651662211415,
+      "dhit_pp": [
+        1.6423192274228808,
+        1.9211819024324015
+      ],
+      "dhit_pp_per_seed": [
+        -0.10467778868171462,
+        1.3317818527735559,
+        3.6998536181768014
+      ],
+      "dttft_pct": [
+        9.877671282725956,
+        21.2714136605687
+      ],
+      "dttft_pct_per_seed": [
+        33.72301017479098,
+        3.0562662839611177,
+        -7.146262610574228
+      ],
+      "dlat_pct": [
+        2.6573886921252106,
+        5.4801298014943045
+      ],
+      "dlat_pct_per_seed": [
+        8.50076959601196,
+        1.8387905706073848,
+        -2.367394090243713
+      ],
+      "dcompletion_pct": [
+        2.4914106951685464,
+        5.040785457718597
+      ],
+      "dcompletion_pct_per_seed": [
+        7.8931342855381725,
+        1.6681949583984945,
+        -2.0870971584310283
+      ],
+      "dthr_pct": [
+        -0.35722475971366646,
+        0.7599240096430289
+      ],
+      "dthr_pct_per_seed": [
+        -0.7779093810683979,
+        -0.8137803703470947,
+        0.5200154722744932
+      ],
+      "vanilla_ttft_ms": 288.60640008937054,
+      "cachescout_ttft_ms": 345.06014170916484,
+      "vanilla_lat_ms": 1472.6943333654356,
+      "cachescout_lat_ms": 1524.676407506616,
+      "vanilla_completion_s": 14.833600926600411,
+      "cachescout_completion_s": 15.339510670516393,
+      "vanilla_thr": 1.6245918982697165,
+      "cachescout_thr": 1.6171640210490696,
+      "engine_pred_acc": 0.17465111526848534,
+      "sources": [
+        "results/real/replay_gsm8k_test_random_s1/vanilla/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s1/cachescout/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s2/vanilla/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s2/cachescout/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s3/vanilla/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s3/cachescout/b150_replay/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "random@200": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.37978512012878346,
+      "cachescout_hit": 0.41881075032911985,
+      "dhit_pp": [
+        3.902563020033637,
+        0.5909973681493977
+      ],
+      "dhit_pp_per_seed": [
+        3.245011449133134,
+        4.389444269855697,
+        4.073233341112081
+      ],
+      "dttft_pct": [
+        -0.44477489375288987,
+        1.6699889584565308
+      ],
+      "dttft_pct_per_seed": [
+        0.16696862781491184,
+        0.833080127213015,
+        -2.3343734362865964
+      ],
+      "dlat_pct": [
+        -1.6910839984133785,
+        0.9762835203990806
+      ],
+      "dlat_pct_per_seed": [
+        -2.650089208824735,
+        -1.7247687537357281,
+        -0.6983940326796723
+      ],
+      "dcompletion_pct": [
+        -1.5188277508231558,
+        0.9043655403106232
+      ],
+      "dcompletion_pct_per_seed": [
+        -2.4160970855535813,
+        -1.532856931424953,
+        -0.6075292354909334
+      ],
+      "dthr_pct": [
+        0.4134229117790748,
+        0.13191246390479938
+      ],
+      "dthr_pct_per_seed": [
+        0.522247456441427,
+        0.45130804998962937,
+        0.266713228906168
+      ],
+      "vanilla_ttft_ms": 119.78201994104984,
+      "cachescout_ttft_ms": 119.47777032688101,
+      "vanilla_lat_ms": 1296.6700788143366,
+      "cachescout_lat_ms": 1273.5932286763061,
+      "vanilla_completion_s": 13.172015546116988,
+      "cachescout_completion_s": 12.957079259516831,
+      "vanilla_thr": 1.6364068668927831,
+      "cachescout_thr": 1.643462095214428,
+      "engine_pred_acc": 0.17178409924357457,
+      "sources": [
+        "results/real/replay_gsm8k_test_random_s1/vanilla/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s1/cachescout/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s2/vanilla/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s2/cachescout/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s3/vanilla/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_random_s3/cachescout/b200_replay/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "debate@100": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.3458424949263551,
+      "cachescout_hit": 0.40934613626078903,
+      "dhit_pp": [
+        6.350364133443393,
+        4.379696635695982
+      ],
+      "dhit_pp_per_seed": [
+        4.54871847477249,
+        3.158840776155464,
+        11.343533149402225
+      ],
+      "dttft_pct": [
+        2.461683606530385,
+        9.046681344585267
+      ],
+      "dttft_pct_per_seed": [
+        12.123823759124042,
+        1.0693239141122524,
+        -5.808096853645139
+      ],
+      "dlat_pct": [
+        1.5762294736353488,
+        4.142537537003382
+      ],
+      "dlat_pct_per_seed": [
+        5.878049373691963,
+        1.236776507940296,
+        -2.386137460726212
+      ],
+      "dcompletion_pct": [
+        1.549096708836543,
+        3.957289778003269
+      ],
+      "dcompletion_pct_per_seed": [
+        5.675486965881604,
+        1.18584863008111,
+        -2.2140454694530853
+      ],
+      "dthr_pct": [
+        -0.04164061245830094,
+        0.20313020458642814
+      ],
+      "dthr_pct_per_seed": [
+        0.0711908492897928,
+        -0.27613968321894555,
+        0.08002699655424994
+      ],
+      "vanilla_ttft_ms": 794.5379989969928,
+      "cachescout_ttft_ms": 843.0678593016314,
+      "vanilla_lat_ms": 2285.624769529444,
+      "cachescout_lat_ms": 2338.5946386762525,
+      "vanilla_completion_s": 14.664433589049743,
+      "cachescout_completion_s": 14.994570978883106,
+      "vanilla_thr": 1.1693626409820856,
+      "cachescout_thr": 1.1686617389201515,
+      "engine_pred_acc": 0.9421356421356422,
+      "sources": [
+        "results/real/replay_gsm8k_test_debate_s1/vanilla/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s1/cachescout/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s2/vanilla/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s2/cachescout/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s3/vanilla/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s3/cachescout/b100_replay/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "debate@150": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.46276340529730337,
+      "cachescout_hit": 0.5035153868136197,
+      "dhit_pp": [
+        4.075198151631643,
+        0.356522927257083
+      ],
+      "dhit_pp_per_seed": [
+        3.9859904160377493,
+        3.7717501804841347,
+        4.4678538583730445
+      ],
+      "dttft_pct": [
+        -2.297924482413253,
+        5.673972075897681
+      ],
+      "dttft_pct_per_seed": [
+        -4.110199790007574,
+        4.060799968050199,
+        -6.844373625282385
+      ],
+      "dlat_pct": [
+        -0.235212794946571,
+        0.8901198101318988
+      ],
+      "dlat_pct_per_seed": [
+        0.0014422467986552334,
+        0.5126635111186051,
+        -1.2197441427569733
+      ],
+      "dcompletion_pct": [
+        -0.21155500019022963,
+        0.8240320426092793
+      ],
+      "dcompletion_pct_per_seed": [
+        0.006504180860722464,
+        0.48151668245144386,
+        -1.1226858638828552
+      ],
+      "dthr_pct": [
+        -0.04759894635721166,
+        0.04173299090196217
+      ],
+      "dthr_pct_per_seed": [
+        -0.09395605083805103,
+        -0.03581805518113601,
+        -0.013022733052447943
+      ],
+      "vanilla_ttft_ms": 166.9423677832642,
+      "cachescout_ttft_ms": 163.34017337221786,
+      "vanilla_lat_ms": 1633.1988280624419,
+      "cachescout_lat_ms": 1629.9630859821286,
+      "vanilla_completion_s": 10.61562633911696,
+      "cachescout_completion_s": 10.599013939699763,
+      "vanilla_thr": 1.1960936987656985,
+      "cachescout_thr": 1.1954854522132263,
+      "engine_pred_acc": 0.9436507936507936,
+      "sources": [
+        "results/real/replay_gsm8k_test_debate_s1/vanilla/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s1/cachescout/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s2/vanilla/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s2/cachescout/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s3/vanilla/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s3/cachescout/b150_replay/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "debate@200": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.5085174945351694,
+      "cachescout_hit": 0.5325634928623224,
+      "dhit_pp": [
+        2.4045998327153075,
+        0.36465796081668406
+      ],
+      "dhit_pp_per_seed": [
+        2.8136402936737026,
+        2.286623546918509,
+        2.113535657553711
+      ],
+      "dttft_pct": [
+        2.277596616783221,
+        3.789752735950508
+      ],
+      "dttft_pct_per_seed": [
+        -0.5363257439248703,
+        0.7822127951475633,
+        6.58690279912697
+      ],
+      "dlat_pct": [
+        -0.4624348531925726,
+        1.9680427221781183
+      ],
+      "dlat_pct_per_seed": [
+        -0.9628956341223516,
+        -2.1319300710846756,
+        1.7075211456293093
+      ],
+      "dcompletion_pct": [
+        -0.42944050601070316,
+        1.8301158122942034
+      ],
+      "dcompletion_pct_per_seed": [
+        -0.9014041817565599,
+        -1.9773481274349636,
+        1.590430791159414
+      ],
+      "dthr_pct": [
+        0.09073904747899005,
+        0.1463779853358152
+      ],
+      "dthr_pct_per_seed": [
+        0.18399562082820342,
+        0.16619238610624532,
+        -0.07797086449747859
+      ],
+      "vanilla_ttft_ms": 88.30040536794628,
+      "cachescout_ttft_ms": 90.21250351099162,
+      "vanilla_lat_ms": 1544.6323630982247,
+      "cachescout_lat_ms": 1536.4967068196859,
+      "vanilla_completion_s": 10.074935213750239,
+      "cachescout_completion_s": 10.020737483300339,
+      "vanilla_thr": 1.196347893299249,
+      "cachescout_thr": 1.1976783222531928,
+      "engine_pred_acc": 0.9436507936507936,
+      "sources": [
+        "results/real/replay_gsm8k_test_debate_s1/vanilla/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s1/cachescout/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s2/vanilla/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s2/cachescout/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s3/vanilla/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_debate_s3/cachescout/b200_replay/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "selector@100": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.18514924908320027,
+      "cachescout_hit": 0.2706592662460884,
+      "dhit_pp": [
+        8.551001716288809,
+        3.041854492520739
+      ],
+      "dhit_pp_per_seed": [
+        6.518929092168807,
+        7.085931543049331,
+        12.04814451364829
+      ],
+      "dttft_pct": [
+        -2.004428642020365,
+        7.82745804216374
+      ],
+      "dttft_pct_per_seed": [
+        1.4379146387940134,
+        3.51192719279545,
+        -10.96312775765056
+      ],
+      "dlat_pct": [
+        -1.1796849983578512,
+        3.9300299236314946
+      ],
+      "dlat_pct_per_seed": [
+        0.6602326232018507,
+        1.4928709869410195,
+        -5.692158605216424
+      ],
+      "dcompletion_pct": [
+        -1.10844756144118,
+        3.7193442652535897
+      ],
+      "dcompletion_pct_per_seed": [
+        0.6327696977827868,
+        1.4208913976031967,
+        -5.379003779709524
+      ],
+      "dthr_pct": [
+        0.16746734220122925,
+        0.6264171256729185
+      ],
+      "dthr_pct_per_seed": [
+        0.004985201148666185,
+        0.8591165390786859,
+        -0.3616997136236644
+      ],
+      "vanilla_ttft_ms": 1689.9943069660324,
+      "cachescout_ttft_ms": 1664.8410829707796,
+      "vanilla_lat_ms": 2798.822320904557,
+      "cachescout_lat_ms": 2771.130034563014,
+      "vanilla_completion_s": 24.23915223881668,
+      "cachescout_completion_s": 24.008623144632654,
+      "vanilla_thr": 1.3869082865885987,
+      "cachescout_thr": 1.3900241146925771,
+      "engine_pred_acc": 0.8080361528637391,
+      "sources": [
+        "results/real/replay_gsm8k_test_selector_s1/vanilla/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s1/cachescout/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s2/vanilla/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s2/cachescout/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s3/vanilla/b100_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s3/cachescout/b100_replay/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "selector@150": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.2931798472571062,
+      "cachescout_hit": 0.39016698081620554,
+      "dhit_pp": [
+        9.698713355909927,
+        1.1483139902284385
+      ],
+      "dhit_pp_per_seed": [
+        10.357486324105766,
+        8.372763450631403,
+        10.365890292992614
+      ],
+      "dttft_pct": [
+        -3.3837684131563774,
+        1.1863695476532592
+      ],
+      "dttft_pct_per_seed": [
+        -3.0842277744856816,
+        -2.3758776171658447,
+        -4.6911998478176065
+      ],
+      "dlat_pct": [
+        -0.9835978391841471,
+        1.0774382643685556
+      ],
+      "dlat_pct_per_seed": [
+        -1.59390742142006,
+        0.26044718721096594,
+        -1.6173332833433474
+      ],
+      "dcompletion_pct": [
+        -0.8819808102996651,
+        0.9716900436089317
+      ],
+      "dcompletion_pct_per_seed": [
+        -1.4372290952902267,
+        0.2400105789313045,
+        -1.4487239145400732
+      ],
+      "dthr_pct": [
+        0.11992622318216888,
+        0.2629377325360998
+      ],
+      "dthr_pct_per_seed": [
+        0.33771689233978996,
+        -0.17216755438165254,
+        0.1942293315883692
+      ],
+      "vanilla_ttft_ms": 285.997074136238,
+      "cachescout_ttft_ms": 275.90695280366157,
+      "vanilla_lat_ms": 1367.4703119326975,
+      "cachescout_lat_ms": 1353.6781950256188,
+      "vanilla_completion_s": 12.46969901149993,
+      "cachescout_completion_s": 12.35723713679963,
+      "vanilla_thr": 1.5946254411491048,
+      "cachescout_thr": 1.5963630455690805,
+      "engine_pred_acc": 0.8103350034384518,
+      "sources": [
+        "results/real/replay_gsm8k_test_selector_s1/vanilla/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s1/cachescout/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s2/vanilla/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s2/cachescout/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s3/vanilla/b150_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s3/cachescout/b150_replay/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "selector@200": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.36107262838261006,
+      "cachescout_hit": 0.4594169978445934,
+      "dhit_pp": [
+        9.834436946198329,
+        1.547965415400984
+      ],
+      "dhit_pp_per_seed": [
+        11.482580685190735,
+        9.609459050125862,
+        8.41127110327839
+      ],
+      "dttft_pct": [
+        -2.7565781168066734,
+        4.4031381949604205
+      ],
+      "dttft_pct_per_seed": [
+        -4.054107519182947,
+        -6.365152849043609,
+        2.1495260178065356
+      ],
+      "dlat_pct": [
+        -1.4814308102319245,
+        1.1263564819189489
+      ],
+      "dlat_pct_per_seed": [
+        -2.3961540185576946,
+        -1.8247813974795912,
+        -0.22335701465848734
+      ],
+      "dcompletion_pct": [
+        -1.3104398180522743,
+        1.0060593298666602
+      ],
+      "dcompletion_pct_per_seed": [
+        -2.1249861594686004,
+        -1.6204818280531996,
+        -0.18585146663502305
+      ],
+      "dthr_pct": [
+        0.2691026720125815,
+        0.21354208834821348
+      ],
+      "dthr_pct_per_seed": [
+        0.1564558328606136,
+        0.5153819830947759,
+        0.13547020008235489
+      ],
+      "vanilla_ttft_ms": 123.65114981733998,
+      "cachescout_ttft_ms": 120.4853469758298,
+      "vanilla_lat_ms": 1204.9748290842294,
+      "cachescout_lat_ms": 1186.939819036315,
+      "vanilla_completion_s": 11.132712249049776,
+      "cachescout_completion_s": 10.985915215766424,
+      "vanilla_thr": 1.6014310200030615,
+      "cachescout_thr": 1.606006735441249,
+      "engine_pred_acc": 0.8103350034384518,
+      "sources": [
+        "results/real/replay_gsm8k_test_selector_s1/vanilla/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s1/cachescout/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s2/vanilla/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s2/cachescout/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s3/vanilla/b200_replay/result.json",
+        "results/real/replay_gsm8k_test_selector_s3/cachescout/b200_replay/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "all@100": {
+      "dhit_pp": 5.714531703705866,
+      "dttft_pct": -2.926031975414667,
+      "dlat_pct": -1.8541225406842825,
+      "dcompletion_pct": -1.7921265147237517
+    },
+    "all@150": {
+      "dhit_pp": 6.258905721063755,
+      "dttft_pct": -0.9378872070301636,
+      "dlat_pct": -0.017821821648868585,
+      "dcompletion_pct": -0.001061960325710043
+    },
+    "all@200": {
+      "dhit_pp": 6.51253916253628,
+      "dttft_pct": -1.2410031326982844,
+      "dlat_pct": -1.0449384309241259,
+      "dcompletion_pct": -0.9392239618779802
+    }
+  },
+  "live": {
+    "pipeline@100": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.21231116016159998,
+      "cachescout_hit": 0.25002360678321334,
+      "dhit_pp": [
+        3.7712446621613327,
+        5.3168233796011
+      ],
+      "dhit_pp_per_seed": [
+        0.835949811126871,
+        0.569133640714653,
+        9.908650534642474
+      ],
+      "dttft_pct": [
+        36.633922367630674,
+        101.66952011821277
+      ],
+      "dttft_pct_per_seed": [
+        23.123506557131112,
+        144.38315395516685,
+        -57.60489340940593
+      ],
+      "dlat_pct": [
+        20.466333684670357,
+        56.26173288015287
+      ],
+      "dlat_pct_per_seed": [
+        16.98260169062884,
+        78.3889819406001,
+        -33.97258257721788
+      ],
+      "dcompletion_pct": [
+        19.046250010485775,
+        60.98723711536036
+      ],
+      "dcompletion_pct_per_seed": [
+        15.095874465200133,
+        81.9126439688628,
+        -39.8697684026056
+      ],
+      "dthr_pct": [
+        6.113639412771772,
+        14.236341390200577
+      ],
+      "dthr_pct_per_seed": [
+        -10.199999554388818,
+        16.02325777676954,
+        12.517660015934595
+      ],
+      "vanilla_ttft_ms": 2132.952922268121,
+      "cachescout_ttft_ms": 2969.670559036007,
+      "vanilla_lat_ms": 3568.784784583124,
+      "cachescout_lat_ms": 4346.60044132276,
+      "vanilla_completion_s": 30.04945293453317,
+      "cachescout_completion_s": 36.003874288183695,
+      "vanilla_thr": 1.234669982326039,
+      "cachescout_thr": 1.2918987930994934,
+      "vanilla_accuracy": 0.5333333333333333,
+      "vanilla_calls": 163,
+      "cachescout_accuracy": 0.5833333333333334,
+      "cachescout_calls": 158,
+      "engine_pred_acc": 0.9170419011882427,
+      "sources": [
+        "results/real/gsm8k_test_pipeline_s1/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s1/cachescout/b100_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s2/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s2/cachescout/b100_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s3/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s3/cachescout/b100_eval/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "pipeline@150": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.30913736884856663,
+      "cachescout_hit": 0.381939133070713,
+      "dhit_pp": [
+        7.280176422214631,
+        4.6580300559128505
+      ],
+      "dhit_pp_per_seed": [
+        6.902066176213606,
+        2.8227254940849766,
+        12.11573759634531
+      ],
+      "dttft_pct": [
+        79.29591667265738,
+        78.08319415247486
+      ],
+      "dttft_pct_per_seed": [
+        -0.9249901187943443,
+        155.049599358404,
+        83.76314077836248
+      ],
+      "dlat_pct": [
+        21.239461844235922,
+        18.39156949811666
+      ],
+      "dlat_pct_per_seed": [
+        1.0070438111619895,
+        36.94465771039632,
+        25.766684011149454
+      ],
+      "dcompletion_pct": [
+        20.272071093535498,
+        17.358503676449867
+      ],
+      "dcompletion_pct_per_seed": [
+        1.5617465763891891,
+        35.853023842691265,
+        23.401442861526036
+      ],
+      "dthr_pct": [
+        -0.12640104973272356,
+        5.624479204990013
+      ],
+      "dthr_pct_per_seed": [
+        6.303891171857523,
+        -4.131023433814174,
+        -2.55207088724152
+      ],
+      "vanilla_ttft_ms": 223.34251476983428,
+      "cachescout_ttft_ms": 390.7790915972664,
+      "vanilla_lat_ms": 1541.2140909585755,
+      "cachescout_lat_ms": 1854.494255354736,
+      "vanilla_completion_s": 13.292419278866388,
+      "cachescout_completion_s": 15.958859929833004,
+      "vanilla_thr": 1.461252531592012,
+      "cachescout_thr": 1.4595592122381935,
+      "vanilla_accuracy": 0.55,
+      "vanilla_calls": 159.33333333333334,
+      "cachescout_accuracy": 0.55,
+      "cachescout_calls": 160.33333333333334,
+      "engine_pred_acc": 0.95,
+      "sources": [
+        "results/real/gsm8k_test_pipeline_s1/vanilla/b150_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s1/cachescout/b150_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s2/vanilla/b150_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s2/cachescout/b150_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s3/vanilla/b150_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s3/cachescout/b150_eval/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "pipeline@200": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.3464367911561591,
+      "cachescout_hit": 0.438732302265132,
+      "dhit_pp": [
+        9.229551110897289,
+        5.198309524901755
+      ],
+      "dhit_pp_per_seed": [
+        13.881764923280748,
+        3.618615152900012,
+        10.188273256511104
+      ],
+      "dttft_pct": [
+        -21.005761862405258,
+        44.60784339749117
+      ],
+      "dttft_pct_per_seed": [
+        -72.38812652643631,
+        7.807782351983361,
+        1.563058587237176
+      ],
+      "dlat_pct": [
+        3.5886698981922245,
+        25.28493776191455
+      ],
+      "dlat_pct_per_seed": [
+        -23.571929743092024,
+        7.892416050133089,
+        26.44552338753561
+      ],
+      "dcompletion_pct": [
+        3.070548699517181,
+        25.550545278261566
+      ],
+      "dcompletion_pct_per_seed": [
+        -21.61652036567134,
+        1.423306636637789,
+        29.404859827585096
+      ],
+      "dthr_pct": [
+        2.6330177247412565,
+        5.903049426614602
+      ],
+      "dthr_pct_per_seed": [
+        0.8534563346027868,
+        -2.175522690578191,
+        9.221119530199173
+      ],
+      "vanilla_ttft_ms": 201.9577635520968,
+      "cachescout_ttft_ms": 111.12696991006501,
+      "vanilla_lat_ms": 1584.2684152123695,
+      "cachescout_lat_ms": 1586.3101951660014,
+      "vanilla_completion_s": 13.644854765883428,
+      "cachescout_completion_s": 13.639458675499434,
+      "vanilla_thr": 1.4686208465273538,
+      "cachescout_thr": 1.4953418957800424,
+      "vanilla_accuracy": 0.4666666666666667,
+      "vanilla_calls": 159.66666666666666,
+      "cachescout_accuracy": 0.5666666666666667,
+      "cachescout_calls": 159,
+      "engine_pred_acc": 0.9498316498316498,
+      "sources": [
+        "results/real/gsm8k_test_pipeline_s1/vanilla/b200_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s1/cachescout/b200_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s2/vanilla/b200_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s2/cachescout/b200_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s3/vanilla/b200_eval/result.json",
+        "results/real/gsm8k_test_pipeline_s3/cachescout/b200_eval/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "random@100": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.1895437913872817,
+      "cachescout_hit": 0.19076672743253473,
+      "dhit_pp": [
+        0.12229360452530495,
+        2.3815068313462104
+      ],
+      "dhit_pp_per_seed": [
+        2.509005879198736,
+        0.11184835824972483,
+        -2.253973423872546
+      ],
+      "dttft_pct": [
+        25.259900546589524,
+        34.161606602705135
+      ],
+      "dttft_pct_per_seed": [
+        -7.876178615770613,
+        23.293767392323893,
+        60.36211286321529
+      ],
+      "dlat_pct": [
+        12.489020507442854,
+        16.18335331546351
+      ],
+      "dlat_pct_per_seed": [
+        -4.932560635827732,
+        15.345982640829137,
+        27.053639517327156
+      ],
+      "dcompletion_pct": [
+        15.084325346750164,
+        21.57187915670735
+      ],
+      "dcompletion_pct_per_seed": [
+        -8.862297215231528,
+        21.11916702210379,
+        32.99610623337823
+      ],
+      "dthr_pct": [
+        0.7732020234078374,
+        1.3103861134672856
+      ],
+      "dthr_pct_per_seed": [
+        -0.5923160090895663,
+        2.0204361441219287,
+        0.8914859351911497
+      ],
+      "vanilla_ttft_ms": 2143.163062965298,
+      "cachescout_ttft_ms": 2218.6727285414804,
+      "vanilla_lat_ms": 3305.452829325019,
+      "cachescout_lat_ms": 3480.687553842158,
+      "vanilla_completion_s": 32.153388301333266,
+      "cachescout_completion_s": 33.904949807283145,
+      "vanilla_thr": 1.379109854574476,
+      "cachescout_thr": 1.3911646792129941,
+      "vanilla_accuracy": 0.3833333333333333,
+      "vanilla_calls": 181.33333333333334,
+      "cachescout_accuracy": 0.4666666666666667,
+      "cachescout_calls": 186,
+      "engine_pred_acc": 0.20528046162104133,
+      "sources": [
+        "results/real/gsm8k_test_random_s1/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_random_s1/cachescout/b100_eval/result.json",
+        "results/real/gsm8k_test_random_s2/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_random_s2/cachescout/b100_eval/result.json",
+        "results/real/gsm8k_test_random_s3/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_random_s3/cachescout/b100_eval/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "random@150": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.28456039873832867,
+      "cachescout_hit": 0.2979732661729856,
+      "dhit_pp": [
+        1.3412867434656925,
+        2.4962401749384977
+      ],
+      "dhit_pp_per_seed": [
+        3.0472857148833272,
+        -1.5237740343310324,
+        2.500348549844783
+      ],
+      "dttft_pct": [
+        30.39897829905766,
+        66.28944439176063
+      ],
+      "dttft_pct_per_seed": [
+        102.72169386123213,
+        15.948425386812337,
+        -27.47318435087148
+      ],
+      "dlat_pct": [
+        2.44191128229353,
+        17.466382066031862
+      ],
+      "dlat_pct_per_seed": [
+        22.185979344489382,
+        -3.865948967528754,
+        -10.994296530080039
+      ],
+      "dcompletion_pct": [
+        8.993921536758535,
+        21.416881049079432
+      ],
+      "dcompletion_pct_per_seed": [
+        30.172794020254166,
+        9.46225695643923,
+        -12.653286366417793
+      ],
+      "dthr_pct": [
+        7.133917220241895,
+        7.717219147655458
+      ],
+      "dthr_pct_per_seed": [
+        7.020004124910018,
+        14.907462342399413,
+        -0.5257148065837436
+      ],
+      "vanilla_ttft_ms": 251.9452150142078,
+      "cachescout_ttft_ms": 360.6603354526139,
+      "vanilla_lat_ms": 1552.4256646715996,
+      "cachescout_lat_ms": 1604.0503067909895,
+      "vanilla_completion_s": 14.545967703883434,
+      "cachescout_completion_s": 15.950320758565795,
+      "vanilla_thr": 1.4895659907753303,
+      "cachescout_thr": 1.6104941266390689,
+      "vanilla_accuracy": 0.4666666666666667,
+      "vanilla_calls": 171.33333333333334,
+      "cachescout_accuracy": 0.4166666666666667,
+      "cachescout_calls": 181.66666666666666,
+      "engine_pred_acc": 0.18909443269908388,
+      "sources": [
+        "results/real/gsm8k_test_random_s1/vanilla/b150_eval/result.json",
+        "results/real/gsm8k_test_random_s1/cachescout/b150_eval/result.json",
+        "results/real/gsm8k_test_random_s2/vanilla/b150_eval/result.json",
+        "results/real/gsm8k_test_random_s2/cachescout/b150_eval/result.json",
+        "results/real/gsm8k_test_random_s3/vanilla/b150_eval/result.json",
+        "results/real/gsm8k_test_random_s3/cachescout/b150_eval/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "random@200": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.3084009780884718,
+      "cachescout_hit": 0.41039742078688085,
+      "dhit_pp": [
+        10.199644269840912,
+        4.751087891967702
+      ],
+      "dhit_pp_per_seed": [
+        12.528564709737749,
+        4.733447964812987,
+        13.336920134971997
+      ],
+      "dttft_pct": [
+        -26.214276021166544,
+        45.271852986829245
+      ],
+      "dttft_pct_per_seed": [
+        -74.94028012644972,
+        14.546075384648717,
+        -18.24862332169863
+      ],
+      "dlat_pct": [
+        -14.732423345444134,
+        13.925440219417073
+      ],
+      "dlat_pct_per_seed": [
+        -29.110415200712158,
+        -1.3086140315135109,
+        -13.778240804106733
+      ],
+      "dcompletion_pct": [
+        -14.961607838581418,
+        15.97976499766169
+      ],
+      "dcompletion_pct_per_seed": [
+        -31.332325233179503,
+        0.5961723313510525,
+        -14.148670613915804
+      ],
+      "dthr_pct": [
+        2.262590174736575,
+        5.1516344669410135
+      ],
+      "dthr_pct_per_seed": [
+        7.116971540605355,
+        -3.1421118594782915,
+        2.812910843082661
+      ],
+      "vanilla_ttft_ms": 241.91829867387312,
+      "cachescout_ttft_ms": 118.8088201769284,
+      "vanilla_lat_ms": 1569.3700074127178,
+      "cachescout_lat_ms": 1306.6167126131966,
+      "vanilla_completion_s": 16.298300803117307,
+      "cachescout_completion_s": 13.454855109850177,
+      "vanilla_thr": 1.617682555175284,
+      "cachescout_thr": 1.6527749284245352,
+      "vanilla_accuracy": 0.43333333333333335,
+      "vanilla_calls": 188.33333333333334,
+      "cachescout_accuracy": 0.36666666666666664,
+      "cachescout_calls": 184.66666666666666,
+      "engine_pred_acc": 0.19181689922222778,
+      "sources": [
+        "results/real/gsm8k_test_random_s1/vanilla/b200_eval/result.json",
+        "results/real/gsm8k_test_random_s1/cachescout/b200_eval/result.json",
+        "results/real/gsm8k_test_random_s2/vanilla/b200_eval/result.json",
+        "results/real/gsm8k_test_random_s2/cachescout/b200_eval/result.json",
+        "results/real/gsm8k_test_random_s3/vanilla/b200_eval/result.json",
+        "results/real/gsm8k_test_random_s3/cachescout/b200_eval/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "debate@100": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.3480386347835347,
+      "cachescout_hit": 0.39924237087757897,
+      "dhit_pp": [
+        5.120373609404427,
+        3.4855541671964723
+      ],
+      "dhit_pp_per_seed": [
+        2.5718741568862002,
+        3.696855599581278,
+        9.092391071745803
+      ],
+      "dttft_pct": [
+        11.213426640086979,
+        18.399566509925823
+      ],
+      "dttft_pct_per_seed": [
+        25.244919597254455,
+        -9.618323305415243,
+        18.013683628421727
+      ],
+      "dlat_pct": [
+        5.261235500527987,
+        8.59148138068365
+      ],
+      "dlat_pct_per_seed": [
+        14.554980737745504,
+        -2.391178153220097,
+        3.6199039170585534
+      ],
+      "dcompletion_pct": [
+        9.482259635025011,
+        10.271059680415936
+      ],
+      "dcompletion_pct_per_seed": [
+        20.755663235722732,
+        0.6553469638248766,
+        7.035768705527423
+      ],
+      "dthr_pct": [
+        -2.8306158585829633,
+        8.205098185488037
+      ],
+      "dthr_pct_per_seed": [
+        -12.13698462465026,
+        0.2839777647051456,
+        3.3611592841962246
+      ],
+      "vanilla_ttft_ms": 828.9283631239828,
+      "cachescout_ttft_ms": 914.5305158487002,
+      "vanilla_lat_ms": 2314.461530837005,
+      "cachescout_lat_ms": 2455.097018492366,
+      "vanilla_completion_s": 14.837241474883255,
+      "cachescout_completion_s": 16.374358941933316,
+      "vanilla_thr": 1.1714073722345628,
+      "cachescout_thr": 1.131406924149389,
+      "vanilla_accuracy": 0.4166666666666667,
+      "vanilla_calls": 121.66666666666667,
+      "cachescout_accuracy": 0.43333333333333335,
+      "cachescout_calls": 126.66666666666667,
+      "engine_pred_acc": 0.9386805912229641,
+      "sources": [
+        "results/real/gsm8k_test_debate_s1/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_debate_s1/cachescout/b100_eval/result.json",
+        "results/real/gsm8k_test_debate_s2/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_debate_s2/cachescout/b100_eval/result.json",
+        "results/real/gsm8k_test_debate_s3/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_debate_s3/cachescout/b100_eval/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "debate@150": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.4513740666902731,
+      "cachescout_hit": 0.5098482555306135,
+      "dhit_pp": [
+        5.847418884034048,
+        2.6354560549672117
+      ],
+      "dhit_pp_per_seed": [
+        7.3044957628202845,
+        2.8051553432852705,
+        7.43260554599659
+      ],
+      "dttft_pct": [
+        15.874906505990017,
+        21.808042637045332
+      ],
+      "dttft_pct_per_seed": [
+        21.701208633894243,
+        34.17805522062727,
+        -8.254544336551461
+      ],
+      "dlat_pct": [
+        9.78781754160903,
+        7.115143657151121
+      ],
+      "dlat_pct_per_seed": [
+        12.88442085867889,
+        14.829929768744087,
+        1.6491019974041121
+      ],
+      "dcompletion_pct": [
+        6.905697250454919,
+        7.156712635118298
+      ],
+      "dcompletion_pct_per_seed": [
+        14.573197111453883,
+        5.741333045707253,
+        0.4025615942036209
+      ],
+      "dthr_pct": [
+        -3.8474947267145954,
+        3.2574610458514437
+      ],
+      "dthr_pct_per_seed": [
+        -3.3574988547872775,
+        -7.322195512687868,
+        -0.8627898126686406
+      ],
+      "vanilla_ttft_ms": 136.16856798720008,
+      "cachescout_ttft_ms": 160.16335761909448,
+      "vanilla_lat_ms": 1528.9296152008285,
+      "cachescout_lat_ms": 1681.165358686653,
+      "vanilla_completion_s": 10.189502047250548,
+      "cachescout_completion_s": 10.950987295599772,
+      "vanilla_thr": 1.2031675810843518,
+      "cachescout_thr": 1.1508270010952917,
+      "vanilla_accuracy": 0.45,
+      "vanilla_calls": 124.66666666666667,
+      "cachescout_accuracy": 0.45,
+      "cachescout_calls": 122.33333333333333,
+      "engine_pred_acc": 0.9428456406717276,
+      "sources": [
+        "results/real/gsm8k_test_debate_s1/vanilla/b150_eval/result.json",
+        "results/real/gsm8k_test_debate_s1/cachescout/b150_eval/result.json",
+        "results/real/gsm8k_test_debate_s2/vanilla/b150_eval/result.json",
+        "results/real/gsm8k_test_debate_s2/cachescout/b150_eval/result.json",
+        "results/real/gsm8k_test_debate_s3/vanilla/b150_eval/result.json",
+        "results/real/gsm8k_test_debate_s3/cachescout/b150_eval/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "debate@200": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.4929176849761755,
+      "cachescout_hit": 0.5244205373543409,
+      "dhit_pp": [
+        3.150285237816545,
+        2.7646922788067263
+      ],
+      "dhit_pp_per_seed": [
+        6.335173174543762,
+        1.3683946559687743,
+        1.7472878829370986
+      ],
+      "dttft_pct": [
+        0.8894127496025436,
+        2.9976442666094845
+      ],
+      "dttft_pct_per_seed": [
+        3.3633652711579254,
+        1.748990885914048,
+        -2.4441179082643427
+      ],
+      "dlat_pct": [
+        -6.123897659232584,
+        8.498925859561618
+      ],
+      "dlat_pct_per_seed": [
+        3.3402157410245437,
+        -8.607697495337307,
+        -13.104211223384986
+      ],
+      "dcompletion_pct": [
+        -9.335213577847012,
+        4.362328572861085
+      ],
+      "dcompletion_pct_per_seed": [
+        -4.319955271032194,
+        -11.436273346593017,
+        -12.249412115915826
+      ],
+      "dthr_pct": [
+        0.8155145859536694,
+        2.45852127377141
+      ],
+      "dthr_pct_per_seed": [
+        -1.784607504022151,
+        3.1024143672614635,
+        1.1287368946216958
+      ],
+      "vanilla_ttft_ms": 94.60735603763911,
+      "cachescout_ttft_ms": 95.52431716888889,
+      "vanilla_lat_ms": 1673.7834230464175,
+      "cachescout_lat_ms": 1575.9796195746098,
+      "vanilla_completion_s": 11.264935927933765,
+      "cachescout_completion_s": 10.234653167567375,
+      "vanilla_thr": 1.1760220144344429,
+      "cachescout_thr": 1.1861290777194942,
+      "vanilla_accuracy": 0.4166666666666667,
+      "vanilla_calls": 126.33333333333333,
+      "cachescout_accuracy": 0.43333333333333335,
+      "cachescout_calls": 121.66666666666667,
+      "engine_pred_acc": 0.942929292929293,
+      "sources": [
+        "results/real/gsm8k_test_debate_s1/vanilla/b200_eval/result.json",
+        "results/real/gsm8k_test_debate_s1/cachescout/b200_eval/result.json",
+        "results/real/gsm8k_test_debate_s2/vanilla/b200_eval/result.json",
+        "results/real/gsm8k_test_debate_s2/cachescout/b200_eval/result.json",
+        "results/real/gsm8k_test_debate_s3/vanilla/b200_eval/result.json",
+        "results/real/gsm8k_test_debate_s3/cachescout/b200_eval/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "selector@100": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.1931831400585213,
+      "cachescout_hit": 0.31667977502971856,
+      "dhit_pp": [
+        12.349663497119728,
+        6.910596994048593
+      ],
+      "dhit_pp_per_seed": [
+        4.485842030363646,
+        17.454853723369396,
+        15.108294737626144
+      ],
+      "dttft_pct": [
+        -28.47081177434262,
+        50.83458139732128
+      ],
+      "dttft_pct_per_seed": [
+        24.04529333604326,
+        -77.43786461283864,
+        -32.019864046232485
+      ],
+      "dlat_pct": [
+        -18.94764185275596,
+        33.88699849066261
+      ],
+      "dlat_pct_per_seed": [
+        14.208014788451283,
+        -53.521455593001036,
+        -17.529484753718126
+      ],
+      "dcompletion_pct": [
+        -16.26225355742267,
+        34.40555272146828
+      ],
+      "dcompletion_pct_per_seed": [
+        18.621301740093045,
+        -50.1690011552453,
+        -17.23906125711576
+      ],
+      "dthr_pct": [
+        10.280696995094138,
+        12.860674046701124
+      ],
+      "dthr_pct_per_seed": [
+        19.328172504802545,
+        15.955210419310383,
+        -4.441291938830516
+      ],
+      "vanilla_ttft_ms": 1676.0102496654638,
+      "cachescout_ttft_ms": 1274.970845649164,
+      "vanilla_lat_ms": 2795.5360477106565,
+      "cachescout_lat_ms": 2297.7907967248093,
+      "vanilla_completion_s": 24.20384442731641,
+      "cachescout_completion_s": 20.544029886849845,
+      "vanilla_thr": 1.3648219712773801,
+      "cachescout_thr": 1.5235540398334817,
+      "vanilla_accuracy": 0.5,
+      "vanilla_calls": 164.66666666666666,
+      "cachescout_accuracy": 0.48333333333333334,
+      "cachescout_calls": 167.33333333333334,
+      "engine_pred_acc": 0.7963501923069964,
+      "sources": [
+        "results/real/gsm8k_test_selector_s1/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_selector_s1/cachescout/b100_eval/result.json",
+        "results/real/gsm8k_test_selector_s2/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_selector_s2/cachescout/b100_eval/result.json",
+        "results/real/gsm8k_test_selector_s3/vanilla/b100_eval/result.json",
+        "results/real/gsm8k_test_selector_s3/cachescout/b100_eval/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "selector@150": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.30264946187328545,
+      "cachescout_hit": 0.39622335201010456,
+      "dhit_pp": [
+        9.357389013681914,
+        8.26497650278631
+      ],
+      "dhit_pp_per_seed": [
+        8.370814869842519,
+        18.07137193118795,
+        1.6299802400152719
+      ],
+      "dttft_pct": [
+        292.93453154312596,
+        570.1779626371498
+      ],
+      "dttft_pct_per_seed": [
+        -42.37022572284707,
+        -30.107443666639753,
+        951.2812640188647
+      ],
+      "dlat_pct": [
+        42.63526127427175,
+        89.94950240380366
+      ],
+      "dlat_pct_per_seed": [
+        -3.204637169597291,
+        -15.159972497352703,
+        146.27039348976524
+      ],
+      "dcompletion_pct": [
+        34.84663909679428,
+        81.70999482438452
+      ],
+      "dcompletion_pct_per_seed": [
+        -2.415643280595703,
+        -21.589955714883647,
+        128.5455162858622
+      ],
+      "dthr_pct": [
+        -2.328241055521145,
+        9.263966110831007
+      ],
+      "dthr_pct_per_seed": [
+        0.3747612967464953,
+        5.283594301988748,
+        -12.643078765298677
+      ],
+      "vanilla_ttft_ms": 287.30886519240534,
+      "cachescout_ttft_ms": 619.2595747643591,
+      "vanilla_lat_ms": 1413.7890799513139,
+      "cachescout_lat_ms": 1880.2746988545687,
+      "vanilla_completion_s": 12.247332564966806,
+      "cachescout_completion_s": 15.495612528183361,
+      "vanilla_thr": 1.416778691457319,
+      "cachescout_thr": 1.393180969965942,
+      "vanilla_accuracy": 0.45,
+      "vanilla_calls": 157,
+      "cachescout_accuracy": 0.4666666666666667,
+      "cachescout_calls": 152.33333333333334,
+      "engine_pred_acc": 0.8048000262383037,
+      "sources": [
+        "results/real/gsm8k_test_selector_s1/vanilla/b150_eval/result.json",
+        "results/real/gsm8k_test_selector_s1/cachescout/b150_eval/result.json",
+        "results/real/gsm8k_test_selector_s2/vanilla/b150_eval/result.json",
+        "results/real/gsm8k_test_selector_s2/cachescout/b150_eval/result.json",
+        "results/real/gsm8k_test_selector_s3/vanilla/b150_eval/result.json",
+        "results/real/gsm8k_test_selector_s3/cachescout/b150_eval/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "selector@200": {
+      "n_seeds": 3,
+      "vanilla_hit": 0.3430976407796568,
+      "cachescout_hit": 0.4593814217809485,
+      "dhit_pp": [
+        11.628378100129167,
+        0.6666883183797208
+      ],
+      "dhit_pp_per_seed": [
+        12.36690928088583,
+        11.070958091382288,
+        11.447266928119381
+      ],
+      "dttft_pct": [
+        -27.79370354293376,
+        26.625710470038964
+      ],
+      "dttft_pct_per_seed": [
+        -57.911135178247086,
+        -7.3839418645585075,
+        -18.086033585995686
+      ],
+      "dlat_pct": [
+        -7.947803703913788,
+        9.887219311877752
+      ],
+      "dlat_pct_per_seed": [
+        -19.280166970402835,
+        -3.4817315733462695,
+        -1.08151256799226
+      ],
+      "dcompletion_pct": [
+        -10.845678232011295,
+        9.08973641024947
+      ],
+      "dcompletion_pct_per_seed": [
+        -21.319125555834685,
+        -5.01440947161047,
+        -6.20349966858873
+      ],
+      "dthr_pct": [
+        -1.8903566338975126,
+        2.735890285263916
+      ],
+      "dthr_pct_per_seed": [
+        0.4079008638449677,
+        -1.1623585866906816,
+        -4.916612178846824
+      ],
+      "vanilla_ttft_ms": 270.16349671093377,
+      "cachescout_ttft_ms": 150.3444970371345,
+      "vanilla_lat_ms": 1427.2879232868918,
+      "cachescout_lat_ms": 1291.8833701740732,
+      "vanilla_completion_s": 13.156116720799764,
+      "cachescout_completion_s": 11.503990017183847,
+      "vanilla_thr": 1.5779686912527495,
+      "cachescout_thr": 1.5526367217068213,
+      "vanilla_accuracy": 0.4666666666666667,
+      "vanilla_calls": 166,
+      "cachescout_accuracy": 0.48333333333333334,
+      "cachescout_calls": 159.66666666666666,
+      "engine_pred_acc": 0.7951540437359143,
+      "sources": [
+        "results/real/gsm8k_test_selector_s1/vanilla/b200_eval/result.json",
+        "results/real/gsm8k_test_selector_s1/cachescout/b200_eval/result.json",
+        "results/real/gsm8k_test_selector_s2/vanilla/b200_eval/result.json",
+        "results/real/gsm8k_test_selector_s2/cachescout/b200_eval/result.json",
+        "results/real/gsm8k_test_selector_s3/vanilla/b200_eval/result.json",
+        "results/real/gsm8k_test_selector_s3/cachescout/b200_eval/result.json"
+      ],
+      "any_git_dirty": false
+    },
+    "all@100": {
+      "dhit_pp": 5.340893843302698,
+      "dttft_pct": 11.15910944499114,
+      "dlat_pct": 4.817236959971309,
+      "dcompletion_pct": 6.83764535870957
+    },
+    "all@150": {
+      "dhit_pp": 5.956567765849071,
+      "dttft_pct": 104.62608325520776,
+      "dlat_pct": 19.02611298560256,
+      "dcompletion_pct": 17.75458224438581
+    },
+    "all@200": {
+      "dhit_pp": 8.551964679670977,
+      "dttft_pct": -18.531082169225755,
+      "dlat_pct": -6.30386370259957,
+      "dcompletion_pct": -8.017987737230635
+    }
+  },
+  "synthetic_reference": {
+    "selector@100": 2.6511417469934204,
+    "selector@150": 2.2156532579297394,
+    "selector@200": 1.217469692842162,
+    "src": "results/report/summary.json"
+  }
+}
