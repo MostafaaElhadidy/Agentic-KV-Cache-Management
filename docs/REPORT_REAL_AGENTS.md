@@ -66,8 +66,9 @@ Source: `results/report_real/summary.json → workload` (per-run files e.g.
 - **Predictability R vs the paper (Fig. 4a):**
   - Pipeline 1.00 matches the paper's 1.00.
   - Random 0.14 is close to the paper's 0.12.
-  - Selector 0.77 is higher than the paper's 0.57. That's not because the model routes predictably: 77% of its
-    decisions are round-robin fallbacks.
+  - Selector 0.77 is higher than the paper's 0.57. This does not mean the model routes predictably: 77% of its
+    routing decisions are the round-robin fallback, which is deterministic (P→A→C→T→R→D), so the measured R
+    mostly reflects the fallback rule rather than the model's own choices.
   - Debate is 1.00 vs the paper's 0.78, because this debate is rule-based and deterministic.
 - **Next-agent prediction accuracy** (CacheScout engine-side learner, replay runs; `summary.json → replay.*.engine_pred_acc`):
   pipeline 0.94–0.95, debate 0.94, selector 0.81, random 0.17–0.18. Paper: 76–86% (Fig. 4b).

@@ -26,7 +26,9 @@ single 8 GB laptop GPU, with an honest scorecard.**
   - A working CacheScout inside **real vLLM 0.31.0** as a scheduler plugin (no vLLM files edited).
   - A one-flag on/off switch, ablations and baselines.
   - A vLLM-exact cache simulator, a synthetic multi-agent workload generator and a full benchmarking pipeline.
-  - 57 GPU runs on an RTX 4060 Laptop (8 GB).
+  - A real multi-agent workload: six LLM agents solving GSM8K with real tools, plus record-and-replay.
+  - Over 200 GPU runs on an RTX 4060 Laptop (8 GB): 57 on synthetic traces and 144 in the real-agent campaign
+    (72 live + 72 replay), plus tuning recordings, simulator cross-checks and pilots.
 - **Headline results.**
   - **Real agents, replay** (identical prompts for both systems): **+5.7 / +6.3 / +6.5 pp** cache hit rate at
     100 / 150 / 200 blocks, positive in 35 of 36 runs. TTFT changes are small (−0.9% to −2.9%) and not
@@ -191,6 +193,11 @@ different engine configurations. Live latency differences therefore can't be att
 | random | 0.14 | n/a | 0.38 | +2.2 / +1.6 / +3.9 pp |
 | debate (rule-based) | 1.00 | n/a | 0.42 | +6.4 / +4.1 / +2.4 pp |
 | selector | 0.77 | **77% of routing decisions** | 0.50 | +8.6 / +9.7 / +9.8 pp |
+
+**Reading the R column:** the selector's measured R of 0.77 is not evidence of predictable model routing. 77% of
+its routing decisions are the round-robin fallback, which is deterministic, so R mostly reflects the fallback
+rule. Pipeline and the rule-based debate are deterministic by design (R = 1.00), and random is close to the
+paper's 0.12.
 
 Per-run files are listed in `results/report_real/summary.json` (e.g.
 `results/real/replay_gsm8k_test_selector_s1/cachescout/b100_replay/result.json`). Full analysis:
