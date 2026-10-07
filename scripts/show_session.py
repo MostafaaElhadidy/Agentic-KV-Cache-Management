@@ -23,6 +23,39 @@ def wrap(text: str, indent: str = "    ") -> str:
     return "\n".join(lines)
 
 
+def print_session(s: dict, system: str, blocks: int | None) -> None:
+    """Print one session (a SessionResult.to_dict()) as a readable conversation."""
+    print(f"Session {s['session_id']}  |  problem {s['problem_id']}  |  topology {s['topology']}  "
+          f"|  system {system}  |  cache {blocks} blocks")
+    print("=" * 100)
+    print("TASK:")
+    print(wrap(s["question"]))
+    print(f"    (gold answer: {s['gold'] or 'none: custom task, not scored'})")
+    print("-" * 100)
+    for c in s["calls"]:
+        tag = " [forced final]" if c.get("force_final") else ""
+        trim = f", {c['dropped_messages']} old msgs trimmed" if c["dropped_messages"] else ""
+        print(f"[{c['turn_idx']:>2}] {NAMES.get(c['agent'], c['agent'])}{tag}   "
+              f"(prompt {c['prompt_tokens']} tok, {c['cached_tokens']} from cache{trim}; "
+              f"output {c['output_tokens']} tok)")
+        print(wrap(c["output"]))
+        if c.get("tool"):
+            t = c["tool"]
+            status = "ok" if t["ok"] else "FAILED"
+            print(f"    -> tool {t['tool']}({t['argument']!r}) = {t['result']!r}  [{status}]")
+        if c.get("route"):
+            r = c["route"]
+            nxt = NAMES.get(r["next"], r["next"]) if r["next"] else "(end)"
+            fb = "  [FALLBACK]" if r.get("fallback") else ""
+            print(f"    -> next: {nxt}   ({r['reason']}){fb}")
+        print()
+    print("-" * 100)
+    correct = "n/a" if s.get("correct") is None else s["correct"]
+    print(f"FINAL ANSWER: {s['final_answer']}   gold: {s['gold'] or 'n/a'}   correct: {correct}   "
+          f"calls: {s['num_calls']}   capped: {s['capped']}   completion: "
+          f"{s['t_end'] - s['t_arrival']:.1f} s")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("run_dir")
@@ -45,34 +78,7 @@ def main() -> int:
     if s is None:
         print(f"session {args.session} not found (use --list)")
         return 1
-    print(f"Session {s['session_id']}  |  problem {s['problem_id']}  |  topology {s['topology']}  "
-          f"|  system {res['system']}  |  cache {res.get('num_gpu_blocks_reported')} blocks")
-    print("=" * 100)
-    print("TASK:")
-    print(wrap(s["question"]))
-    print(f"    (gold answer: {s['gold']})")
-    print("-" * 100)
-    for c in s["calls"]:
-        tag = " [forced final]" if c.get("force_final") else ""
-        trim = f", {c['dropped_messages']} old msgs trimmed" if c["dropped_messages"] else ""
-        print(f"[{c['turn_idx']:>2}] {NAMES.get(c['agent'], c['agent'])}{tag}   "
-              f"(prompt {c['prompt_tokens']} tok, {c['cached_tokens']} from cache{trim}; "
-              f"output {c['output_tokens']} tok)")
-        print(wrap(c["output"]))
-        if c.get("tool"):
-            t = c["tool"]
-            status = "ok" if t["ok"] else "FAILED"
-            print(f"    -> tool {t['tool']}({t['argument']!r}) = {t['result']!r}  [{status}]")
-        if c.get("route"):
-            r = c["route"]
-            nxt = NAMES.get(r["next"], r["next"]) if r["next"] else "(end)"
-            fb = "  [FALLBACK]" if r.get("fallback") else ""
-            print(f"    -> next: {nxt}   ({r['reason']}){fb}")
-        print()
-    print("-" * 100)
-    print(f"FINAL ANSWER: {s['final_answer']}   gold: {s['gold']}   correct: {s['correct']}   "
-          f"calls: {s['num_calls']}   capped: {s['capped']}   completion: "
-          f"{s['t_end'] - s['t_arrival']:.1f} s")
+    print_session(s, res['system'], res.get('num_gpu_blocks_reported'))
     return 0
 
 

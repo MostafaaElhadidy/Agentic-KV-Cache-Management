@@ -173,3 +173,12 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
   (results/tuning/real_eviction_sweep.json): vanilla 0.3265, previous constants 0.3783, best 0.3803 (only
   lambda 0.005 -> 0.001). Gain 0.20 pp = exactly the pre-set adoption threshold (0.2 pp), so lambda = 0.001 is
   adopted for configs/experiments/real/local.yaml; a borderline change. Synthetic-trace configs unchanged.
+- **Replay is open-loop (engineering choice).** `mode: online` with a recorded live run as `trace` sends the
+  recorded prompt token IDs with `max_tokens` = the recorded output length and `ignore_eos`. The model's
+  replay-time generations are discarded and do NOT feed later prompts; arrival times and inter-call gaps are
+  also the recorded ones. This keeps the request stream identical across systems, so only the cache policy
+  differs, but it does not react to the system's own speed or outputs (unlike the live closed-loop runs).
+- **Debate topology is deterministic (interpretation).** Our debate routes P→C→R→D and, on `REVISE` (or an
+  unclear DECIDER reply), back to C. Measured R = 1.00. The paper's debate (Fig. 4a/5) is stochastic: after the
+  reviewer the next speaker varies (R = 0.78). Our results for "debate" therefore correspond to a fully
+  predictable coder/reviewer/judge loop, not to the paper's debate statistics.

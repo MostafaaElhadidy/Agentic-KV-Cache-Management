@@ -290,3 +290,28 @@ def test_router_call_constrained_choices_and_cap_counts_agent_calls() -> None:
     client2.router_picks = ["CODER", "CODER"]
     res2 = run(client2, "selector", max_calls=3, router=True)
     assert [c.agent for c in res2.calls if c.agent != "S"] == ["P", "C", "D"]
+
+
+def test_demo_custom_task_not_scored_and_recording_replays(tmp_path) -> None:
+    import importlib
+    import sys
+    from pathlib import Path
+
+    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    sys.path.insert(0, str(scripts))
+    demo = importlib.import_module("demo")
+    from cachescout.agents.replay import RecordedTrace
+
+    client = FakeClient({"D": ["FINAL ANSWER: 150"]})
+    b = PromptBuilder(fake_tokenize, "pipeline", 1584, 128, NAMES)
+    cfg = SessionConfig(topology="pipeline", think_s=0.0)
+    p = demo.custom_problem("A train travels 60 km/h for 2.5 hours. How far does it go?")
+    res = asyncio.run(run_session(client, b, p, cfg, "demo-000", random.Random(0),
+                                  clock=lambda: 0.0))
+    demo.finalize_custom(res)
+    assert res.final_answer == "150" and res.correct is None and p.gold == ""
+    out = demo.write_recording(tmp_path / "rec", [res], "demo_test", "vanilla", 100, {})
+    tr = RecordedTrace.from_run(out)
+    assert tr.meta["name"] == "replay_demo_test"
+    assert [t.agent for t in tr.sessions[0].turns] == list(PIPELINE)
+    assert tr.prompt(tr.sessions[0], 0) == res.calls[0].prompt_ids

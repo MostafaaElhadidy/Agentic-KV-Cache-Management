@@ -167,7 +167,9 @@ More: topology and load-sweep tables in `results/report/tables.md`, the per-topo
 
 **Two comparisons:**
 - **Replay (headline, controlled):** each live vanilla session is recorded once, then its exact prompts are
-  replayed under vanilla and CacheScout.
+  replayed under vanilla and CacheScout. Replay is **open-loop**: the recorded prompts are sent with the recorded
+  output lengths, and the model's replay-time generations do not feed later prompts. Both systems see exactly the
+  same requests, so only the cache policy differs.
 - **Live closed-loop:** each system generates its own conversation.
 
 Live runs **diverge between systems**: the same problem at temperature 0 yields different conversations under
@@ -191,13 +193,14 @@ different engine configurations. Live latency differences therefore can't be att
 |---|---|---|---|---|
 | pipeline | 1.00 | n/a | 0.53 | +5.7 / +9.6 / +9.9 pp |
 | random | 0.14 | n/a | 0.38 | +2.2 / +1.6 / +3.9 pp |
-| debate (rule-based) | 1.00 | n/a | 0.42 | +6.4 / +4.1 / +2.4 pp |
+| debate (rule-based, deterministic) | 1.00 | n/a | 0.42 | +6.4 / +4.1 / +2.4 pp |
 | selector | 0.77 | **77% of routing decisions** | 0.50 | +8.6 / +9.7 / +9.8 pp |
 
 **Reading the R column:** the selector's measured R of 0.77 is not evidence of predictable model routing. 77% of
 its routing decisions are the round-robin fallback, which is deterministic, so R mostly reflects the fallback
-rule. Pipeline and the rule-based debate are deterministic by design (R = 1.00), and random is close to the
-paper's 0.12.
+rule. Pipeline and our debate are deterministic by design (R = 1.00). Our debate topology always routes
+C→R→D and back to C on `REVISE`, so it differs from the paper's stochastic debate (R = 0.78), where the next
+speaker after the reviewer varies. Random (0.14) is close to the paper's 0.12.
 
 Per-run files are listed in `results/report_real/summary.json` (e.g.
 `results/real/replay_gsm8k_test_selector_s1/cachescout/b100_replay/result.json`). Full analysis:
