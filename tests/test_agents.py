@@ -315,3 +315,29 @@ def test_demo_custom_task_not_scored_and_recording_replays(tmp_path) -> None:
     assert tr.meta["name"] == "replay_demo_test"
     assert [t.agent for t in tr.sessions[0].turns] == list(PIPELINE)
     assert tr.prompt(tr.sessions[0], 0) == res.calls[0].prompt_ids
+
+
+def test_demo_compare_table_excludes_warmups(tmp_path, monkeypatch) -> None:
+    import importlib
+    import json
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+    demo = importlib.import_module("demo")
+
+    def result(records):
+        return {"summary": {"hit_rate": 0.5, "ttft": {"mean": 0.1},
+                            "per_turn_latency": {"mean": 0.2}, "total_cached_tokens": 10,
+                            "total_prompt_tokens": 20}, "records": records}
+    rec = {"session_id": "demo-000", "prompt_tokens": 100, "cached_tokens": 40, "is_warmup": False}
+    warm = {"session_id": "demo-000", "prompt_tokens": 50, "cached_tokens": 50, "is_warmup": True}
+    paths = {}
+    for name, recs in (("vanilla", [rec]), ("cachescout", [rec, warm])):
+        p = tmp_path / f"{name}.json"
+        p.write_text(json.dumps(result(recs)))
+        paths[name] = p
+    monkeypatch.setattr(demo, "REPO", tmp_path)   # relative paths in the table
+    table = demo.compare_table(paths)
+    lines = [ln for ln in table.splitlines() if ln.startswith(("vanilla", "cachescout"))]
+    assert all("40/100" in ln for ln in lines), table

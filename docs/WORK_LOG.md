@@ -223,3 +223,4 @@ Resume with `claude --continue`; the last entry says what was in progress.
   throughput per-run -0.9..+8.0%); README updated (synthetic results labelled, real-agent section, scope box,
   Mermaid, fetch_gsm8k in quickstart, false caveats removed). 119 tests pass.
 - STOPPED for the user's review. Nothing pushed or merged.
+- 2026-10-07 06:52 Docs: open-loop replay + deterministic debate notes (README, decisions). Added scripts/demo.py (your task; --compare = live vanilla recording + REPLAY vanilla vs cachescout). Example run (results/demo/*20261007-064340*): replay hit 22.3% vs 27.9%, TTFT 1306 vs 1341 ms; agents answered the custom task wrongly (CODER copied the calculator example). Fixed a demo table bug (warmups counted in per-task sums) found on that run. 121 tests pass.

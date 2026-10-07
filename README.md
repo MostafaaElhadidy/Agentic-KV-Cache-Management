@@ -6,7 +6,7 @@ single 8 GB laptop GPU, with an honest scorecard.**
 ![Python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)
 ![vLLM](https://img.shields.io/badge/vLLM-0.31.0-0b7285)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
-![Tests](https://img.shields.io/badge/tests-119%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-121%20passing-brightgreen)
 ![Status](https://img.shields.io/badge/status-partial%20replication-orange)
 
 > **Scope.** Two workloads, the same vLLM plugin:
@@ -267,7 +267,7 @@ cd Agentic-KV-Cache-Management
 source ~/your-vllm-env/bin/activate            # an environment that already has vllm==0.31.0
 pip install -r requirements-extra.txt          # or: uv pip install -r ...  (pytest, ruff, pyyaml, matplotlib)
 
-pytest -q                                       # 119 tests, no GPU needed
+pytest -q                                       # 121 tests, no GPU needed
 python scripts/make_traces.py                  # regenerate the synthetic traces (deterministic seeds)
 python scripts/compare.py --config configs/experiments/main/local.yaml --blocks 100,150,200 --sim   # no GPU
 ```
@@ -298,6 +298,36 @@ scripts/gpu_run.sh replay 2400 python -m cachescout.run --config $RCFG --system 
     --set mode=online --trace results/real/gsm8k_test_selector_s1/vanilla/b100_eval     # controlled replay
 bash scripts/run_real_campaign.sh replay && python scripts/aggregate_real.py           # campaign + report
 ```
+
+## Try it yourself: your own task
+
+`scripts/demo.py` runs the six real agents on **any word problem you type** and prints the whole conversation:
+plans, tool calls and their results, routing decisions, and the final answer. Your task has no gold answer, so
+it isn't scored.
+
+```bash
+bash scripts/fetch_gsm8k.sh            # only needed for --compare (background sessions)
+scripts/gpu_run.sh demo 1800 python scripts/demo.py \
+    --task "A bakery sells muffins for \$3 each and cookies for \$1.50 each. Sara buys 4 muffins and 6 cookies and pays with a \$25 bill. How much change does she get?" \
+    --topology pipeline --system cachescout          # pipeline | debate | selector | random
+```
+
+Add `--compare` for a controlled before/after measurement. It runs your task plus 20 background GSM8K *train*
+sessions live under vanilla (recorded), then **replays exactly those prompts** under vanilla and CacheScout at
+100 blocks (open-loop replay), and prints a side-by-side **REPLAY comparison**. Example output from one run
+(`results/demo/replay_demo_20261007-064340/*/b100_demo_20261007-064340/result.json`):
+
+```
+REPLAY comparison (identical recorded prompts for both systems; open-loop)
+system      hit rate  TTFT mean   latency  cached tok (all)  cached tok (your task)
+vanilla        22.3%   1306.4ms  2753.6ms    19696/88382           1568/7570
+cachescout     27.9%   1340.9ms  2804.4ms    24688/88382           2336/7570
+```
+
+That single run shows the typical pattern of this replication: more cache hits (+5.6 pp) but no latency gain.
+It is one run, not a benchmark. In that run the 1.5B agents also answered the bakery task wrongly (137 instead
+of 4): the CODER copied the calculator *example* from its instructions. Small models make mistakes like this,
+and the transcript shows them as they happen.
 
 ## Hardware and environment
 
@@ -332,7 +362,7 @@ configs/         hardware (local/cloud), traces, experiments
 scripts/         compare.py, gpu_run.sh, run_all_local.sh, aggregate_report.py, tuning, checks
 results/         tracked results cited by the docs (raw logs and regenerable traces are git-ignored)
 docs/            REPORT, WORK_LOG, decisions, open questions, paper notes, vLLM internals, cloud runbook
-tests/           119 pytest tests (no GPU)
+tests/           121 pytest tests (no GPU)
 paper/           the paper PDF (CC BY 4.0) and attribution
 ```
 

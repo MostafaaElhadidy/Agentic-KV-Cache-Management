@@ -126,7 +126,8 @@ def compare_table(paths: dict[str, Path]) -> str:
     for system, p in paths.items():
         r = json.loads(p.read_text())
         s = r["summary"]
-        custom = [x for x in r["records"] if x["session_id"] == "demo-000"]
+        custom = [x for x in r["records"]                     # your task, warmups excluded
+                  if x["session_id"] == "demo-000" and not x.get("is_warmup")]
         rows.append((system, s["hit_rate"], s["ttft"]["mean"] * 1e3,
                      s["per_turn_latency"]["mean"] * 1e3, s["total_cached_tokens"],
                      s["total_prompt_tokens"], sum(x["cached_tokens"] for x in custom),
