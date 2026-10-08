@@ -47,8 +47,8 @@ Same shell setup as above (`HARDWARE` exported). Both are resumable: rerunning s
 #     Reduce with: GATE_BLOCKS=100 (the paper's effect is at small caches)
 bash scripts/run_real_campaign.sh gate_ablation cloud
 
-# 12. Fig. 10b, peak throughput: live runs at several arrival rates, vanilla vs cachescout (2 x 5 = 10 runs).
-#     Defaults: RATES="0.2 0.5 1 2 4" SWEEP_TOPO=selector SWEEP_SEED=1 SWEEP_BLOCKS=100
+# 12. Figs. 10b/11, load sweep + peak throughput: live runs, vanilla vs cachescout (2 x 6 = 12 runs, 40 sessions
+#     each). Rates 0.2 0.5 1 2 4 8 sessions/s are FIXED in docs/decisions.md: don't change them; report all.
 bash scripts/run_real_campaign.sh rate_sweep cloud
 
 # 13. tables for both (also saved to the --out file)

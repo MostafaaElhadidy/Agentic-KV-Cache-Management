@@ -8,8 +8,9 @@
    up to 22%"). Pairs `cachescout` with the `gate_off` variant (r_min = 0) on the same replay
    recording and budget (stage `gate_ablation` of run_real_campaign.sh). Ratio = mean per-turn
    latency ungated / gated, averaged over seeds first (> 1 means the gate helps).
-2. Peak throughput (paper Fig. 10b): live runs at several arrival rates (stage `rate_sweep`, tags
-   `rate<r>`); peak = the maximum completed turns/s over the rates, per system.
+2. Peak throughput (paper Figs. 10b, 11): live runs at several arrival rates (stage `rate_sweep`,
+   tags `rate<r>`); every rate is listed with hit rate, TTFT, per-turn latency and turns/s; peak =
+   the maximum completed turns/s over the rates, per system.
 
 Per-turn latency here is per LLM call (docs/decisions.md, "Per-turn latency"). Every number comes
 from a result.json under results/<exp>/; nothing is computed from the paper.
@@ -98,6 +99,9 @@ def sweep_rows(root: Path) -> list[dict[str, Any]]:
         rows.append({"workload": path.parents[2].name, "system": path.parents[1].name,
                      "blocks": int(m["blocks"]), "rate": rate,
                      "throughput": s["throughput_turns_per_s"],
+                     "ttft_ms": 1000 * s["ttft"]["mean"],
+                     "ttft_median_ms": 1000 * s["ttft"]["median"],
+                     "ttft_p99_ms": 1000 * s["ttft"]["p99"],
                      "lat_ms": 1000 * s["per_turn_latency"]["mean"], "hit": s["hit_rate"]})
     rows.sort(key=lambda r: (r["workload"], r["blocks"], r["system"], r["rate"]))
     return rows
@@ -115,17 +119,20 @@ def peaks(rows: list[dict[str, Any]]) -> dict[tuple[str, int, str], tuple[float,
 
 def sweep_markdown(rows: list[dict[str, Any]]) -> str:
     out = ["## Arrival-rate sweep and peak throughput (paper Fig. 10b)", "",
-           "| workload | blocks | system | arrival rate (sessions/s) | turns/s "
-           "| per-turn latency (ms) | hit rate |", "|---|---|---|---|---|---|---|"]
+           "Every rate run is listed, including rates where CacheScout shows no gain.", "",
+           "| workload | blocks | system | arrival rate (sessions/s) | turns/s | TTFT mean (ms) "
+           "| TTFT median (ms) | TTFT P99 (ms) | per-turn latency (ms) | hit rate |",
+           "|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
         thr = "n/a" if r["throughput"] is None else f"{r['throughput']:.3f}"
         out.append(f"| {r['workload']} | {r['blocks']} | {r['system']} | {r['rate']:g} | {thr} | "
+                   f"{r['ttft_ms']:.1f} | {r['ttft_median_ms']:.1f} | {r['ttft_p99_ms']:.1f} | "
                    f"{r['lat_ms']:.1f} | {100 * r['hit']:.1f}% |")
     out += ["", "| workload | blocks | system | peak turns/s | at rate |", "|---|---|---|---|---|"]
     for (w, b, sysname), (thr, rate) in sorted(peaks(rows).items()):
         out.append(f"| {w} | {b} | {sysname} | {thr:.3f} | {rate:g} |")
     if not rows:
-        out.append("| (no rate<r> runs found) |||||")
+        out.append("| (no rate<r> runs found) |||||||||")
     return "\n".join(out)
 
 

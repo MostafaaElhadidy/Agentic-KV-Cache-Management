@@ -313,3 +313,15 @@ Resume with `claude --continue`; the last entry says what was in progress.
   (random s1: 5 vs 3 issued). Commands in BOX_CHEATSHEET.md "After the first basic run works".
 - **Fingerprints under Llama 3.1 (unsloth tokenizer only, 17 MB, no weights):** PASS for all four topologies;
   shared header 25 tokens, agents differ from token 25, inside the 32-token window (fingerprint_blocks=2).
+
+## 2026-10-08 Rate sweep fixed before the box; CLAUDE.md box rules (branch box-rate-sweep, no GPU used)
+- GSM8K only (user decision; MT-Bench not added). Rate sweep fixed in decisions.md before any run: 0.2 0.5 1 2
+  4 8 sessions/s, 40 sessions per run, every rate reported. Summary table now has TTFT mean/median/P99.
+- Re-read Sec. 5.2/5.4 and Figs. 11/13: the paper reports latency gains already at 0.2 sessions/s for long
+  prompts on the 235B model, so low load is not the only reason the laptop showed no speed-up (cheap prefill is
+  the other). Written as a caveat in decisions.md, with the exact passages.
+- CLAUDE.md: new "On the remote box" section (tmux/nohup + logs, one GPU job, no destructive commands, no
+  results/tokens in git, noreply email, stop and report on errors).
+- Box-hours estimate (3-5 min per run, from 230 laptop runs + slower 8B start-up; refine after the first runs):
+  main comparison (setup + quick test + tune_record/xcheck/eval_record/replay + live @100) ~7-11 h;
+  extras (rate_sweep 12 runs + gate_ablation @100 12 runs) ~1.5-2.5 h.
