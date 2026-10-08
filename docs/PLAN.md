@@ -86,7 +86,7 @@ disabled, results equal vanilla vLLM.
 ## M5. Evaluation against baselines (local)
 - [x] vLLM vs Continuum-TTL vs CacheScout (selector_eval, 100/150/200 blocks; `scripts/compare.py`)
 - [x] Ablation: vanilla / eviction only / warmup only / full + literal Alg. 1 + no-prediction
-- [x] Block budget sweep 100-200 (3 seeds); [ ] prefetch gate on/off not run (warmup has no measurable effect locally)
+- [x] Block budget sweep 100-200 (3 seeds); [ ] prefetch gate on/off not run (warmup has no measurable effect locally); prepared for the box: `gate_ablation` stage (2026-10-08)
 - [x] Topology sweep Pipeline/Debate/Selector/Random (100/150 blocks)
 - [x] Constants tuned on tuning traces (results/tuning); 3 eval seeds; docs/REPORT.md
 **Verify:** `experiment-reviewer` agent passes; every result has config + versions + seed.

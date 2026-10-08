@@ -32,6 +32,7 @@ results/**/*.tmp
 *.pth
 *.gguf
 models/
+!configs/models/
 hf_cache/
 .cache/
 .huggingface/
@@ -58,3 +59,8 @@ results/**/prompts.jsonl.gz
 results/demo/*
 !results/demo/demo_20261007-064340/
 !results/demo/replay_demo_20261007-064340/
+
+# Beginner guide: kept local, not published (user decision 2026-10-08)
+docs/GUIDE.md
+docs/GUIDE.pdf
+docs/guide_img/

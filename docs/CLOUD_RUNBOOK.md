@@ -26,8 +26,8 @@ load sweep with `--blocks 1000` instead of 2000.
 - Repo cloned:
   `git clone https://github.com/MostafaaElhadidy/Agentic-KV-Cache-Management.git && cd Agentic-KV-Cache-Management`.
 - Python 3.12 venv with `vllm==0.31.0` + `requirements-extra.txt`, activated in every shell.
-- `meta-llama/Llama-3.1-8B-Instruct` downloaded (or the ungated fallback `Qwen/Qwen2.5-7B-Instruct`, set in
-  your profile's `model.name`).
+- Llama-3.1-8B-Instruct downloaded: `hf download unsloth/Llama-3.1-8B-Instruct` (ungated mirror; the name is set
+  once in `configs/models/llama31_8b.yaml`, switch it to `meta-llama/...` when access is approved).
 - Work inside `tmux` so runs survive a disconnect.
 
 ## 1. Preflight (read-only) and choose the profile

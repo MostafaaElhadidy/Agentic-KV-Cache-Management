@@ -27,3 +27,7 @@ cachescout:
            tau: 0.1, e_max: 6, lam: 0.001, delta: 0.01, epsilon: 0.01, fingerprint_blocks: 2, r_min: 0.3}  # lam re-tuned on real train recordings (decisions.md)
 warmup: {min_interval_s: 2.0}
 continuum: {ttl_s: 0.3}
+variants:
+  gate_off:                         # Fig. 14b / Sec. 3.4 ablation: warmup gate disabled (R in [0,1] >= 0 always)
+    system: cachescout
+    params: {r_min: 0.0}

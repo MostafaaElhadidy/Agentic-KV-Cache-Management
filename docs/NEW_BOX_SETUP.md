@@ -81,29 +81,23 @@ python -c "import vllm, torch, transformers; print(vllm.__version__, torch.__ver
 - **If vLLM isn't 0.31.0:** don't continue. The plugin was verified only on 0.31.0
   (`docs/vllm_internals.md` has the file:line references to re-check).
 
-## 6. Hugging Face access and model download
+## 6. Hugging Face model download
 
-`meta-llama/Llama-3.1-8B-Instruct` is **gated**: request access once, from a browser, with your own account.
-
-1. Open https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct, log in, accept the license, and request
-   access. Approval can take minutes to days.
-2. Create a **read** token at https://huggingface.co/settings/tokens.
-3. On the box:
+The box profiles load **`unsloth/Llama-3.1-8B-Instruct`**: an ungated copy of Meta's Llama-3.1-8B-Instruct
+(same weight files as the NousResearch mirror; see `docs/decisions.md`, "Model mirror"). No login needed:
 ```bash
 export HF_HOME=$HOME/.cache/huggingface          # or a bigger disk, e.g. /scratch/$USER/hf (use it everywhere)
-hf auth login                                     # paste the token; never put it in a file in the repo
-hf download meta-llama/Llama-3.1-8B-Instruct      # ~16 GB
+hf download unsloth/Llama-3.1-8B-Instruct         # ~16 GB
 ```
-- **You should see** files being downloaded, ending with a path under `.../models--meta-llama--Llama-3.1-8B-Instruct/snapshots/...`.
-- **If you get "401/403 ... gated repo":** access isn't approved yet. Meanwhile use the **ungated fallback**:
-```bash
-hf download Qwen/Qwen2.5-7B-Instruct              # ~15 GB, Apache-2.0, no approval needed
-```
-  To use it, change one line in your GPU profile (§9), e.g. in `configs/hardware/box_48gb.yaml`:
-  `name: Qwen/Qwen2.5-7B-Instruct`. Report any results as "Qwen2.5-7B", not as the paper's model.
+- **You should see** files being downloaded, ending with a path under `.../models--unsloth--Llama-3.1-8B-Instruct/snapshots/...`.
+- **When your Meta access is approved** (optional): edit the single `name:` line in
+  `configs/models/llama31_8b.yaml` to `meta-llama/Llama-3.1-8B-Instruct`, then
+  `hf auth login` (paste a **read** token from https://huggingface.co/settings/tokens; never put it in a file in
+  the repo) and `hf download meta-llama/Llama-3.1-8B-Instruct`. Every profile follows that one file.
+- **Different model (last resort):** `hf download Qwen/Qwen2.5-7B-Instruct` and set that name in
+  `configs/models/llama31_8b.yaml`. Report results as "Qwen2.5-7B", not as the paper's model.
 - **If `hf` is not found** (it comes with vLLM's `huggingface_hub` dependency), use the Python API instead:
-  `python -c "from huggingface_hub import login; login()"` and
-  `python -c "from huggingface_hub import snapshot_download as d; d('meta-llama/Llama-3.1-8B-Instruct')"`.
+  `python -c "from huggingface_hub import snapshot_download as d; d('unsloth/Llama-3.1-8B-Instruct')"`.
 - The box profiles set `HF_HUB_OFFLINE=1`: runs never download anything. If a run says the model isn't found,
   the download in this step didn't finish.
 

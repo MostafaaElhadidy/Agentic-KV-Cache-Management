@@ -10,7 +10,8 @@
 set -u
 cd "$(dirname "$0")/.."
 PY=${PYTHON:-python}
-MODEL=${MODEL:-meta-llama/Llama-3.1-8B-Instruct}
+# Default: the name in configs/models/llama31_8b.yaml (ungated mirror unless switched to meta-llama).
+MODEL=${MODEL:-$(sed -n 's/^name: *\([^ #]*\).*/\1/p' configs/models/llama31_8b.yaml)}
 HF_CACHE=${HF_HUB_CACHE:-${HF_HOME:-$HOME/.cache/huggingface}/hub}
 fails=0; warns=0
 pass() { echo "PASS  $*"; }
@@ -93,9 +94,11 @@ print(f"KV cache (bf16): {L} layers x {kv} KV heads x {hd} dim -> {per_tok} B/to
 EOF
   fi
 else
-  fail "$MODEL not in the cache ($mdir). Llama is gated: request access, 'hf auth login', then 'hf download $MODEL'"
+  fail "$MODEL not in the cache ($mdir). Download it: 'hf download $MODEL' (meta-llama/* is gated: request access + 'hf auth login' first)"
 fi
-[ -f "${HF_HOME:-$HOME/.cache/huggingface}/token" ] && pass "a Hugging Face token file exists (not printed)" || warn "no Hugging Face token file (needed for gated meta-llama models)"
+case "$MODEL" in meta-llama/*)
+  [ -f "${HF_HOME:-$HOME/.cache/huggingface}/token" ] && pass "a Hugging Face token file exists (not printed)" || warn "no Hugging Face token file (needed for gated meta-llama models)";;
+esac
 
 echo; echo "=== Data ==="
 if [ -f data/gsm8k/test.jsonl ] && [ -f data/gsm8k/train.jsonl ]; then

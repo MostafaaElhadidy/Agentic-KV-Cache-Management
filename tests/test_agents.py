@@ -345,6 +345,7 @@ def test_demo_compare_table_excludes_warmups(tmp_path, monkeypatch) -> None:
 
 @pytest.mark.parametrize(("model", "config"), [
     ("Qwen/Qwen2.5-1.5B-Instruct", "configs/experiments/real/local.yaml"),
+    ("unsloth/Llama-3.1-8B-Instruct", "configs/experiments/real/cloud.yaml"),
     ("meta-llama/Llama-3.1-8B-Instruct", "configs/experiments/real/cloud.yaml"),
     ("Qwen/Qwen2.5-7B-Instruct", "configs/experiments/real/cloud.yaml"),
 ])
@@ -395,7 +396,7 @@ def test_box_profiles_and_hardware_override() -> None:
     repo = Path(__file__).resolve().parents[1]
     for name in ("box_24gb", "box_48gb", "box_80gb"):
         hw = load_yaml(repo / f"configs/hardware/{name}.yaml")
-        assert hw["model"]["name"] == "meta-llama/Llama-3.1-8B-Instruct"
+        assert hw["model"]["name"].endswith("/Llama-3.1-8B-Instruct")
         assert 0 < hw["vllm"]["gpu_memory_utilization"] <= 0.95
         assert hw["env"]["HF_HUB_OFFLINE"] == "1"
     exp = load_experiment(repo / "configs/experiments/real/cloud.yaml", repo_root=repo,

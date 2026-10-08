@@ -199,7 +199,73 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
   like run.py.
 - **Fingerprints under Llama 3.1.** Its chat template prepends a shared header ("Cutting Knowledge Date / Today
   Date") before each system prompt; `scripts/check_fingerprints.py` / the tokenizer test verify that the six
-  agents still differ within the plugin's 2-block window. Not verifiable locally (gated tokenizer not cached);
+  agents still differ within the plugin's 2-block window. Not yet run locally (tokenizer not cached; the unsloth mirror is ungated, see 2026-10-08);
   if it fails on the box, raise `fingerprint_blocks` in configs/experiments/real/cloud.yaml.
 - **Ungated fallback model:** Qwen/Qwen2.5-7B-Instruct (Apache-2.0; 56 KiB KV/token). Results with it must be
   labelled as Qwen2.5-7B, not as the paper's model.
+
+## 2026-10-08: Model mirror for Llama-3.1-8B-Instruct (branch box-model-mirror)
+- **Engineering choice.** The remote-box profiles (`configs/hardware/{cloud,box_24gb,box_48gb,box_80gb}.yaml`)
+  load `unsloth/Llama-3.1-8B-Instruct`, an ungated Hugging Face re-upload of the paper's model (Sec. 5.1),
+  because access to the gated `meta-llama/Llama-3.1-8B-Instruct` was requested and is still pending.
+- **What was checked (2026-10-08, Hugging Face API):** the four `model-0000x-of-00004.safetensors` files of
+  `unsloth/Llama-3.1-8B-Instruct` have the same SHA-256 (LFS oid) as those of
+  `NousResearch/Meta-Llama-3.1-8B-Instruct`, a second independent mirror. They could **not** be compared with
+  Meta's own files: the gated repo hides its checksums from accounts without access. Treat "same weights as
+  Meta's" as very likely, not verified.
+- **Why unsloth and not NousResearch:** unsloth's `tokenizer_config.json` carries Meta's official Llama 3.1 chat
+  template (system header with "Cutting Knowledge Date / Today Date"); NousResearch's carries an older, simpler
+  template. CacheScout works on prompt prefixes, so the exact prompt tokens matter. Its `config.json` differs
+  only in metadata (`eos_token_id` 128009 alone, `pad_token_id`, `unsloth_fixed`); `generation_config.json`
+  differs only in `max_length`, `pad_token_id` and the transformers version string. `check_fingerprints.py`
+  still checks the agents' prefixes on the box before any run.
+- **One-line switch:** the name lives only in `configs/models/llama31_8b.yaml` (hardware profiles use
+  `model_file:`; `load_yaml` resolves it). When Meta access is approved, change that line to
+  `meta-llama/Llama-3.1-8B-Instruct` and download it; the preflight default follows the same file.
+- **Claims:** results from the box are "Llama-3.1-8B-Instruct (unsloth mirror)", i.e. the same model as the paper,
+  not the paper's numbers: hardware, vLLM version, workload driver and load differ (see README Limitations).
+
+## 2026-10-08: Replication scope and documented deviations (from the paper audit against the PDF)
+- **Workloads: only GSM8K is replicated (gap; scope).** The paper (Sec. 5.1) evaluates four workloads, GSM8K,
+  MT-Bench, GAIA and SWE-bench, all on a six-agent supervisor framework with AutoGen's SelectorGroupChat. This
+  replication runs **only GSM8K** (plus synthetic traces). **MT-Bench, GAIA and SWE-bench are not replicated**:
+  no results in this repo correspond to them, and nothing here supports claims about them. (Reasons: GAIA is
+  gated, SWE-bench needs Docker tool execution, and the 8 GB laptop did not allow it; open_questions.md C4.)
+- **Prefetch coordinator keeps its own transition learner (deviation; engineering choice).** Paper Fig. 6 draws
+  one learned transition matrix feeding both eviction and the Background Prefetch Coordinator. Here the
+  coordinator (`core/warmup.py`) runs client-side and keeps a second `TransitionLearner`, fed with the same
+  prompt-prefix fingerprints as the engine-side runtime, so no state crosses the vLLM engine process boundary.
+  The two learners see the same non-warmup requests, but they are not one shared object.
+- **"Per-turn latency" is per LLM call (interpretation; may differ from the paper).** The paper (Sec. 5.1)
+  defines per-turn latency as "the end-to-end latency of an individual agent invocation, including both prefill
+  and decoding". Our records (`metrics/records.py`) are per LLM call. In the real-agent workload, an agent
+  invocation that uses tools spans several LLM calls, so **our per-turn latency is per LLM call, and the paper
+  may mean per agent turn** (which would be larger). Throughput likewise counts completed LLM calls per second.
+- **Continuum baseline pins after every request (known difference).** The paper describes Continuum as "TTL-based
+  pinning around tool-call boundaries" (TTL 0.3 s). Our `continuum` policy (`core/runtime.py`,
+  `on_blocks_freed`) soft-pins the blocks of **every** finished request for the TTL, not only at tool-call
+  boundaries, and Continuum's own fork is not used (open_questions.md D1: "not a faithful Continuum").
+  Not changed; results for `continuum` must be read with this in mind.
+- **Fallback constants in the code (labelling).** `CacheScoutParams` defaults in `core/runtime.py`
+  (epsilon 0.01, tau 0.3, e_max 3, lam 0.01, delta 0.05, r_min 0.3) and the warmup `min_interval_s` default 1.0
+  (`run.py`, `sim/simulator.py`) are code fallbacks only. The paper gives no values for any of them. Every
+  experiment config sets its own values under `cachescout.params` and `warmup.min_interval_s`, and those, saved
+  in each result.json, are the ones that count (constants entry above; λ re-tuned on real recordings).
+- **Small undocumented rules, now documented (engineering choices / interpretations):**
+  - Eq. 7 graph drops self-loops (`core/scorer.py`, `b != a`): Alg. 1 never counts a self-transition, so an
+    edge a->a could only come from smoothing; it would not change BFS hop distances.
+  - A block's last-access step is reset when it is freed (`core/runtime.py`, `on_blocks_freed`): the request
+    used it until then; this matches vLLM's LRU order (B5).
+  - The request->agent map is capped at 8192 entries, oldest dropped first (`core/runtime.py`), to keep state
+    bounded (Sec. 4); preempted requests within that window keep their agent.
+  - Fingerprint fallback for prompts shorter than one block differs by component: the vLLM plugin uses the
+    first 16 prompt tokens, the simulator the first token, the coordinator its own prefix rule. All agent
+    prompts in our workloads are longer than one block, so the fallback is not hit in the reported runs.
+- **Gate ablation and peak-throughput sweep (prepared for the box, not run).** Paper Fig. 14b / Sec. 5.4 ("disabling
+  the gate increases per-turn latency by up to 22% at small cache sizes") and Fig. 10b (peak throughput).
+  `gate_off` variant = `cachescout` with `r_min: 0.0` (R is in [0, 1], so the gate never closes), in
+  `configs/experiments/real/{local,cloud}.yaml`. Stages `gate_ablation` (replay recordings, same tag as the
+  replay stage) and `rate_sweep` (live, arrival rates 0.2 0.5 1 2 4 sessions/s by default; the paper sweeps
+  0.2-2.0 in Fig. 13 and 0.2-50 in Fig. 11) in `scripts/run_real_campaign.sh`; tables from
+  `scripts/summarize_box_ablations.py`. Checked without a GPU: the simulator on local recordings shows
+  `gate_off` issues more warmups with 0 gated decisions (random s1: 5 vs 3 issued, 0 vs 8 gated).

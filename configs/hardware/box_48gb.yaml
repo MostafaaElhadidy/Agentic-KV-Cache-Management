@@ -2,9 +2,7 @@
 # Memory estimate: 0.90 x ~44.4 GiB usable = ~40 GiB; weights ~15.0 GiB; activations + CUDA graphs
 # ~3 GiB -> ~22 GiB KV = ~11,000 blocks of 2 MiB. Verify with vLLM's "Available KV cache memory".
 name: box-48gb
-model:
-  name: meta-llama/Llama-3.1-8B-Instruct
-  dtype: bfloat16
+model_file: ../models/llama31_8b.yaml   # Llama-3.1-8B-Instruct; one-line mirror/meta-llama switch there
 vllm:
   gpu_memory_utilization: 0.90
   max_model_len: 4096

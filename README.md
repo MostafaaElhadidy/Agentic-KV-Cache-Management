@@ -95,7 +95,7 @@ flowchart LR
 | **Transition learner + survival scoring** | `src/cachescout/core/` | Paper Eqs. 2–11 and Algorithm 1: online transition counts, thresholded graph, BFS hop distance → survival score, block score `(p_surv+δ)·(e^(−λ·age)+δ)·size(b)`, entropy-gated warmup. |
 | **Synthetic agentic workloads** | `src/cachescout/workload/` | Six-agent sessions from the paper's Fig. 5 transition tables (Pipeline, Debate, Selector, Random). They match the paper's predictability R (1.00 / 0.77 / 0.58 / 0.12 vs 1.00 / 0.78 / 0.57 / 0.12) and anchor share (54–62% vs 53–62%). |
 | **vLLM-exact simulator** | `src/cachescout/sim/` | Pure-Python replica of vLLM's prefix cache. Matches real vLLM on **703/703** requests for vanilla; used for constant tuning and a Belady upper bound. |
-| **Metrics layer** | `src/cachescout/metrics/` | Hit rate, TTFT, per-turn latency and throughput exactly as defined in the paper (Sec. 5.1), cross-checked against vLLM's own counters. |
+| **Metrics layer** | `src/cachescout/metrics/` | Hit rate, TTFT, per-turn latency and throughput following the paper's Sec. 5.1 definitions, cross-checked against vLLM's own counters. Per-turn latency is per LLM call, the paper may mean per agent turn (see [Replication scope and gaps](#replication-scope-and-gaps)). |
 | **Cache-size sweep + comparison** | `scripts/compare.py` | Runs or loads every system on the same trace, prints a side-by-side table with PASS/FAIL trend checks against the paper, and saves plots. |
 | **Overhead microbenchmark** | `scripts/microbench_overhead.py` | State size and hot-path latency for 6 / 12 / 24 agents (paper Fig. 15). |
 | **Safe GPU runner** | `scripts/gpu_run.sh` | One GPU job at a time, timeout, memory checks before start, crash-proof memory log (built after a WSL crash). |
@@ -366,6 +366,51 @@ tests/           121 pytest tests (no GPU)
 paper/           the paper PDF (CC BY 4.0) and attribution
 ```
 
+## Replication scope and gaps
+
+From a component-by-component check of the code against the paper PDF (2026-10-08). Details and file:line
+references: [`docs/decisions.md`](docs/decisions.md) (2026-10-08 entries) and
+[`docs/open_questions.md`](docs/open_questions.md).
+
+**Matches the paper.** Transition counting (Sec. 3.2); Eqs. 4, 5, 8, 9, 10, 11; BFS hop distances (Fig. 7);
+Alg. 1 lines 10-21 (graph refreshed only when the agent changes); the warmup request (anchor only, 1 output token,
+excluded from learning); the vanilla, eviction-only and warmup-only systems; the hit-rate metric; the 100-200
+block budgets; the overhead measurement method.
+
+**Documented interpretations** (the paper is silent or ambiguous; each choice is written down): the state space
+in Eq. 3; R (Eq. 2) from raw counts; block age; which blocks Alg. 1 labels with their agent (anchor only);
+the argmin scan over the free queue; agent fingerprints; extra warmup rules (anchor seen in 2 sessions, rate
+limit); a vLLM 0.31 scheduler plugin instead of the paper's v0.11 patch; no CPU tier; all constants (ε, τ,
+E_max, λ, δ, R_min: the paper gives no values); seeds.
+
+**Custom or simulated where the paper used something real.**
+- Our own asyncio six-agent driver, not AutoGen's SelectorGroupChat; the selector is the agent's own `NEXT:` line.
+- Calculator and scratchpad tools (the paper does not list its tools).
+- A Python simulator, used for tuning and cross-checks (the paper uses only real vLLM).
+- Qwen2.5-1.5B on an 8 GB laptop GPU so far (the paper: Llama-3.1-8B on RTX PRO 6000s); no Qwen3-235B study.
+- Our Continuum-style baseline, not Continuum's vLLM fork.
+
+**Gaps.**
+1. **Only GSM8K is replicated.** The paper evaluates four workloads; **MT-Bench, GAIA and SWE-bench are not
+   replicated** here.
+2. **Prefetch-gate on/off ablation (Fig. 14b) not run.** Prepared for the remote box (`gate_ablation` stage).
+3. **No peak throughput on the real-agent workload (Fig. 10b).** Real agents were measured at one load (0.2
+   sessions/s); a load sweep exists only on synthetic traces. Prepared for the box (`rate_sweep` stage).
+4. **The prefetch coordinator keeps its own copy of the transition learner**, while the paper's Fig. 6 shows
+   one shared matrix.
+5. **Continuum pins blocks after every request**, not only around tool-call boundaries as the paper describes.
+6. **Our "per-turn" latency is per LLM call; the paper may mean per agent turn** (an agent invocation with tool
+   calls spans several LLM calls). Throughput likewise counts LLM calls per second.
+7. **Fallback constants in the code** (`core/runtime.py`, `min_interval_s`) are not the values used in
+   experiments; configs set the values that count.
+8. **Small rules not stated in the paper:** self-loops dropped from the Eq. 7 graph, a block's last access reset
+   when it is freed, a cap of 8192 on the request-to-agent map, short-prompt fingerprint fallbacks that differ
+   between components.
+
+Not verifiable from the paper: the column positions of the Selector and Debate rows in Fig. 5, how concurrent
+sessions share Alg. 1's single current agent, whether R in Alg. 1 line 29 uses smoothed counts, and Continuum's
+actual algorithm.
+
 ## Limitations
 
 - **Small model, short prompts.** Prefill is cheap at 1.5B parameters and ~340 tokens, which likely hides any
@@ -389,7 +434,12 @@ paper/           the paper PDF (CC BY 4.0) and attribution
 ## Roadmap
 
 - **Cloud phase** (prepared, not run): Llama-3.1-8B on an A100/H100, the same sweeps up to 50 sessions/s. Exact
-  commands are in [`docs/CLOUD_RUNBOOK.md`](docs/CLOUD_RUNBOOK.md).
+  commands are in [`docs/CLOUD_RUNBOOK.md`](docs/CLOUD_RUNBOOK.md). The box profiles load
+  `unsloth/Llama-3.1-8B-Instruct`, an ungated mirror of Meta's model (Meta access pending): on 2026-10-08 its
+  weight-file checksums matched the `NousResearch/Meta-Llama-3.1-8B-Instruct` mirror, but could not be checked
+  against Meta's gated repo. Same model as the paper, not the paper's numbers. Switching to
+  `meta-llama/Llama-3.1-8B-Instruct` is one line in `configs/models/llama31_8b.yaml`
+  ([`docs/decisions.md`](docs/decisions.md), "Model mirror").
 - **Larger model for the real-agent workload** (an 8B model follows tool and routing protocols far better than
   1.5B), and higher session load.
 - **Faster runtime:** cached per-agent scores and a heap instead of a full scan, toward the paper's µs overhead.

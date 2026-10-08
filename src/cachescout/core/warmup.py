@@ -1,10 +1,12 @@
 """Background Prefetch Coordinator (paper Sec. 3.4, Alg. 1 lines 28-33, Eqs. 10-11).
 
 Runs on the client/driver side and issues warmup requests through the normal serving API.
-Engineering choice (docs/decisions.md): the coordinator keeps its own TransitionLearner fed with
-the same prompt-prefix fingerprints the engine-side runtime uses, so no state has to cross the
-engine process boundary. Anchors are learned online as the block-aligned longest common prefix
-of an agent's prompts seen in at least two different sessions (no framework annotations).
+Engineering choice, a deviation from Fig. 6's single shared matrix (docs/decisions.md, 2026-10-08
+"Prefetch coordinator keeps its own transition learner"): the coordinator keeps its own
+TransitionLearner fed with the same prompt-prefix fingerprints the engine-side runtime uses, so no
+state has to cross the engine process boundary. Anchors are learned online as the block-aligned
+longest common prefix of an agent's prompts seen in at least two different sessions (no framework
+annotations).
 """
 
 import hashlib

@@ -278,3 +278,38 @@ Resume with `claude --continue`; the last entry says what was in progress.
 - Then write a cloud report (Llama-3.1-8B vs the laptop results: does a costlier prefill turn hit-rate gains into
   TTFT gains? does a stronger model lower the selector fallback rate?).
 - Optionally run the synthetic-trace experiments from docs/CLOUD_RUNBOOK.md §5 on the box.
+
+## 2026-10-08 Ungated Llama mirror + GitHub sync (branch box-model-mirror, no GPU used)
+- **Model:** the remote-box profiles now load `unsloth/Llama-3.1-8B-Instruct` (ungated mirror; Meta access still
+  pending). Its 4 safetensors files have the same SHA-256 as `NousResearch/Meta-Llama-3.1-8B-Instruct`; Meta's
+  checksums are hidden (gated), so not checked against them. Chosen over NousResearch because its chat template is
+  Meta's official one. Details: docs/decisions.md "Model mirror".
+- **One-line switch:** the name lives in `configs/models/llama31_8b.yaml`; hardware profiles say
+  `model_file: ../models/llama31_8b.yaml` (resolved by `config.load_yaml`; smoke_vllm_generate.py now uses it too).
+  box_preflight.sh reads its default MODEL from that file and asks for an HF token only for `meta-llama/*`.
+  NEW_BOX_SETUP §6, BOX_CHEATSHEET step 5, CLOUD_RUNBOOK, README roadmap updated (no `hf auth login` needed).
+- **Tests:** +2 config tests (shared model file; model + model_file conflict), unsloth tokenizer added to the
+  fingerprint test (skips until the tokenizer is cached).
+- **Not committed (user decision):** docs/GUIDE.md, docs/GUIDE.pdf, docs/guide_img/ (now in .gitignore). The 12
+  files from 4 compare.py re-renders on 2026-10-07 (selector_eval 161325/172109/214433, replay 214841) are left
+  untracked: their tables are identical to committed ones (selector_eval 20261006-172634, replay 20261007-004814)
+  and nothing cites them.
+- **Paper audit:** a read-only check of the code against the paper PDF was started in parallel; findings are
+  reported to the user before any fix.
+
+## 2026-10-08 Paper audit follow-up: scope documented, box ablations prepared (same branch, no GPU used)
+- **Paper audit** (paper-checker agent, read the PDF itself): every equation (2-5, 7-11) and Alg. 1's control
+  flow are implemented. 8 gaps, now all written down: decisions.md "Replication scope and documented
+  deviations" and a new README section "Replication scope and gaps" (matches / interpretations / custom / gaps).
+  Plain statements: only GSM8K is replicated (not MT-Bench, GAIA, SWE-bench); per-turn latency is per LLM call
+  (the paper may mean per agent turn); Continuum pins after every request (known difference, not changed).
+  README's metrics row no longer says "exactly as defined in the paper". warmup.py docstring now cites the
+  real decisions.md entry. Gate quote verified in the PDF text: Sec. 5.4 (Fig. 14b), "up to 22% at small
+  cache sizes".
+- **Prepared, not run:** `gate_off` variant (r_min 0.0) in configs/experiments/real/{local,cloud}.yaml;
+  run_real_campaign.sh stages `gate_ablation` (Fig. 14b) and `rate_sweep` (Fig. 10b, RATES default
+  "0.2 0.5 1 2 4"); scripts/summarize_box_ablations.py (+3 tests on fake results). GPU-free checks: dry runs with
+  `PYTHON="echo python"`; simulator on local recordings: gate_off has 0 gated decisions and more warmups
+  (random s1: 5 vs 3 issued). Commands in BOX_CHEATSHEET.md "After the first basic run works".
+- **Fingerprints under Llama 3.1 (unsloth tokenizer only, 17 MB, no weights):** PASS for all four topologies;
+  shared header 25 tokens, agents differ from token 25, inside the 32-token window (fingerprint_blocks=2).

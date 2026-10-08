@@ -9,8 +9,12 @@ Not part of `pytest`.
 
 import argparse
 import os
+import sys
+from pathlib import Path
 
-import yaml
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from cachescout.config import load_yaml  # noqa: E402
 
 MIB = 1024**2
 
@@ -44,8 +48,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="configs/hardware/local.yaml")
     args = parser.parse_args()
-    with open(args.config) as f:
-        cfg = yaml.safe_load(f)
+    cfg = load_yaml(args.config)   # resolves model_file:
     os.environ.update(cfg.get("env", {}))
     v = cfg["vllm"]
     print(f"config={args.config} model={cfg['model']['name']} "

@@ -4,11 +4,12 @@ Faithful replication of "Learning Agent Execution for KV-Cache Management in Age
 (CacheScout, arXiv:2608.14624, `paper/cachescout.pdf`). Phase 1: local, small scale (8 GB GPU).
 Phase 2: a remote Linux GPU box (24/48/80 GB, Llama-3.1-8B). Same code; hardware/model settings only in `configs/`.
 
-## Status (2026-10-07): read `docs/WORK_LOG.md` (last entry) first
+## Status (2026-10-08): read `docs/WORK_LOG.md` (last entry) first
 - Done and merged into `main` (public GitHub repo, PRs #1-#3): M1-M5 locally (synthetic traces), real multi-agent
   GSM8K workload (72 replay + 72 live runs, `docs/REPORT_REAL_AGENTS.md`), `scripts/demo.py`, remote-box prep.
-- Pending: (1) beginner guide PDF (user's request, not started); (2) waiting for the instructor's Linux box (GPU
-  size unknown) -> then follow `docs/BOX_CHEATSHEET.md`. Nothing has run on a remote box yet.
+- Pending: (1) beginner guide `docs/GUIDE.{md,pdf}` exists locally, git-ignored by the user's choice; (2) remote
+  box incoming -> follow `docs/BOX_CHEATSHEET.md`. Model = ungated mirror `unsloth/Llama-3.1-8B-Instruct`, set once
+  in `configs/models/llama31_8b.yaml` (switch to meta-llama when access is approved). Nothing has run on a box yet.
 
 ## Environment (verified 2026-10-06)
 - Windows 11 + WSL2, Ubuntu 26.04.1, kernel 6.18. Linux/bash only; repo and HF cache stay in `~/` (not `/mnt/c`).

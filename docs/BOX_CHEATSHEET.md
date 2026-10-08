@@ -16,8 +16,8 @@ curl -LsSf https://astral.sh/uv/install.sh | sh && source $HOME/.local/bin/env &
 # 4. vLLM 0.31.0 + project extras
 uv pip install vllm==0.31.0 && uv pip install -r requirements-extra.txt
 
-# 5. Hugging Face login + model (Llama is gated: request access on huggingface.co first)
-hf auth login && hf download meta-llama/Llama-3.1-8B-Instruct       # fallback: hf download Qwen/Qwen2.5-7B-Instruct
+# 5. model: ungated mirror of Llama-3.1-8B-Instruct, no login (name in configs/models/llama31_8b.yaml)
+hf download unsloth/Llama-3.1-8B-Instruct
 
 # 6. read-only preflight: must end with "0 FAIL"; note the suggested profile
 bash scripts/box_preflight.sh
@@ -36,6 +36,26 @@ for st in tune_record xcheck eval_record replay live; do bash scripts/run_real_c
 python scripts/aggregate_real.py --exp real_cloud
 rsync -av <user>@<box-address>:Agentic-KV-Cache-Management/results/ ~/box_results/
 ```
+
+## After the first basic run works: the two extra paper experiments
+
+Start these only after steps 8-9 have finished without errors (they need the `replay` stage's recordings).
+Same shell setup as above (`HARDWARE` exported). Both are resumable: rerunning skips finished results.
+```bash
+# 11. Fig. 14b, prefetch gate on/off: replays the recordings with the gate disabled (gate_off variant, r_min=0).
+#     Only gate_off runs are new (cachescout replays are reused): 4 topologies x 3 seeds x 3 budgets = 36 runs.
+#     Reduce with: GATE_BLOCKS=100 (the paper's effect is at small caches)
+bash scripts/run_real_campaign.sh gate_ablation cloud
+
+# 12. Fig. 10b, peak throughput: live runs at several arrival rates, vanilla vs cachescout (2 x 5 = 10 runs).
+#     Defaults: RATES="0.2 0.5 1 2 4" SWEEP_TOPO=selector SWEEP_SEED=1 SWEEP_BLOCKS=100
+bash scripts/run_real_campaign.sh rate_sweep cloud
+
+# 13. tables for both (also saved to the --out file)
+python scripts/summarize_box_ablations.py --exp real_cloud --out results/report_real_cloud/ablations.md
+```
+Check before a long run: `PYTHON="echo python" bash scripts/run_real_campaign.sh rate_sweep cloud` prints the
+commands without running anything.
 
 Every new shell: `cd Agentic-KV-Cache-Management && source ~/cachescout-venv/bin/activate`.
 Never run two GPU jobs at once; `scripts/gpu_run.sh` refuses to start if one is already running.
