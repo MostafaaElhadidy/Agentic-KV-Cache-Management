@@ -16,7 +16,8 @@ def fake(root: Path, workload: str, label: str, run: str, lat: float, thr: float
     d = root / workload / label / run
     d.mkdir(parents=True)
     (d / "result.json").write_text(json.dumps({
-        "summary": {"hit_rate": 0.5, "ttft": {"mean": lat / 2}, "per_turn_latency": {"mean": lat},
+        "summary": {"hit_rate": 0.5, "ttft": {"mean": lat / 2, "median": lat / 4, "p99": lat},
+                    "per_turn_latency": {"mean": lat},
                     "throughput_turns_per_s": thr},
         "warmups_issued": issued, "warmups_gated": gated}))
 
@@ -52,3 +53,15 @@ def test_sweep_peak(tmp_path: Path) -> None:
     assert peaks[("gsm8k_test_selector_s1", 100, "vanilla")] == (1.6, 1.0)
     assert peaks[("gsm8k_test_selector_s1", 100, "cachescout")] == (2.1, 4.0)
     assert "peak" in sba.sweep_markdown(rows).lower()
+
+
+def test_sweep_reports_ttft_and_every_rate(tmp_path: Path) -> None:
+    w = "gsm8k_test_selector_s1"
+    for rate in ("0.2", "8"):
+        fake(tmp_path, w, "vanilla", f"b100_rate{rate}", 2.0, 1.0)
+        fake(tmp_path, w, "cachescout", f"b100_rate{rate}", 2.0, 1.0)   # no gain: still reported
+    rows = sba.sweep_rows(tmp_path)
+    assert rows[0]["ttft_ms"] == 1000.0 and rows[0]["ttft_median_ms"] == 500.0
+    md = sba.sweep_markdown(rows)
+    assert "TTFT" in md and "| 8 |" in md and "| 0.2 |" in md
+    assert md.count("| gsm8k_test_selector_s1 | 100 |") == 4 + 2  # 4 rate rows + 2 peak rows

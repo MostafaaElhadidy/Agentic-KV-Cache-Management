@@ -11,7 +11,21 @@ Phase 2: a remote Linux GPU box (24/48/80 GB, Llama-3.1-8B). Same code; hardware
   box incoming -> follow `docs/BOX_CHEATSHEET.md`. Model = ungated mirror `unsloth/Llama-3.1-8B-Instruct`, set once
   in `configs/models/llama31_8b.yaml` (switch to meta-llama when access is approved). Nothing has run on a box yet.
 
-## Environment (verified 2026-10-06)
+## On the remote box (read this first when running there)
+- Rented GPU instance; you may be root. Same repo, cloned from GitHub. Venv: `~/cachescout-venv`
+  (not `~/testLLM`). The laptop-only facts below (WSL, 8 GB GPU, `~/testLLM`) do not apply there.
+- Follow `docs/BOX_CHEATSHEET.md` step by step; explain each command simply before running it.
+- SSH drops often: every long job runs inside `tmux` (or `nohup ... > logs/<name>.log 2>&1 &`) with a log file,
+  and is resumable (campaign stages skip finished results). Never run a long job in a bare SSH shell.
+- One GPU job at a time, only through `scripts/gpu_run.sh` (the campaign scripts already do this).
+- Never run destructive commands (rm -rf, git reset --hard, killing others' processes, deleting results or
+  the HF cache) without asking first.
+- Never commit results, logs, `.env` files or tokens (HF tokens stay in `~/.cache/huggingface`). Commits use the
+  user's noreply address: `git config user.email 110402955+MostafaaElhadidy@users.noreply.github.com`.
+- On any error or unexpected result: stop and tell the user what happened, with the exact message. Don't guess,
+  retry blindly, or change configs, rates or code to make numbers look better (rates are fixed in decisions.md).
+
+## Environment (laptop, verified 2026-10-06)
 - Windows 11 + WSL2, Ubuntu 26.04.1, kernel 6.18. Linux/bash only; repo and HF cache stay in `~/` (not `/mnt/c`).
 - GPU: RTX 4060 Laptop, 8188 MiB (~370 MiB used by Windows). Driver comes from Windows; never install one in WSL.
 - RAM 11 GiB, swap 16 GiB (WSL limits set by the user in `.wslconfig`).

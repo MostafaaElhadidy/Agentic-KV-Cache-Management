@@ -269,3 +269,30 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
   0.2-2.0 in Fig. 13 and 0.2-50 in Fig. 11) in `scripts/run_real_campaign.sh`; tables from
   `scripts/summarize_box_ablations.py`. Checked without a GPU: the simulator on local recordings shows
   `gate_off` issues more warmups with 0 gated decisions (random s1: 5 vs 3 issued, 0 vs 8 gated).
+
+## 2026-10-08: Rate sweep fixed before any box run (pre-registration)
+- **Fixed now, before any run on the box:** stage `rate_sweep` uses arrival rates **0.2, 0.5, 1, 2, 4, 8
+  sessions/s**, **40 sessions per run**, selector topology, problem seed 1, 100 blocks, systems vanilla and
+  cachescout, Llama-3.1-8B (unsloth mirror). Supersedes the 0.2-4 / 20-session defaults in the entry above.
+  Any change to this list after runs start is a new decision with its own dated entry, and the original
+  list is still reported.
+- **Reporting rule:** every rate that was run is reported (hit rate, TTFT mean / median / P99, per-turn latency,
+  turns/s), **including rates where CacheScout shows no gain or is worse**. Peak throughput = max turns/s over
+  these rates, per system. No rate is dropped or re-run selectively.
+- **Why a sweep (engineering choice, paper basis):** the paper does not state the load of its main bar charts
+  (Figs. 8-10). Passages (check in the PDF):
+  - Sec. 5.2, "End-to-end latency and throughput": "Figure 11 shows how this advantage compounds with load:
+    vanilla vLLM's throughput plateaus once its KV-cache saturates, while CacheScout continues to scale, and
+    within the same mean-latency budget CacheScout sustains 1.7-12x the arrival rate of vanilla vLLM".
+  - Fig. 11 caption: "Latency and throughput versus session arrival rate. CacheScout delays cache saturation,
+    sustaining lower latency and higher throughput under increasing load."
+  - Sec. 5.4, "GPU cache capacity and load": "across the full arrival-rate sweep of Figure 11 (0.2-50
+    sessions/s), its KV-cache hit rate holds at 86-87% while vanilla vLLM stays near 65-68%."
+  - Sec. 5.4, "Model scale" (Qwen3-235B, SWE-bench): "whose long prompts keep prefill on the costly path ...
+    sweeping the arrival rate from 0.2 to 2.0 sessions/s (Figure 13b-d), CacheScout reduces mean TTFT by
+    33-54% and mean per-turn latency by 26-36% at every rate".
+- **Caveat (do not overstate):** the last passage reports latency gains already at 0.2 sessions/s, for long,
+  prefill-heavy prompts on a 235B model. So low load alone does not explain the laptop's missing speed-up; cheap
+  prefill (1.5B model, ~340-token prompts) is the other likely cause (README "Did not reproduce"). Our laptop
+  real-agent runs used 0.2 sessions/s, "far below saturation" (REPORT_REAL_AGENTS.md). Rates up to 8/s are
+  chosen to reach the regime where vanilla saturates on one GPU; the paper's 50/s used its 8-GPU server.
