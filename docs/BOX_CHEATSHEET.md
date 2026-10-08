@@ -16,8 +16,8 @@ curl -LsSf https://astral.sh/uv/install.sh | sh && source $HOME/.local/bin/env &
 # 4. vLLM 0.31.0 + project extras
 uv pip install vllm==0.31.0 && uv pip install -r requirements-extra.txt
 
-# 5. Hugging Face login + model (Llama is gated: request access on huggingface.co first)
-hf auth login && hf download meta-llama/Llama-3.1-8B-Instruct       # fallback: hf download Qwen/Qwen2.5-7B-Instruct
+# 5. model: ungated mirror of Llama-3.1-8B-Instruct, no login (name in configs/models/llama31_8b.yaml)
+hf download unsloth/Llama-3.1-8B-Instruct
 
 # 6. read-only preflight: must end with "0 FAIL"; note the suggested profile
 bash scripts/box_preflight.sh

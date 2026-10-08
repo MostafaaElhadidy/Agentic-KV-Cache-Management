@@ -32,3 +32,27 @@ def test_apply_env(monkeypatch) -> None:
     import os
 
     assert os.environ["CS_TEST_VAR"] == "1"
+
+
+def test_llama_profiles_share_one_model_file() -> None:
+    """All Llama-3.1-8B hardware profiles read the model name from one file, so switching
+    mirror -> meta-llama is a one-line edit (docs/decisions.md, model mirror)."""
+    from cachescout.config import load_yaml
+
+    model = load_yaml(REPO / "configs/models/llama31_8b.yaml")
+    assert model["name"] in ("unsloth/Llama-3.1-8B-Instruct", "meta-llama/Llama-3.1-8B-Instruct")
+    for name in ("cloud", "box_24gb", "box_48gb", "box_80gb"):
+        hw = load_yaml(REPO / f"configs/hardware/{name}.yaml")
+        assert hw["model"] == model, name
+        assert llm_kwargs(hw, seed=0, log_stats=False)["model"] == model["name"]
+
+
+def test_model_file_conflicts_with_inline_model(tmp_path) -> None:
+    import pytest
+
+    from cachescout.config import load_yaml
+
+    (tmp_path / "m.yaml").write_text("name: x\ndtype: bfloat16\n")
+    (tmp_path / "hw.yaml").write_text("model_file: m.yaml\nmodel: {name: y}\n")
+    with pytest.raises(ValueError):
+        load_yaml(tmp_path / "hw.yaml")

@@ -1,0 +1,5 @@
+# Llama-3.1-8B-Instruct (paper main model, Sec. 5.1), shared by configs/hardware/{cloud,box_*}.yaml.
+# Engineering choice (docs/decisions.md, "Model mirror"): ungated mirror with the same weight files.
+# When Meta access is approved, change the next line to: name: meta-llama/Llama-3.1-8B-Instruct
+name: unsloth/Llama-3.1-8B-Instruct
+dtype: bfloat16

@@ -4,9 +4,7 @@
 # Paper-budget experiments override this to 100-200 blocks anyway. Check vLLM's log line
 # "Available KV cache memory" on the first smoke run; lower max_num_seqs if it is tight.
 name: box-24gb
-model:
-  name: meta-llama/Llama-3.1-8B-Instruct   # ungated fallback: Qwen/Qwen2.5-7B-Instruct (see setup doc)
-  dtype: bfloat16
+model_file: ../models/llama31_8b.yaml   # Llama-3.1-8B-Instruct; one-line mirror/meta-llama switch there
 vllm:
   gpu_memory_utilization: 0.90
   max_model_len: 4096

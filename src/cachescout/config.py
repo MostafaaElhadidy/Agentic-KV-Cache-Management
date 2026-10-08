@@ -24,11 +24,19 @@ VLLM_KEYS = (
 
 
 def load_yaml(path: str | Path) -> dict[str, Any]:
-    """Read a YAML mapping."""
+    """Read a YAML mapping.
+
+    Engineering choice: a `model_file:` key (relative to this file) is replaced by
+    `model: <that file's mapping>`, so several hardware profiles share one model name.
+    """
     with open(path) as f:
         data = yaml.safe_load(f)
     if not isinstance(data, dict):
         raise ValueError(f"{path}: expected a YAML mapping")
+    if "model_file" in data:
+        if "model" in data:
+            raise ValueError(f"{path}: give either model or model_file, not both")
+        data["model"] = load_yaml(Path(path).parent / data.pop("model_file"))
     return data
 
 

@@ -199,7 +199,28 @@ Format: date, decision, why, alternatives. Label: **paper** / **interpretation**
   like run.py.
 - **Fingerprints under Llama 3.1.** Its chat template prepends a shared header ("Cutting Knowledge Date / Today
   Date") before each system prompt; `scripts/check_fingerprints.py` / the tokenizer test verify that the six
-  agents still differ within the plugin's 2-block window. Not verifiable locally (gated tokenizer not cached);
+  agents still differ within the plugin's 2-block window. Not yet run locally (tokenizer not cached; the unsloth mirror is ungated, see 2026-10-08);
   if it fails on the box, raise `fingerprint_blocks` in configs/experiments/real/cloud.yaml.
 - **Ungated fallback model:** Qwen/Qwen2.5-7B-Instruct (Apache-2.0; 56 KiB KV/token). Results with it must be
   labelled as Qwen2.5-7B, not as the paper's model.
+
+## 2026-10-08: Model mirror for Llama-3.1-8B-Instruct (branch box-model-mirror)
+- **Engineering choice.** The remote-box profiles (`configs/hardware/{cloud,box_24gb,box_48gb,box_80gb}.yaml`)
+  load `unsloth/Llama-3.1-8B-Instruct`, an ungated Hugging Face re-upload of the paper's model (Sec. 5.1),
+  because access to the gated `meta-llama/Llama-3.1-8B-Instruct` was requested and is still pending.
+- **What was checked (2026-10-08, Hugging Face API):** the four `model-0000x-of-00004.safetensors` files of
+  `unsloth/Llama-3.1-8B-Instruct` have the same SHA-256 (LFS oid) as those of
+  `NousResearch/Meta-Llama-3.1-8B-Instruct`, a second independent mirror. They could **not** be compared with
+  Meta's own files: the gated repo hides its checksums from accounts without access. Treat "same weights as
+  Meta's" as very likely, not verified.
+- **Why unsloth and not NousResearch:** unsloth's `tokenizer_config.json` carries Meta's official Llama 3.1 chat
+  template (system header with "Cutting Knowledge Date / Today Date"); NousResearch's carries an older, simpler
+  template. CacheScout works on prompt prefixes, so the exact prompt tokens matter. Its `config.json` differs
+  only in metadata (`eos_token_id` 128009 alone, `pad_token_id`, `unsloth_fixed`); `generation_config.json`
+  differs only in `max_length`, `pad_token_id` and the transformers version string. `check_fingerprints.py`
+  still checks the agents' prefixes on the box before any run.
+- **One-line switch:** the name lives only in `configs/models/llama31_8b.yaml` (hardware profiles use
+  `model_file:`; `load_yaml` resolves it). When Meta access is approved, change that line to
+  `meta-llama/Llama-3.1-8B-Instruct` and download it; the preflight default follows the same file.
+- **Claims:** results from the box are "Llama-3.1-8B-Instruct (unsloth mirror)", i.e. the same model as the paper,
+  not the paper's numbers: hardware, vLLM version, workload driver and load differ (see README Limitations).

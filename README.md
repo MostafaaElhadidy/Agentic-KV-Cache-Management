@@ -389,7 +389,12 @@ paper/           the paper PDF (CC BY 4.0) and attribution
 ## Roadmap
 
 - **Cloud phase** (prepared, not run): Llama-3.1-8B on an A100/H100, the same sweeps up to 50 sessions/s. Exact
-  commands are in [`docs/CLOUD_RUNBOOK.md`](docs/CLOUD_RUNBOOK.md).
+  commands are in [`docs/CLOUD_RUNBOOK.md`](docs/CLOUD_RUNBOOK.md). The box profiles load
+  `unsloth/Llama-3.1-8B-Instruct`, an ungated mirror of Meta's model (Meta access pending): on 2026-10-08 its
+  weight-file checksums matched the `NousResearch/Meta-Llama-3.1-8B-Instruct` mirror, but could not be checked
+  against Meta's gated repo. Same model as the paper, not the paper's numbers. Switching to
+  `meta-llama/Llama-3.1-8B-Instruct` is one line in `configs/models/llama31_8b.yaml`
+  ([`docs/decisions.md`](docs/decisions.md), "Model mirror").
 - **Larger model for the real-agent workload** (an 8B model follows tool and routing protocols far better than
   1.5B), and higher session load.
 - **Faster runtime:** cached per-agent scores and a heap instead of a full scan, toward the paper's µs overhead.

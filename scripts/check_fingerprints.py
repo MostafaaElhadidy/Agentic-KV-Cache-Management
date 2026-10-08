@@ -1,6 +1,6 @@
 """Print whether the six agents have distinct plugin fingerprints for a model's chat template.
 
-    python scripts/check_fingerprints.py                                   # Llama-3.1-8B-Instruct
+    python scripts/check_fingerprints.py                                   # Llama-3.1-8B
     python scripts/check_fingerprints.py --model Qwen/Qwen2.5-7B-Instruct  # ungated fallback
     python scripts/check_fingerprints.py --config configs/experiments/real/cloud.yaml
 

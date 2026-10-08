@@ -278,3 +278,21 @@ Resume with `claude --continue`; the last entry says what was in progress.
 - Then write a cloud report (Llama-3.1-8B vs the laptop results: does a costlier prefill turn hit-rate gains into
   TTFT gains? does a stronger model lower the selector fallback rate?).
 - Optionally run the synthetic-trace experiments from docs/CLOUD_RUNBOOK.md §5 on the box.
+
+## 2026-10-08 Ungated Llama mirror + GitHub sync (branch box-model-mirror, no GPU used)
+- **Model:** the remote-box profiles now load `unsloth/Llama-3.1-8B-Instruct` (ungated mirror; Meta access still
+  pending). Its 4 safetensors files have the same SHA-256 as `NousResearch/Meta-Llama-3.1-8B-Instruct`; Meta's
+  checksums are hidden (gated), so not checked against them. Chosen over NousResearch because its chat template is
+  Meta's official one. Details: docs/decisions.md "Model mirror".
+- **One-line switch:** the name lives in `configs/models/llama31_8b.yaml`; hardware profiles say
+  `model_file: ../models/llama31_8b.yaml` (resolved by `config.load_yaml`; smoke_vllm_generate.py now uses it too).
+  box_preflight.sh reads its default MODEL from that file and asks for an HF token only for `meta-llama/*`.
+  NEW_BOX_SETUP §6, BOX_CHEATSHEET step 5, CLOUD_RUNBOOK, README roadmap updated (no `hf auth login` needed).
+- **Tests:** +2 config tests (shared model file; model + model_file conflict), unsloth tokenizer added to the
+  fingerprint test (skips until the tokenizer is cached).
+- **Not committed (user decision):** docs/GUIDE.md, docs/GUIDE.pdf, docs/guide_img/ (now in .gitignore). The 12
+  files from 4 compare.py re-renders on 2026-10-07 (selector_eval 161325/172109/214433, replay 214841) are left
+  untracked: their tables are identical to committed ones (selector_eval 20261006-172634, replay 20261007-004814)
+  and nothing cites them.
+- **Paper audit:** a read-only check of the code against the paper PDF was started in parallel; findings are
+  reported to the user before any fix.
