@@ -296,3 +296,20 @@ Resume with `claude --continue`; the last entry says what was in progress.
   and nothing cites them.
 - **Paper audit:** a read-only check of the code against the paper PDF was started in parallel; findings are
   reported to the user before any fix.
+
+## 2026-10-08 Paper audit follow-up: scope documented, box ablations prepared (same branch, no GPU used)
+- **Paper audit** (paper-checker agent, read the PDF itself): every equation (2-5, 7-11) and Alg. 1's control
+  flow are implemented. 8 gaps, now all written down: decisions.md "Replication scope and documented
+  deviations" and a new README section "Replication scope and gaps" (matches / interpretations / custom / gaps).
+  Plain statements: only GSM8K is replicated (not MT-Bench, GAIA, SWE-bench); per-turn latency is per LLM call
+  (the paper may mean per agent turn); Continuum pins after every request (known difference, not changed).
+  README's metrics row no longer says "exactly as defined in the paper". warmup.py docstring now cites the
+  real decisions.md entry. Gate quote verified in the PDF text: Sec. 5.4 (Fig. 14b), "up to 22% at small
+  cache sizes".
+- **Prepared, not run:** `gate_off` variant (r_min 0.0) in configs/experiments/real/{local,cloud}.yaml;
+  run_real_campaign.sh stages `gate_ablation` (Fig. 14b) and `rate_sweep` (Fig. 10b, RATES default
+  "0.2 0.5 1 2 4"); scripts/summarize_box_ablations.py (+3 tests on fake results). GPU-free checks: dry runs with
+  `PYTHON="echo python"`; simulator on local recordings: gate_off has 0 gated decisions and more warmups
+  (random s1: 5 vs 3 issued). Commands in BOX_CHEATSHEET.md "After the first basic run works".
+- **Fingerprints under Llama 3.1 (unsloth tokenizer only, 17 MB, no weights):** PASS for all four topologies;
+  shared header 25 tokens, agents differ from token 25, inside the 32-token window (fingerprint_blocks=2).

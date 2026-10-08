@@ -11,6 +11,10 @@
 #   bash scripts/run_real_campaign.sh replay        # HEADLINE: replay recordings, vanilla vs cachescout, 100/150/200
 #   bash scripts/run_real_campaign.sh live          # remaining live runs (vanilla 150/200, cachescout 100/150/200)
 #   LIVE_BLOCKS=100,150 bash scripts/run_real_campaign.sh live    # reduced live set if time is tight
+#   bash scripts/run_real_campaign.sh gate_ablation # Fig. 14b: replay recordings, cachescout vs gate_off (needs replay)
+#   bash scripts/run_real_campaign.sh rate_sweep    # Fig. 10b: live arrival-rate sweep, vanilla vs cachescout
+#   RATES="0.2 0.5 1 2 4" SWEEP_TOPO=selector SWEEP_SEED=1 SWEEP_BLOCKS=100 ...  (rate_sweep defaults)
+# Summaries of the last two: python scripts/summarize_box_ablations.py --exp real_cloud
 set -u
 cd "$(dirname "$0")/.."
 stage=${1:?stage}
@@ -62,6 +66,19 @@ case "$stage" in
       $PY scripts/compare.py --config $CFG "${HW_ARGS[@]}" --systems vanilla,cachescout --blocks $BL --tag eval --run \
         --set agents.topology=$t --set agents.problem_seed=$seed || exit 1
     done; done ;;
+  gate_ablation)   # cachescout results are shared with the replay stage (same tag), only gate_off runs
+    for seed in $SEEDS; do for t in $TOPOS; do
+      REC=$(rec_dir test $t $seed eval)
+      [ -f "$REC/result.json" ] || { echo "missing recording $REC"; exit 1; }
+      $PY scripts/compare.py --config $CFG "${HW_ARGS[@]}" --trace "$REC" --set mode=online \
+        --systems vanilla,cachescout,gate_off --blocks ${GATE_BLOCKS:-100,150,200} --tag replay --run || exit 1
+    done; done ;;
+  rate_sweep)      # live runs: each arrival rate gets its own tag; peak = max turns/s over rates
+    for r in ${RATES:-0.2 0.5 1 2 4}; do
+      $PY scripts/compare.py --config $CFG "${HW_ARGS[@]}" --systems vanilla,cachescout \
+        --blocks ${SWEEP_BLOCKS:-100} --tag "rate$r" --run --set agents.topology=${SWEEP_TOPO:-selector} \
+        --set agents.problem_seed=${SWEEP_SEED:-1} --set agents.arrival_rate=$r || exit 1
+    done ;;
   *) echo "unknown stage $stage"; exit 2 ;;
 esac
 echo "stage $stage done"
